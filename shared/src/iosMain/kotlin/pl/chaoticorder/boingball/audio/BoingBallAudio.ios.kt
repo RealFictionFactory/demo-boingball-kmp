@@ -1,6 +1,6 @@
 package pl.chaoticorder.boingball.audio
 
-import boingballdemo.composeapp.generated.resources.Res
+import boingball.shared.generated.resources.Res
 import kotlinx.cinterop.ExperimentalForeignApi
 import platform.AVFAudio.AVAudioPlayer
 import platform.AVFAudio.AVAudioSession
