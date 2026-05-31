@@ -13,8 +13,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.windowInsetsPadding
-import androidx.compose.material3.LocalTextStyle
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -34,9 +32,12 @@ import boingball.shared.generated.resources.preferences_set_amigaos_1_3_style
 import boingball.shared.generated.resources.preferences_set_amigaos_2_style
 import boingball.shared.generated.resources.preferences_set_app_defaults
 import boingball.shared.generated.resources.preferences_set_demo_defaults
+import org.jetbrains.compose.resources.stringResource
+import org.koin.compose.viewmodel.koinViewModel
 import pl.chaoticorder.boingball.component.AmigaButton
 import pl.chaoticorder.boingball.component.AmigaCheckBox
 import pl.chaoticorder.boingball.component.AmigaColorPicker
+import pl.chaoticorder.boingball.component.AmigaTextBox
 import pl.chaoticorder.boingball.component.AmigaToolbar
 import pl.chaoticorder.boingball.component.OSStyle
 import pl.chaoticorder.boingball.main.conditional
@@ -46,13 +47,7 @@ import pl.chaoticorder.boingball.ui.theme.amigaOs13Blue
 import pl.chaoticorder.boingball.ui.theme.amigaOs30Blue
 import pl.chaoticorder.boingball.ui.theme.backgroundColor
 import pl.chaoticorder.boingball.ui.theme.blackColor
-import pl.chaoticorder.boingball.ui.theme.topazFont
-import pl.chaoticorder.boingball.ui.theme.topazFont20
 import pl.chaoticorder.boingball.ui.theme.whiteColor
-import org.jetbrains.compose.resources.stringResource
-import org.koin.compose.viewmodel.koinViewModel
-import pl.chaoticorder.boingball.component.AmigaTextBox
-import kotlin.collections.copy
 
 /**
  * possible settings to change:
