@@ -1,3 +1,5 @@
+#include? "GeneratedVersion.xcconfig"
+
 TEAM_ID=
 
 PRODUCT_NAME=BoingBall

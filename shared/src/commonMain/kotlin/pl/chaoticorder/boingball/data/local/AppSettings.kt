@@ -11,6 +11,7 @@ import pl.chaoticorder.boingball.component.OSStyle
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.map
+import pl.chaoticorder.boingball.VersionConfig
 
 class AppSettings(
     private val preferences: DataStore<Preferences>
@@ -32,7 +33,7 @@ class AppSettings(
             )
         }
 
-    fun getVersion() = BuildConfig.VERSION_NAME
+    fun getVersion() = VersionConfig.VERSION_NAME
 
     suspend fun saveBoingBallPrefs(value: BoingBallPrefs) {
         preferences.edit { preferences ->

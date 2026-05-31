@@ -6,6 +6,9 @@ plugins {
     alias(libs.plugins.composeCompiler)
 }
 
+val appVersionCode = rootProject.extra["appVersionCode"] as Int
+val appVersionName = rootProject.extra["appVersionName"] as String
+
 kotlin {
     compilerOptions {
         jvmTarget = JvmTarget.JVM_11
@@ -31,8 +34,8 @@ android {
         applicationId = "pl.chaoticorder.boingball"
         minSdk = libs.versions.android.minSdk.get().toInt()
         targetSdk = libs.versions.android.targetSdk.get().toInt()
-        versionCode = 102000
-        versionName = "1.2.0"
+        versionCode = appVersionCode
+        versionName = appVersionName
     }
     packaging {
         resources {
@@ -48,4 +51,9 @@ android {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
     }
+}
+
+tasks.named("preBuild") {
+    dependsOn(rootProject.tasks.named("generateVersionConfig"))
+    dependsOn(rootProject.tasks.named("generateXcodeVersionConfig"))
 }

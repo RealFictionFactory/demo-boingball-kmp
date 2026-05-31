@@ -9,6 +9,10 @@ plugins {
     alias(libs.plugins.koin.compiler)
 }
 
+val generatedVersionSourceDir = rootProject.layout.buildDirectory.dir(
+    "generated/source/versioning/commonMain/kotlin"
+)
+
 kotlin {
     listOf(
         iosArm64(),
@@ -37,6 +41,10 @@ kotlin {
     }
 
     sourceSets {
+        commonMain {
+            kotlin.srcDir(generatedVersionSourceDir)
+        }
+
         androidMain.dependencies {
             implementation(libs.compose.uiToolingPreview)
             implementation(libs.koin.android)
@@ -71,4 +79,13 @@ kotlin {
 
 dependencies {
     androidRuntimeClasspath(libs.compose.uiTooling)
+}
+
+tasks.matching {
+    it.name.startsWith("compile") ||
+        it.name == "embedAndSignAppleFrameworkForXcode" ||
+        it.name == "embedSwiftExportForXcode"
+}.configureEach {
+    dependsOn(rootProject.tasks.named("generateVersionConfig"))
+    dependsOn(rootProject.tasks.named("generateXcodeVersionConfig"))
 }
