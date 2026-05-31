@@ -68,15 +68,9 @@ fun PreferencesScreenRoot(
     val state by viewModel.uiState.collectAsStateWithLifecycle()
     PreferencesScreen(
         state = state,
+        onCloseClick = onCloseClick,
         onAction = { action ->
-            when (action) {
-                PreferencesAction.Back -> {
-                    onCloseClick()
-                }
-                else -> {
-                    viewModel.onAction(action)
-                }
-            }
+            viewModel.onAction(action)
         }
     )
 }
@@ -84,6 +78,7 @@ fun PreferencesScreenRoot(
 @Composable
 fun PreferencesScreen(
     state: PreferencesState,
+    onCloseClick: () -> Unit = {},
     onAction: (PreferencesAction) -> Unit,
 ) {
     BoxWithConstraints(
