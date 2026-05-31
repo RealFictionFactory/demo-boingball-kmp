@@ -13,6 +13,9 @@ This project features two core Jetpack Compose components: one responsible for r
 
 ![Boing Ball demo](boing.gif)
 
+[<img src="https://play.google.com/intl/en_us/badges/images/generic/en-play-badge.png"
+alt="Get it on Google Play" height="80">](https://play.google.com/store/apps/details?id=com.rff.boingballdemo)
+
 ## This is a Kotlin Multiplatform project targeting Android, iOS.
 
 * [/androidApp](./androidApp)  contains the Android application entry point. Unlike `iosApp`, which requires Xcode
