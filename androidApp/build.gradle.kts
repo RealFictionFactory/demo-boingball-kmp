@@ -27,11 +27,11 @@ dependencies {
 }
 
 android {
-    namespace = "pl.chaoticorder.boingball"
+    namespace = "com.rff.boingballdemo"
     compileSdk = libs.versions.android.compileSdk.get().toInt()
 
     defaultConfig {
-        applicationId = "pl.chaoticorder.boingball"
+        applicationId = "com.rff.boingballdemo"
         minSdk = libs.versions.android.minSdk.get().toInt()
         targetSdk = libs.versions.android.targetSdk.get().toInt()
         versionCode = appVersionCode

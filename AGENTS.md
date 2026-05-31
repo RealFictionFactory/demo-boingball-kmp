@@ -17,7 +17,7 @@ Use the Gradle wrapper from the repository root.
 Run the iOS app from Xcode by opening `iosApp/iosApp.xcodeproj`.
 
 ## Coding Style & Naming Conventions
-Follow Kotlin defaults: 4-space indentation, no tabs, and one top-level class or screen per file when practical. Use `UpperCamelCase` for types (`BoingBallViewModel`), `lowerCamelCase` for functions and properties, and keep package names lowercase under `pl.chaoticorder.boingball`.
+Follow Kotlin defaults: 4-space indentation, no tabs, and one top-level class or screen per file when practical. Use `UpperCamelCase` for types (`BoingBallViewModel`), `lowerCamelCase` for functions and properties, and keep package names lowercase under `com.rff.boingballdemo`.
 
 Compose screens, state, and action types already follow `FeatureScreen`, `FeatureState`, and `FeatureAction`; keep new code consistent with that pattern. No formatter or linter is configured in this repository, so keep imports tidy and match surrounding code style.
 

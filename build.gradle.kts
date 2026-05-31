@@ -34,10 +34,10 @@ extra["appVersionName"] = appVersionName
 
 tasks.register("generateVersionConfig") {
     val outputFile = layout.buildDirectory.file(
-        "generated/source/versioning/commonMain/kotlin/pl/chaoticorder/boingball/VersionConfig.kt"
+        "generated/source/versioning/commonMain/kotlin/com/rff/boingballdemo/VersionConfig.kt"
     )
     val content = """
-        package pl.chaoticorder.boingball
+        package com.rff.boingballdemo
 
         object VersionConfig {
             const val VERSION_CODE = $appVersionCode

@@ -25,7 +25,7 @@ kotlin {
     }
 
     android {
-        namespace = "pl.chaoticorder.boingball.shared"
+        namespace = "com.rff.boingballdemo.shared"
         compileSdk = libs.versions.android.compileSdk.get().toInt()
         minSdk = libs.versions.android.minSdk.get().toInt()
 
