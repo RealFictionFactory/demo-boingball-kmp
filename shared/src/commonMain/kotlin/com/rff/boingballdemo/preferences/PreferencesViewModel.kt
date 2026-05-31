@@ -79,6 +79,7 @@ class PreferencesViewModel(
             PreferencesAction.SetAmigaOS20 -> {
                 setStyle(OSStyle.AmigaOS20)
             }
+            PreferencesAction.Back -> TODO()
         }
     }
 

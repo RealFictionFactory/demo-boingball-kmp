@@ -63,12 +63,20 @@ import com.rff.boingballdemo.ui.theme.whiteColor
 @Composable
 fun PreferencesScreenRoot(
     viewModel: PreferencesViewModel = koinViewModel(),
+    onCloseClick: () -> Unit = {},
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
     PreferencesScreen(
         state = state,
         onAction = { action ->
-            viewModel.onAction(action)
+            when (action) {
+                PreferencesAction.Back -> {
+                    onCloseClick()
+                }
+                else -> {
+                    viewModel.onAction(action)
+                }
+            }
         }
     )
 }
@@ -94,7 +102,8 @@ fun PreferencesScreen(
         ) {
             AmigaToolbar(
                 title = stringResource(Res.string.preferences),
-                osStyle = state.osStyle
+                osStyle = state.osStyle,
+                onCloseClick = onCloseClick
             )
 
             if (isLandscape) {

@@ -13,7 +13,9 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             BoingBallDemoTheme {
-                NavigationRoot()
+                NavigationRoot(
+                    onExitApp = { finish() }
+                )
             }
         }
     }

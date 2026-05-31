@@ -34,7 +34,9 @@ private val navConfig = SavedStateConfiguration {
 }
 
 @Composable
-fun NavigationRoot() {
+fun NavigationRoot(
+    onExitApp: () -> Unit = {},
+) {
     val backStack = rememberNavBackStack(navConfig, Home)
     NavDisplay(
         backStack = backStack,
@@ -45,13 +47,18 @@ fun NavigationRoot() {
                         BoingBallScreenRoot(
                             onPreferencesClick = {
                                 backStack.add(Prefs)
-                            }
+                            },
+                            onCloseClick = onExitApp
                         )
                     }
                 }
                 Prefs -> {
                     NavEntry(key = key) {
-                        PreferencesScreenRoot()
+                        PreferencesScreenRoot(
+                            onCloseClick = {
+                                backStack.removeLastOrNull()
+                            }
+                        )
                     }
                 }
                 else -> throw IllegalArgumentException("Unknown key: $key")

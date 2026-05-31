@@ -1,5 +1,6 @@
 package com.rff.boingballdemo.component
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -28,17 +29,20 @@ fun AmigaToolbar(
     osStyle: OSStyle,
     modifier: Modifier = Modifier,
     toolbarHeight: Dp = 28.dp,
+    onCloseClick: () -> Unit,
 ) {
     when (osStyle) {
         OSStyle.AmigaOS13 -> AmigaOs13Toolbar(
             title = title,
             modifier = modifier,
             toolbarHeight = toolbarHeight,
+            onCloseClick = onCloseClick,
         )
         OSStyle.AmigaOS20 -> AmigaOs30Toolbar(
             title = title,
             modifier = modifier,
             toolbarHeight = toolbarHeight,
+            onCloseClick = onCloseClick,
         )
     }
 }
@@ -48,6 +52,7 @@ private fun AmigaOs13Toolbar(
     title: String,
     modifier: Modifier = Modifier,
     toolbarHeight: Dp = 28.dp,
+    onCloseClick: (() -> Unit)? = null,
 ) {
     Box(
         modifier
@@ -64,7 +69,13 @@ private fun AmigaOs13Toolbar(
         ) {
             Spacer(Modifier.width(4.dp))
             // Close gadget
-            AmigaOs13CloseGadget()
+            if (onCloseClick != null) {
+                AmigaOs13CloseGadget(
+                    modifier = Modifier.clickable(onClick = onCloseClick)
+                )
+            } else {
+                AmigaOs13CloseGadget()
+            }
             Spacer(Modifier.width(4.dp))
             // Title
             Text(
@@ -93,6 +104,7 @@ private fun AmigaOs30Toolbar(
     title: String,
     modifier: Modifier = Modifier,
     toolbarHeight: Dp = 28.dp,
+    onCloseClick: (() -> Unit)? = null,
 ) {
     Box(
         modifier
@@ -108,7 +120,13 @@ private fun AmigaOs30Toolbar(
             verticalAlignment = Alignment.CenterVertically
         ) {
             // Close gadget
-            AmigaOs30CloseGadget()
+            if (onCloseClick != null) {
+                AmigaOs30CloseGadget(
+                    modifier = Modifier.clickable(onClick = onCloseClick)
+                )
+            } else {
+                AmigaOs30CloseGadget()
+            }
             AmigaOs30ToolbarPlaceholderGadget(
                 text = title,
                 modifier = Modifier

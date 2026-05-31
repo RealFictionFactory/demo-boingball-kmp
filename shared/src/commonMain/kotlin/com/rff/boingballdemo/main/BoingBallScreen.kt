@@ -50,6 +50,7 @@ import kotlin.collections.copy
 fun BoingBallScreenRoot(
     viewModel: BoingBallViewModel = koinViewModel(),
     onPreferencesClick: () -> Unit,
+    onCloseClick: () -> Unit = {},
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
 
@@ -59,6 +60,10 @@ fun BoingBallScreenRoot(
             when (action) {
                 BoingBallAction.Preferences -> {
                     onPreferencesClick()
+                }
+
+                BoingBallAction.Back -> {
+                    onCloseClick()
                 }
             }
         }
@@ -92,6 +97,7 @@ fun BoingBallScreen(
             ) {
                 BoingBallWindow(
                     state = state,
+                    onCloseClick = { onAction(BoingBallAction.Back) },
                     modifier = Modifier
                         .align(Alignment.TopStart)
                         .widthIn(max = availableWidth * 0.72f)
@@ -119,6 +125,7 @@ fun BoingBallScreen(
                 )
                 BoingBallWindow(
                     state = state,
+                    onCloseClick = { onAction(BoingBallAction.Back) },
                     modifier = Modifier
                         .align(Alignment.Center)
                         .widthIn(max = availableWidth)
@@ -131,12 +138,14 @@ fun BoingBallScreen(
 @Composable
 private fun BoingBallWindow(
     state: BoingBallState,
+    onCloseClick: () -> Unit = {},
     modifier: Modifier = Modifier,
 ) {
     Column(modifier = modifier) {
         AmigaToolbar(
             title = stringResource(Res.string.app_name),
-            osStyle = state.osStyle
+            osStyle = state.osStyle,
+            onCloseClick = onCloseClick
         )
         Box(
             modifier = Modifier
