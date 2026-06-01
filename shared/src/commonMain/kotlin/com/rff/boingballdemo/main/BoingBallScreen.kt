@@ -46,6 +46,11 @@ import com.rff.boingballdemo.component.AmigaTextBox
 import com.rff.boingballdemo.ui.theme.amigaOs13Blue
 import kotlin.collections.copy
 
+/**
+ * Plans for the future:
+ * - implement interaction on single screen. It would be nice to have all Amiga windows opened
+ *   on the same screen
+ */
 @Composable
 fun BoingBallScreenRoot(
     viewModel: BoingBallViewModel = koinViewModel(),

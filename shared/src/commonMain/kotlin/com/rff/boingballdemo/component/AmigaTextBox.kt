@@ -5,6 +5,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import com.rff.boingballdemo.ui.theme.blackColor
+import com.rff.boingballdemo.ui.theme.whiteColor
 import com.rff.boingballdemo.ui.theme.topazFont
 import com.rff.boingballdemo.ui.theme.topazFont20
 
@@ -15,7 +16,10 @@ fun AmigaTextBox(
     modifier: Modifier = Modifier
 ) {
     val textStyle = if (osStyle == OSStyle.AmigaOS13)
-        LocalTextStyle.current.copy(fontFamily = topazFont())
+        LocalTextStyle.current.copy(
+            fontFamily = topazFont(),
+            color = whiteColor
+        )
     else
         LocalTextStyle.current.copy(
             fontFamily = topazFont20(),

@@ -81,10 +81,15 @@ fun PreferencesScreen(
     onCloseClick: () -> Unit = {},
     onAction: (PreferencesAction) -> Unit,
 ) {
+    val bg = if (state.osStyle == OSStyle.AmigaOS20)
+        backgroundColor
+    else
+        amigaOs13Blue
+
     BoxWithConstraints(
         modifier = Modifier
             .fillMaxSize()
-            .background(color = backgroundColor)
+            .background(color = bg)
             .windowInsetsPadding(WindowInsets.safeDrawing),
         contentAlignment = Alignment.Center
     ) {
@@ -92,7 +97,8 @@ fun PreferencesScreen(
 
         Column(
             modifier = Modifier
-                .fillMaxSize(),
+                .fillMaxSize()
+                .padding(16.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             AmigaToolbar(
