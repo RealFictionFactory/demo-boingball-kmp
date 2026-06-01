@@ -50,6 +50,10 @@ import kotlin.collections.copy
  * Plans for the future:
  * - implement interaction on single screen. It would be nice to have all Amiga windows opened
  *   on the same screen
+ * - Amiga top menu bar with shutdown option?
+ * - additional windows (each window has its own icon):
+ *    - about app
+ *    - clock
  */
 @Composable
 fun BoingBallScreenRoot(
