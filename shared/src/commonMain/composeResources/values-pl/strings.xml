@@ -1,0 +1,12 @@
+<resources>
+    <string name="preferences">Ustawienia</string>
+    <string name="clock">Zegar</string>
+    <string name="preferences_pick_main_bb_color">Kolor główny dla BB</string>
+    <string name="preferences_pick_alternate_bb_color">Kolor dodatkowy dla BB</string>
+    <string name="preferences_draw_bb_square_borders">Rysuj ramki wokół ścianek BB</string>
+    <string name="preferences_set_demo_defaults">Ustawienia domyślne oryginalnego demo</string>
+    <string name="preferences_set_app_defaults">Ustawienia domyślne aplikacji</string>
+    <string name="preferences_set_amigaos_2_style">Ustaw styl AmigaOS 2+</string>
+    <string name="preferences_set_amigaos_1_3_style">Ustaw styl AmigaOS 1.3</string>
+    <string name="preferences_application_version">Wersja aplikacji: %1$s</string>
+</resources>

@@ -1,0 +1,12 @@
+<resources>
+    <string name="preferences">Einstellungen</string>
+    <string name="clock">Uhr</string>
+    <string name="preferences_pick_main_bb_color">Hauptfarbe der BB wählen</string>
+    <string name="preferences_pick_alternate_bb_color">Alternative BB-Farbe wählen</string>
+    <string name="preferences_draw_bb_square_borders">BB-Quadratgrenzen zeichnen</string>
+    <string name="preferences_set_demo_defaults">Standardwerte der Boing-Ball-Demo setzen</string>
+    <string name="preferences_set_app_defaults">App-Standardwerte setzen</string>
+    <string name="preferences_set_amigaos_2_style">AmigaOS-2+-Stil setzen</string>
+    <string name="preferences_set_amigaos_1_3_style">AmigaOS-1.3-Stil setzen</string>
+    <string name="preferences_application_version">Anwendungsversion: %1$s</string>
+</resources>

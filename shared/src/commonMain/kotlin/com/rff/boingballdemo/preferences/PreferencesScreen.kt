@@ -345,7 +345,7 @@ private val previewState = PreferencesState(
     osStyle = OSStyle.AmigaOS20
 )
 
-@Preview
+@Preview(locale = "pl")
 @Composable
 private fun PreferencesScreenPortraitOs13Preview() {
     BoingBallDemoTheme {
