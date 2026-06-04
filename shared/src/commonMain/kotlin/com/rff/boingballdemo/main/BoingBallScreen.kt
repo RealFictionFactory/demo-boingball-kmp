@@ -46,13 +46,26 @@ import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 
 /**
- * Plans for the future:
- * - implement interaction on single screen. It would be nice to have all Amiga windows opened
- *   on the same screen
- * - Amiga top menu bar with shutdown option?
- * - additional windows (each window has its own icon):
- *    - about app
- *    - clock
+ * Future development plan — making this a real Workbench experience:
+ *
+ * PHASE 1 — current screen improvements (near term):
+ * - Amiga screen title bar at top (thin strip: "Workbench Screen", right-aligned, OS-style aware)
+ * - Amiga top menu bar on tap (menus: Workbench / Tools / Help, OS-style dropdowns)
+ * - Guru Meditation easter egg (long-press triggers iconic red/black error screen)
+ * - About window (3rd desktop icon, shows app/device info in Amiga Topaz style)
+ * - [DONE] Clock window
+ *
+ * PHASE 2 — full Workbench rework:
+ * - Rework main screen to look like real Workbench desktop
+ * - App starts at desktop; user taps disk icon to open a drawer window (like a folder)
+ * - Drawer window contains app icons: Boing Ball, Clock, Preferences, About, etc.
+ * - Each icon launches its window as an overlay on the desktop (multiple windows open at once)
+ * - Windows are movable/stackable (bring to front / send to back gadgets become functional)
+ *
+ * PHASE 3 — polish:
+ * - Screen flip/push animation when switching OS style
+ * - Amiga-style requester/dialog component (reusable, e.g. "Exit app?" confirmation)
+ * - Workbench top menu bar items wired to real actions (About Workbench, etc.)
  */
 @Composable
 fun BoingBallScreenRoot(
