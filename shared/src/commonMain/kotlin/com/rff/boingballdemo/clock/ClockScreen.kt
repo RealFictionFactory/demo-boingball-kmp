@@ -22,6 +22,9 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import boingball.shared.generated.resources.Res
 import boingball.shared.generated.resources.clock
+import androidx.compose.foundation.layout.Box
+import boingball.shared.generated.resources.workbench
+import com.rff.boingballdemo.component.AmigaScreenTitleBar
 import com.rff.boingballdemo.component.AmigaTextBox
 import com.rff.boingballdemo.component.AmigaToolbar
 import com.rff.boingballdemo.component.OSStyle
@@ -61,16 +64,27 @@ fun ClockScreen(
         val isLandscape = maxWidth > maxHeight
         val windowWidth = if (isLandscape) minOf(maxHeight * 0.78f, maxWidth * 0.55f) else maxWidth * 0.82f
 
-        Column(
-            modifier = Modifier.width(windowWidth),
-            horizontalAlignment = Alignment.CenterHorizontally,
-        ) {
-            AmigaToolbar(
-                title = stringResource(Res.string.clock),
-                osStyle = state.osStyle,
-                onCloseClick = onCloseClick,
+        Column(modifier = Modifier.fillMaxSize()) {
+            AmigaScreenTitleBar(
+                text = stringResource(Res.string.workbench),
+                osStyle = state.osStyle
             )
-            ClockContent(state = state)
+            Box(
+                modifier = Modifier.weight(1f).fillMaxWidth(),
+                contentAlignment = Alignment.Center,
+            ) {
+                Column(
+                    modifier = Modifier.width(windowWidth),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                ) {
+                    AmigaToolbar(
+                        title = stringResource(Res.string.clock),
+                        osStyle = state.osStyle,
+                        onCloseClick = onCloseClick,
+                    )
+                    ClockContent(state = state)
+                }
+            }
         }
     }
 }

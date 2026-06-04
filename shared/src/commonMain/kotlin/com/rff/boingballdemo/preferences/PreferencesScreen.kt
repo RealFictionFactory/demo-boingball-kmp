@@ -31,9 +31,11 @@ import boingball.shared.generated.resources.preferences_set_amigaos_1_3_style
 import boingball.shared.generated.resources.preferences_set_amigaos_2_style
 import boingball.shared.generated.resources.preferences_set_app_defaults
 import boingball.shared.generated.resources.preferences_set_demo_defaults
+import boingball.shared.generated.resources.workbench
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 import com.rff.boingballdemo.component.AmigaButton
+import com.rff.boingballdemo.component.AmigaScreenTitleBar
 import com.rff.boingballdemo.component.AmigaCheckBox
 import com.rff.boingballdemo.component.AmigaColorPicker
 import com.rff.boingballdemo.component.AmigaTextBox
@@ -94,12 +96,18 @@ fun PreferencesScreen(
     ) {
         val isLandscape = maxWidth > maxHeight
 
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(16.dp),
-            horizontalAlignment = Alignment.CenterHorizontally,
-        ) {
+        Column(modifier = Modifier.fillMaxSize()) {
+            AmigaScreenTitleBar(
+                text = stringResource(Res.string.workbench),
+                osStyle = state.osStyle
+            )
+            Column(
+                modifier = Modifier
+                    .weight(1f)
+                    .fillMaxWidth()
+                    .padding(16.dp),
+                horizontalAlignment = Alignment.CenterHorizontally,
+            ) {
             AmigaToolbar(
                 title = stringResource(Res.string.preferences),
                 osStyle = state.osStyle,
@@ -111,7 +119,8 @@ fun PreferencesScreen(
             } else {
                 PortraitPreferencesLayout(state, onAction)
             }
-        }
+            } // end inner Column
+        } // end outer Column
     }
 }
 

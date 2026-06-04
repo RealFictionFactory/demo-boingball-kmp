@@ -31,6 +31,8 @@ import boingball.shared.generated.resources.clock
 import boingball.shared.generated.resources.clock30
 import boingball.shared.generated.resources.preferences
 import boingball.shared.generated.resources.prefs30
+import boingball.shared.generated.resources.workbench
+import com.rff.boingballdemo.component.AmigaScreenTitleBar
 import com.rff.boingballdemo.component.AmigaTextBox
 import com.rff.boingballdemo.component.AmigaToolbar
 import com.rff.boingballdemo.component.BoingBallView
@@ -107,10 +109,17 @@ fun BoingBallScreen(
         val availableWidth = maxWidth
         val isLandscape = maxWidth > maxHeight
 
-        if (isLandscape) {
+        Column(modifier = Modifier.fillMaxSize()) {
+            AmigaScreenTitleBar(
+                text = stringResource(Res.string.workbench),
+                osStyle = state.osStyle
+            )
+
+            if (isLandscape) {
             Box(
                 modifier = Modifier
-                    .fillMaxSize()
+                    .weight(1f)
+                    .fillMaxWidth()
                     .padding(16.dp),
             ) {
                 BoingBallWindow(
@@ -137,10 +146,11 @@ fun BoingBallScreen(
                     )
                 }
             }
-        } else {
+            } else {
             Box(
                 modifier = Modifier
-                    .fillMaxSize()
+                    .weight(1f)
+                    .fillMaxWidth()
                     .padding(16.dp)
             ) {
                 Row(
@@ -166,7 +176,8 @@ fun BoingBallScreen(
                         .widthIn(max = availableWidth)
                 )
             }
-        }
+            } // end if/else landscape
+        } // end Column
     }
 }
 

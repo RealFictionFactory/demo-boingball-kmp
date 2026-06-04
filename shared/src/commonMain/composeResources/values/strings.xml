@@ -1,6 +1,8 @@
 <resources>
     <string name="app_name" translatable="false">Boing Ball Demo</string>
 
+    <string name="workbench" translatable="false">Workbench</string>
+
     <string name="preferences">Preferences</string>
     <string name="clock">Clock</string>
     <string name="preferences_pick_main_bb_color">Pick main BB color</string>
