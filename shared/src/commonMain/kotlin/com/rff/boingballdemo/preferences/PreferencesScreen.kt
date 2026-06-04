@@ -27,7 +27,6 @@ import boingball.shared.generated.resources.preferences_application_version
 import boingball.shared.generated.resources.preferences_draw_bb_square_borders
 import boingball.shared.generated.resources.preferences_pick_alternate_bb_color
 import boingball.shared.generated.resources.preferences_pick_main_bb_color
-import boingball.shared.generated.resources.preferences_save_current_settings
 import boingball.shared.generated.resources.preferences_set_amigaos_1_3_style
 import boingball.shared.generated.resources.preferences_set_amigaos_2_style
 import boingball.shared.generated.resources.preferences_set_app_defaults
@@ -217,12 +216,6 @@ fun PortraitPreferencesLayout(
             osStyle = state.osStyle,
             onClick = { onAction(PreferencesAction.BringAppDefaults) }
         )
-        Spacer(modifier = Modifier.height(24.dp))
-        AmigaButton(
-            text = stringResource(Res.string.preferences_save_current_settings),
-            osStyle = state.osStyle,
-            onClick = { onAction(PreferencesAction.SaveSettings) }
-        )
         Spacer(modifier = Modifier.weight(1f))
         AmigaTextBox(
             text = stringResource(Res.string.preferences_application_version, state.appVersion),
@@ -337,12 +330,6 @@ fun LandscapePreferencesLayout(
                     text = stringResource(Res.string.preferences_set_app_defaults),
                     osStyle = state.osStyle,
                     onClick = { onAction(PreferencesAction.BringAppDefaults) }
-                )
-                Spacer(modifier = Modifier.height(24.dp))
-                AmigaButton(
-                    text = stringResource(Res.string.preferences_save_current_settings),
-                    osStyle = state.osStyle,
-                    onClick = { onAction(PreferencesAction.SaveSettings) }
                 )
             }
         }

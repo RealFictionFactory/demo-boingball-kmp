@@ -17,7 +17,6 @@ import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.layout.windowInsetsPadding
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -28,23 +27,23 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import boingball.shared.generated.resources.Res
 import boingball.shared.generated.resources.app_name
+import boingball.shared.generated.resources.clock
+import boingball.shared.generated.resources.clock30
 import boingball.shared.generated.resources.preferences
 import boingball.shared.generated.resources.prefs30
+import com.rff.boingballdemo.component.AmigaTextBox
 import com.rff.boingballdemo.component.AmigaToolbar
 import com.rff.boingballdemo.component.BoingBallView
 import com.rff.boingballdemo.component.OSStyle
 import com.rff.boingballdemo.ui.theme.BoingBallDemoTheme
+import com.rff.boingballdemo.ui.theme.amigaOs13Blue
 import com.rff.boingballdemo.ui.theme.amigaOs30Blue
 import com.rff.boingballdemo.ui.theme.backgroundColor
 import com.rff.boingballdemo.ui.theme.blackColor
-import com.rff.boingballdemo.ui.theme.topazFont
 import com.rff.boingballdemo.ui.theme.whiteColor
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
-import com.rff.boingballdemo.component.AmigaTextBox
-import com.rff.boingballdemo.ui.theme.amigaOs13Blue
-import kotlin.collections.copy
 
 /**
  * Plans for the future:
@@ -59,6 +58,7 @@ import kotlin.collections.copy
 fun BoingBallScreenRoot(
     viewModel: BoingBallViewModel = koinViewModel(),
     onPreferencesClick: () -> Unit,
+    onClockClick: () -> Unit = {},
     onCloseClick: () -> Unit = {},
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
@@ -67,13 +67,9 @@ fun BoingBallScreenRoot(
         state = state,
         onAction = { action ->
             when (action) {
-                BoingBallAction.Preferences -> {
-                    onPreferencesClick()
-                }
-
-                BoingBallAction.Back -> {
-                    onCloseClick()
-                }
+                BoingBallAction.Preferences -> onPreferencesClick()
+                BoingBallAction.Clock -> onClockClick()
+                BoingBallAction.Back -> onCloseClick()
             }
         }
     )
@@ -111,13 +107,22 @@ fun BoingBallScreen(
                         .align(Alignment.TopStart)
                         .widthIn(max = availableWidth * 0.72f)
                 )
-                PreferencesShortcut(
-                    state = state,
-                    onClick = { onAction(BoingBallAction.Preferences) },
+                Column(
                     modifier = Modifier
                         .align(Alignment.TopEnd)
-                        .padding(16.dp)
-                )
+                        .padding(16.dp),
+                    verticalArrangement = Arrangement.spacedBy(16.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                ) {
+                    PreferencesShortcut(
+                        state = state,
+                        onClick = { onAction(BoingBallAction.Preferences) },
+                    )
+                    ClockShortcut(
+                        state = state,
+                        onClick = { onAction(BoingBallAction.Clock) },
+                    )
+                }
             }
         } else {
             Box(
@@ -125,13 +130,21 @@ fun BoingBallScreen(
                     .fillMaxSize()
                     .padding(16.dp)
             ) {
-                PreferencesShortcut(
-                    state = state,
-                    onClick = { onAction(BoingBallAction.Preferences) },
+                Row(
                     modifier = Modifier
                         .align(Alignment.TopEnd)
-                        .padding(16.dp)
-                )
+                        .padding(16.dp),
+                    horizontalArrangement = Arrangement.spacedBy(16.dp),
+                ) {
+                    ClockShortcut(
+                        state = state,
+                        onClick = { onAction(BoingBallAction.Clock) },
+                    )
+                    PreferencesShortcut(
+                        state = state,
+                        onClick = { onAction(BoingBallAction.Preferences) },
+                    )
+                }
                 BoingBallWindow(
                     state = state,
                     onCloseClick = { onAction(BoingBallAction.Back) },
@@ -216,6 +229,35 @@ private fun PreferencesShortcut(
         )
         AmigaTextBox(
             text = stringResource(Res.string.preferences),
+            osStyle = state.osStyle
+        )
+    }
+}
+
+@Composable
+private fun ClockShortcut(
+    state: BoingBallState,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    val resId = if (state.osStyle == OSStyle.AmigaOS13)
+        Res.drawable.clock
+    else
+        Res.drawable.clock30
+
+    Column(
+        modifier = modifier.clickable(onClick = onClick),
+        horizontalAlignment = Alignment.CenterHorizontally,
+    ) {
+        Image(
+            modifier = Modifier
+                .width(40.dp)
+                .height(40.dp),
+            painter = painterResource(resId),
+            contentDescription = stringResource(Res.string.clock)
+        )
+        AmigaTextBox(
+            text = stringResource(Res.string.clock),
             osStyle = state.osStyle
         )
     }

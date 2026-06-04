@@ -4,6 +4,7 @@ import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import com.rff.boingballdemo.data.local.AppSettings
 import com.rff.boingballdemo.data.local.createPreferencesDataStore
+import com.rff.boingballdemo.clock.ClockViewModel
 import com.rff.boingballdemo.main.BoingBallViewModel
 import com.rff.boingballdemo.preferences.PreferencesViewModel
 import org.koin.core.module.Module
@@ -19,4 +20,5 @@ val sharedModule = module {
 
     viewModelOf(::BoingBallViewModel)
     viewModelOf(::PreferencesViewModel)
+    viewModelOf(::ClockViewModel)
 }
