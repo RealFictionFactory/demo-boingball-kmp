@@ -17,8 +17,13 @@ import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.layout.windowInsetsPadding
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -34,6 +39,7 @@ import boingball.shared.generated.resources.prefs30
 import boingball.shared.generated.resources.workbench
 import com.rff.boingballdemo.component.AmigaScreenTitleBar
 import com.rff.boingballdemo.component.AmigaTextBox
+import com.rff.boingballdemo.component.GuruMeditationOverlay
 import com.rff.boingballdemo.component.AmigaToolbar
 import com.rff.boingballdemo.component.BoingBallView
 import com.rff.boingballdemo.component.OSStyle
@@ -51,11 +57,11 @@ import org.koin.compose.viewmodel.koinViewModel
  * Future development plan — making this a real Workbench experience:
  *
  * PHASE 1 — current screen improvements (near term):
- * - Amiga screen title bar at top (thin strip: "Workbench Screen", right-aligned, OS-style aware)
+ * - [*DONE*] Amiga screen title bar at top (thin strip: "Workbench Screen", right-aligned, OS-style aware)
  * - Amiga top menu bar on tap (menus: Workbench / Tools / Help, OS-style dropdowns)
- * - Guru Meditation easter egg (long-press triggers iconic red/black error screen)
+ * - [*DONE*] Guru Meditation easter egg (long-press triggers iconic red/black error screen)
  * - About window (3rd desktop icon, shows app/device info in Amiga Topaz style)
- * - [DONE] Clock window
+ * - [*DONE*] Clock window
  *
  * PHASE 2 — full Workbench rework:
  * - Rework main screen to look like real Workbench desktop
@@ -95,6 +101,8 @@ fun BoingBallScreen(
     state: BoingBallState,
     onAction: (BoingBallAction) -> Unit = {},
 ) {
+    var showGuruMeditation by remember { mutableStateOf(false) }
+
     val bg = if (state.osStyle == OSStyle.AmigaOS20)
         backgroundColor
     else
@@ -104,7 +112,10 @@ fun BoingBallScreen(
         modifier = Modifier
             .fillMaxSize()
             .background(color = bg)
-            .windowInsetsPadding(WindowInsets.safeDrawing),
+            .windowInsetsPadding(WindowInsets.safeDrawing)
+            .pointerInput(Unit) {
+                detectTapGestures(onLongPress = { showGuruMeditation = true })
+            },
     ) {
         val availableWidth = maxWidth
         val isLandscape = maxWidth > maxHeight
@@ -178,6 +189,12 @@ fun BoingBallScreen(
             }
             } // end if/else landscape
         } // end Column
+
+        if (showGuruMeditation) {
+            GuruMeditationOverlay(
+                osStyle = state.osStyle,
+                onDismiss = { showGuruMeditation = false })
+        }
     }
 }
 

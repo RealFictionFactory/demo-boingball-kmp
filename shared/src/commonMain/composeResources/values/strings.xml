@@ -13,4 +13,6 @@
     <string name="preferences_set_amigaos_2_style">Set AmigaOS 2+ style</string>
     <string name="preferences_set_amigaos_1_3_style">Set AmigaOS 1.3 style</string>
     <string name="preferences_application_version">Application version: %1$s</string>
+    <string name="guru_meditation_header">Software Failure.  Press left mouse button to continue.</string>
+    <string name="guru_meditation_code">Guru Meditation %1$s</string>
 </resources>
