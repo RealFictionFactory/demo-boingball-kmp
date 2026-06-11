@@ -3,6 +3,7 @@ package com.rff.boingballdemo.clock
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.rff.boingballdemo.data.local.AppSettings
+import com.rff.boingballdemo.utils.toDateText
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -11,13 +12,14 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import kotlinx.datetime.Clock
-import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
+import kotlin.time.Clock
+import kotlin.time.Duration.Companion.milliseconds
 
-class ClockViewModel(private val settings: AppSettings) : ViewModel() {
-
+class ClockViewModel(
+    private val settings: AppSettings
+) : ViewModel() {
     private val _uiState = MutableStateFlow(initialState())
     val uiState: StateFlow<ClockState> = _uiState.asStateFlow()
 
@@ -38,7 +40,7 @@ class ClockViewModel(private val settings: AppSettings) : ViewModel() {
                         dateText = local.toDateText(),
                     )
                 }
-                delay(1000L - now.toEpochMilliseconds() % 1000L)
+                delay((1000L - now.toEpochMilliseconds() % 1000L).milliseconds)
             }
         }
     }
@@ -52,10 +54,4 @@ class ClockViewModel(private val settings: AppSettings) : ViewModel() {
             dateText = local.toDateText(),
         )
     }
-}
-
-private fun LocalDateTime.toDateText(): String {
-    val dd = dayOfMonth.toString().padStart(2, '0')
-    val mm = monthNumber.toString().padStart(2, '0')
-    return "$dd.$mm.$year"
 }
