@@ -108,87 +108,89 @@ fun BoingBallScreen(
     else
         amigaOs13Blue
 
-    BoxWithConstraints(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(color = bg)
-            .windowInsetsPadding(WindowInsets.safeDrawing)
-            .pointerInput(Unit) {
-                detectTapGestures(onLongPress = { showGuruMeditation = true })
-            },
-    ) {
-        val availableWidth = maxWidth
-        val isLandscape = maxWidth > maxHeight
+    Box(modifier = Modifier.fillMaxSize()) {
+        BoxWithConstraints(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(color = bg)
+                .windowInsetsPadding(WindowInsets.safeDrawing)
+                .pointerInput(Unit) {
+                    detectTapGestures(onLongPress = { showGuruMeditation = true })
+                },
+        ) {
+            val availableWidth = maxWidth
+            val isLandscape = maxWidth > maxHeight
 
-        Column(modifier = Modifier.fillMaxSize()) {
-            AmigaScreenTitleBar(
-                text = stringResource(Res.string.workbench),
-                osStyle = state.osStyle
-            )
-
-            if (isLandscape) {
-            Box(
-                modifier = Modifier
-                    .weight(1f)
-                    .fillMaxWidth()
-                    .padding(16.dp),
-            ) {
-                BoingBallWindow(
-                    state = state,
-                    onCloseClick = { onAction(BoingBallAction.Back) },
-                    modifier = Modifier
-                        .align(Alignment.TopStart)
-                        .widthIn(max = availableWidth * 0.72f)
+            Column(modifier = Modifier.fillMaxSize()) {
+                AmigaScreenTitleBar(
+                    text = stringResource(Res.string.workbench),
+                    osStyle = state.osStyle
                 )
-                Column(
+
+                if (isLandscape) {
+                Box(
                     modifier = Modifier
-                        .align(Alignment.TopEnd)
+                        .weight(1f)
+                        .fillMaxWidth()
                         .padding(16.dp),
-                    verticalArrangement = Arrangement.spacedBy(16.dp),
-                    horizontalAlignment = Alignment.CenterHorizontally,
                 ) {
-                    PreferencesShortcut(
+                    BoingBallWindow(
                         state = state,
-                        onClick = { onAction(BoingBallAction.Preferences) },
+                        onCloseClick = { onAction(BoingBallAction.Back) },
+                        modifier = Modifier
+                            .align(Alignment.TopStart)
+                            .widthIn(max = availableWidth * 0.72f)
                     )
-                    ClockShortcut(
+                    Column(
+                        modifier = Modifier
+                            .align(Alignment.TopEnd)
+                            .padding(16.dp),
+                        verticalArrangement = Arrangement.spacedBy(16.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                    ) {
+                        PreferencesShortcut(
+                            state = state,
+                            onClick = { onAction(BoingBallAction.Preferences) },
+                        )
+                        ClockShortcut(
+                            state = state,
+                            onClick = { onAction(BoingBallAction.Clock) },
+                        )
+                    }
+                }
+                } else {
+                Box(
+                    modifier = Modifier
+                        .weight(1f)
+                        .fillMaxWidth()
+                        .padding(16.dp)
+                ) {
+                    Row(
+                        modifier = Modifier
+                            .align(Alignment.TopEnd)
+                            .padding(16.dp),
+                        horizontalArrangement = Arrangement.spacedBy(16.dp),
+                    ) {
+                        ClockShortcut(
+                            state = state,
+                            onClick = { onAction(BoingBallAction.Clock) },
+                        )
+                        PreferencesShortcut(
+                            state = state,
+                            onClick = { onAction(BoingBallAction.Preferences) },
+                        )
+                    }
+                    BoingBallWindow(
                         state = state,
-                        onClick = { onAction(BoingBallAction.Clock) },
+                        onCloseClick = { onAction(BoingBallAction.Back) },
+                        modifier = Modifier
+                            .align(Alignment.Center)
+                            .widthIn(max = availableWidth)
                     )
                 }
-            }
-            } else {
-            Box(
-                modifier = Modifier
-                    .weight(1f)
-                    .fillMaxWidth()
-                    .padding(16.dp)
-            ) {
-                Row(
-                    modifier = Modifier
-                        .align(Alignment.TopEnd)
-                        .padding(16.dp),
-                    horizontalArrangement = Arrangement.spacedBy(16.dp),
-                ) {
-                    ClockShortcut(
-                        state = state,
-                        onClick = { onAction(BoingBallAction.Clock) },
-                    )
-                    PreferencesShortcut(
-                        state = state,
-                        onClick = { onAction(BoingBallAction.Preferences) },
-                    )
-                }
-                BoingBallWindow(
-                    state = state,
-                    onCloseClick = { onAction(BoingBallAction.Back) },
-                    modifier = Modifier
-                        .align(Alignment.Center)
-                        .widthIn(max = availableWidth)
-                )
-            }
-            } // end if/else landscape
-        } // end Column
+                } // end if/else landscape
+            } // end Column
+        }
 
         if (showGuruMeditation) {
             GuruMeditationOverlay(
