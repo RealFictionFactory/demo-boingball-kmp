@@ -15,7 +15,7 @@
                   <BuildableReference
                      BuildableIdentifier = "primary"
                      BlueprintIdentifier = "83C7CE6A67B6F4AD2B683881"
-                     BuildableName = "BoingBall.app"
+                     BuildableName = "Boing Ball.app"
                      BlueprintName = "iosApp"
                      ReferencedContainer = "container:iosApp.xcodeproj">
                   </BuildableReference>
@@ -33,7 +33,7 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "83C7CE6A67B6F4AD2B683881"
-               BuildableName = "BoingBall.app"
+               BuildableName = "Boing Ball.app"
                BlueprintName = "iosApp"
                ReferencedContainer = "container:iosApp.xcodeproj">
             </BuildableReference>
@@ -63,7 +63,7 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "83C7CE6A67B6F4AD2B683881"
-            BuildableName = "BoingBall.app"
+            BuildableName = "Boing Ball.app"
             BlueprintName = "iosApp"
             ReferencedContainer = "container:iosApp.xcodeproj">
          </BuildableReference>
@@ -80,7 +80,7 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "83C7CE6A67B6F4AD2B683881"
-            BuildableName = "BoingBall.app"
+            BuildableName = "Boing Ball.app"
             BlueprintName = "iosApp"
             ReferencedContainer = "container:iosApp.xcodeproj">
          </BuildableReference>
