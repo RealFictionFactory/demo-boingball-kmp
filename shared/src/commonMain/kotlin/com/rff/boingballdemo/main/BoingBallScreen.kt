@@ -128,66 +128,66 @@ fun BoingBallScreen(
                 )
 
                 if (isLandscape) {
-                Box(
-                    modifier = Modifier
-                        .weight(1f)
-                        .fillMaxWidth()
-                        .padding(16.dp),
-                ) {
-                    BoingBallWindow(
-                        state = state,
-                        onCloseClick = { onAction(BoingBallAction.Back) },
+                    Box(
                         modifier = Modifier
-                            .align(Alignment.TopStart)
-                            .widthIn(max = availableWidth * 0.72f)
-                    )
-                    Column(
-                        modifier = Modifier
-                            .align(Alignment.TopEnd)
+                            .weight(1f)
+                            .fillMaxWidth()
                             .padding(16.dp),
-                        verticalArrangement = Arrangement.spacedBy(16.dp),
-                        horizontalAlignment = Alignment.CenterHorizontally,
                     ) {
-                        PreferencesShortcut(
+                        BoingBallWindow(
                             state = state,
-                            onClick = { onAction(BoingBallAction.Preferences) },
+                            onCloseClick = { onAction(BoingBallAction.Back) },
+                            modifier = Modifier
+                                .align(Alignment.TopStart)
+                                .widthIn(max = availableWidth * 0.72f)
                         )
-                        ClockShortcut(
-                            state = state,
-                            onClick = { onAction(BoingBallAction.Clock) },
-                        )
+                        Column(
+                            modifier = Modifier
+                                .align(Alignment.TopEnd)
+                                .padding(16.dp),
+                            verticalArrangement = Arrangement.spacedBy(16.dp),
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                        ) {
+                            PreferencesShortcut(
+                                state = state,
+                                onClick = { onAction(BoingBallAction.Preferences) },
+                            )
+                            ClockShortcut(
+                                state = state,
+                                onClick = { onAction(BoingBallAction.Clock) },
+                            )
+                        }
                     }
-                }
                 } else {
-                Box(
-                    modifier = Modifier
-                        .weight(1f)
-                        .fillMaxWidth()
-                        .padding(16.dp)
-                ) {
-                    Row(
+                    Box(
                         modifier = Modifier
-                            .align(Alignment.TopEnd)
-                            .padding(16.dp),
-                        horizontalArrangement = Arrangement.spacedBy(16.dp),
+                            .weight(1f)
+                            .fillMaxWidth()
+                            .padding(16.dp)
                     ) {
-                        ClockShortcut(
+                        Row(
+                            modifier = Modifier
+                                .align(Alignment.TopEnd)
+                                .padding(16.dp),
+                            horizontalArrangement = Arrangement.spacedBy(16.dp),
+                        ) {
+                            ClockShortcut(
+                                state = state,
+                                onClick = { onAction(BoingBallAction.Clock) },
+                            )
+                            PreferencesShortcut(
+                                state = state,
+                                onClick = { onAction(BoingBallAction.Preferences) },
+                            )
+                        }
+                        BoingBallWindow(
                             state = state,
-                            onClick = { onAction(BoingBallAction.Clock) },
-                        )
-                        PreferencesShortcut(
-                            state = state,
-                            onClick = { onAction(BoingBallAction.Preferences) },
+                            onCloseClick = { onAction(BoingBallAction.Back) },
+                            modifier = Modifier
+                                .align(Alignment.Center)
+                                .widthIn(max = availableWidth)
                         )
                     }
-                    BoingBallWindow(
-                        state = state,
-                        onCloseClick = { onAction(BoingBallAction.Back) },
-                        modifier = Modifier
-                            .align(Alignment.Center)
-                            .widthIn(max = availableWidth)
-                    )
-                }
                 } // end if/else landscape
             } // end Column
         }
