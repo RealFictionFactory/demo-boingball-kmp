@@ -10,9 +10,10 @@ plugins {
 val appVersionCode = rootProject.extra["appVersionCode"] as Int
 val appVersionName = rootProject.extra["appVersionName"] as String
 
-val keystoreProps = Properties().also { props ->
-    rootProject.file("keystore.properties").inputStream().use { props.load(it) }
-}
+val keystorePropsFile = rootProject.file("keystore.properties")
+val keystoreProps = if (keystorePropsFile.exists()) {
+    Properties().also { props -> keystorePropsFile.inputStream().use { props.load(it) } }
+} else null
 
 kotlin {
     compilerOptions {
@@ -47,19 +48,21 @@ android {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
         }
     }
-    signingConfigs {
-        create("release") {
-            storeFile = file(keystoreProps["storeFile"] as String)
-            storePassword = keystoreProps["storePassword"] as String
-            keyAlias = keystoreProps["keyAlias"] as String
-            keyPassword = keystoreProps["keyPassword"] as String
+    if (keystoreProps != null) {
+        signingConfigs {
+            create("release") {
+                storeFile = file(keystoreProps["storeFile"] as String)
+                storePassword = keystoreProps["storePassword"] as String
+                keyAlias = keystoreProps["keyAlias"] as String
+                keyPassword = keystoreProps["keyPassword"] as String
+            }
         }
     }
     buildTypes {
         getByName("release") {
             isMinifyEnabled = true
             isShrinkResources = true
-            signingConfig = signingConfigs.getByName("release")
+            signingConfig = if (keystoreProps != null) signingConfigs.getByName("release") else null
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
