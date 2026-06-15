@@ -182,7 +182,7 @@ fun BoingBallScreen(
                             modifier = Modifier
                                 .align(Alignment.TopEnd)
                                 .padding(16.dp),
-                            horizontalArrangement = Arrangement.spacedBy(16.dp),
+                            horizontalArrangement = Arrangement.spacedBy(24.dp),
                         ) {
                             AboutShortcut(
                                 state = state,
@@ -282,7 +282,7 @@ private fun PreferencesShortcut(
     ) {
         Image(
             modifier = Modifier
-                .width(120.dp)
+                .width(80.dp)
                 .height(40.dp),
             painter = painterResource(resId),
             contentDescription = stringResource(Res.string.preferences)
