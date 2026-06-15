@@ -31,6 +31,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import boingball.shared.generated.resources.Res
+import boingball.shared.generated.resources.about
+import boingball.shared.generated.resources.about30
 import boingball.shared.generated.resources.app_name
 import boingball.shared.generated.resources.clock
 import boingball.shared.generated.resources.clock30
@@ -91,6 +93,7 @@ fun BoingBallScreenRoot(
                 BoingBallAction.Preferences -> onPreferencesClick()
                 BoingBallAction.Clock -> onClockClick()
                 BoingBallAction.Back -> onCloseClick()
+                BoingBallAction.About -> TODO()
             }
         }
     )
@@ -156,6 +159,10 @@ fun BoingBallScreen(
                                 state = state,
                                 onClick = { onAction(BoingBallAction.Clock) },
                             )
+                            AboutShortcut(
+                                state = state,
+                                onClick = { onAction(BoingBallAction.About) },
+                            )
                         }
                     }
                 } else {
@@ -171,6 +178,10 @@ fun BoingBallScreen(
                                 .padding(16.dp),
                             horizontalArrangement = Arrangement.spacedBy(16.dp),
                         ) {
+                            AboutShortcut(
+                                state = state,
+                                onClick = { onAction(BoingBallAction.About) },
+                            )
                             ClockShortcut(
                                 state = state,
                                 onClick = { onAction(BoingBallAction.Clock) },
@@ -301,6 +312,35 @@ private fun ClockShortcut(
         )
         AmigaTextBox(
             text = stringResource(Res.string.clock),
+            osStyle = state.osStyle
+        )
+    }
+}
+
+@Composable
+private fun AboutShortcut(
+    state: BoingBallState,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    val resId = if (state.osStyle == OSStyle.AmigaOS13)
+        Res.drawable.about
+    else
+        Res.drawable.about30
+
+    Column(
+        modifier = modifier.clickable(onClick = onClick),
+        horizontalAlignment = Alignment.CenterHorizontally,
+    ) {
+        Image(
+            modifier = Modifier
+                .width(40.dp)
+                .height(40.dp),
+            painter = painterResource(resId),
+            contentDescription = stringResource(Res.string.about)
+        )
+        AmigaTextBox(
+            text = stringResource(Res.string.about),
             osStyle = state.osStyle
         )
     }
