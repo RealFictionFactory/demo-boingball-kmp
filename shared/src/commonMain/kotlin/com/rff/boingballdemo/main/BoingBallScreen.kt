@@ -60,12 +60,14 @@ import org.koin.compose.viewmodel.koinViewModel
  *
  * PHASE 1 — current screen improvements (near term):
  * - [*DONE*] Amiga screen title bar at top (thin strip: "Workbench Screen", right-aligned, OS-style aware)
- * - Amiga top menu bar on tap (menus: Workbench / Tools / Help, OS-style dropdowns)
  * - [*DONE*] Guru Meditation easter egg (long-press triggers iconic red/black error screen)
- * - About window (3rd desktop icon, shows app/device info in Amiga Topaz style)
+ * - [*DONE*] About window (3rd desktop icon, shows app/device info in Amiga Topaz style)
  * - [*DONE*] Clock window
  *
  * PHASE 2 — full Workbench rework:
+ * - Allow user to change rotation speed
+ * - Add full screen Boing Ball view like real demo, some back button may be necessary
+ * - Amiga top menu bar on tap (menus: Workbench / Tools / Help, OS-style dropdowns)
  * - Rework main screen to look like real Workbench desktop
  * - App starts at desktop; user taps disk icon to open a drawer window (like a folder)
  * - Drawer window contains app icons: Boing Ball, Clock, Preferences, About, etc.
