@@ -12,9 +12,9 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
+import androidx.compose.foundation.layout.sizeIn
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.windowInsetsPadding
-import androidx.compose.foundation.layout.sizeIn
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -27,7 +27,6 @@ import boingball.shared.generated.resources.Res
 import boingball.shared.generated.resources.about
 import boingball.shared.generated.resources.about_app_name
 import boingball.shared.generated.resources.about_application_version
-import boingball.shared.generated.resources.amiga_check_b
 import boingball.shared.generated.resources.amiga_check_w
 import boingball.shared.generated.resources.workbench
 import com.rff.boingballdemo.component.AmigaScreenTitleBar

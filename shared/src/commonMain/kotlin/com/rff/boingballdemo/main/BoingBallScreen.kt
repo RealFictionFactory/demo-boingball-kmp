@@ -64,9 +64,12 @@ import org.koin.compose.viewmodel.koinViewModel
  * - [*DONE*] About window (3rd desktop icon, shows app/device info in Amiga Topaz style)
  * - [*DONE*] Clock window
  *
- * PHASE 2 — full Workbench rework:
+ * PHASE 2 — additional features:
+ * - History of Amiga logo by year
  * - Allow user to change rotation speed
  * - Add full screen Boing Ball view like real demo, some back button may be necessary
+ *
+ * PHASE 3 — full Workbench rework:
  * - Amiga top menu bar on tap (menus: Workbench / Tools / Help, OS-style dropdowns)
  * - Rework main screen to look like real Workbench desktop
  * - App starts at desktop; user taps disk icon to open a drawer window (like a folder)
@@ -74,7 +77,7 @@ import org.koin.compose.viewmodel.koinViewModel
  * - Each icon launches its window as an overlay on the desktop (multiple windows open at once)
  * - Windows are movable/stackable (bring to front / send to back gadgets become functional)
  *
- * PHASE 3 — polish:
+ * PHASE 4 — polish:
  * - Screen flip/push animation when switching OS style
  * - Amiga-style requester/dialog component (reusable, e.g. "Exit app?" confirmation)
  * - Workbench top menu bar items wired to real actions (About Workbench, etc.)
