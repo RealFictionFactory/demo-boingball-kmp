@@ -45,7 +45,7 @@ import kotlin.math.PI
 import kotlin.math.cos
 import kotlin.math.sin
 
-internal const val ROTATION_SPEED = 0.02f
+internal const val ROTATION_SPEED = 0.08f
 internal const val BOING_BALL_ROWS = 8
 internal const val BOING_BALL_COLUMNS = 16
 

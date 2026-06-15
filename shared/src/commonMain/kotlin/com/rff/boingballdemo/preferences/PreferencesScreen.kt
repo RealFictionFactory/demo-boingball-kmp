@@ -23,7 +23,6 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import boingball.shared.generated.resources.Res
 import boingball.shared.generated.resources.preferences
-import boingball.shared.generated.resources.preferences_application_version
 import boingball.shared.generated.resources.preferences_draw_bb_square_borders
 import boingball.shared.generated.resources.preferences_pick_alternate_bb_color
 import boingball.shared.generated.resources.preferences_pick_main_bb_color
@@ -225,11 +224,6 @@ fun PortraitPreferencesLayout(
             osStyle = state.osStyle,
             onClick = { onAction(PreferencesAction.BringAppDefaults) }
         )
-        Spacer(modifier = Modifier.weight(1f))
-        AmigaTextBox(
-            text = stringResource(Res.string.preferences_application_version, state.appVersion),
-            osStyle = state.osStyle
-        )
     }
 }
 
@@ -342,11 +336,6 @@ fun LandscapePreferencesLayout(
                 )
             }
         }
-        Spacer(modifier = Modifier.weight(1f))
-        AmigaTextBox(
-            text = stringResource(Res.string.preferences_application_version, state.appVersion),
-            osStyle = state.osStyle
-        )
     }
 }
 

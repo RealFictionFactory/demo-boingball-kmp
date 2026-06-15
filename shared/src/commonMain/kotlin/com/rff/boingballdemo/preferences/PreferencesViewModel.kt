@@ -18,9 +18,7 @@ import kotlinx.coroutines.withContext
 class PreferencesViewModel(
     private val settings: AppSettings,
 ) : ViewModel() {
-    private val _uiState = MutableStateFlow(
-        PreferencesState(appVersion = settings.getVersion())
-    )
+    private val _uiState = MutableStateFlow(PreferencesState())
     val uiState: StateFlow<PreferencesState> = _uiState.asStateFlow()
 
     init {

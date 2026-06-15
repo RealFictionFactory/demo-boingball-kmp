@@ -82,6 +82,7 @@ fun BoingBallScreenRoot(
     viewModel: BoingBallViewModel = koinViewModel(),
     onPreferencesClick: () -> Unit,
     onClockClick: () -> Unit = {},
+    onAboutClick: () -> Unit = {},
     onCloseClick: () -> Unit = {},
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
@@ -93,7 +94,7 @@ fun BoingBallScreenRoot(
                 BoingBallAction.Preferences -> onPreferencesClick()
                 BoingBallAction.Clock -> onClockClick()
                 BoingBallAction.Back -> onCloseClick()
-                BoingBallAction.About -> TODO()
+                BoingBallAction.About -> onAboutClick()
             }
         }
     )

@@ -6,6 +6,7 @@ import androidx.navigation3.runtime.NavKey
 import androidx.navigation3.runtime.rememberNavBackStack
 import androidx.navigation3.ui.NavDisplay
 import androidx.savedstate.serialization.SavedStateConfiguration
+import com.rff.boingballdemo.about.AboutScreenRoot
 import com.rff.boingballdemo.clock.ClockScreenRoot
 import com.rff.boingballdemo.main.BoingBallScreenRoot
 import com.rff.boingballdemo.preferences.PreferencesScreenRoot
@@ -27,6 +28,9 @@ data object Prefs : AppRoute
 @Serializable
 data object Clock : AppRoute
 
+@Serializable
+data object About : AppRoute
+
 @OptIn(ExperimentalSerializationApi::class)
 private val navConfig = SavedStateConfiguration {
     serializersModule = SerializersModule {
@@ -34,6 +38,7 @@ private val navConfig = SavedStateConfiguration {
             subclass(Home::class)
             subclass(Prefs::class)
             subclass(Clock::class)
+            subclass(About::class)
         }
     }
 }
@@ -56,6 +61,9 @@ fun NavigationRoot(
                             onClockClick = {
                                 backStack.add(Clock)
                             },
+                            onAboutClick = {
+                                backStack.add(About)
+                            },
                             onCloseClick = onExitApp
                         )
                     }
@@ -72,6 +80,15 @@ fun NavigationRoot(
                 Clock -> {
                     NavEntry(key = key) {
                         ClockScreenRoot(
+                            onCloseClick = {
+                                backStack.removeLastOrNull()
+                            }
+                        )
+                    }
+                }
+                About -> {
+                    NavEntry(key = key) {
+                        AboutScreenRoot(
                             onCloseClick = {
                                 backStack.removeLastOrNull()
                             }
