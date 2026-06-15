@@ -45,7 +45,7 @@ import kotlin.math.PI
 import kotlin.math.cos
 import kotlin.math.sin
 
-internal const val ROTATION_SPEED = 0.08f
+internal const val ROTATION_SPEED_RADIANS_PER_SECOND = 3.6f
 internal const val BOING_BALL_ROWS = 8
 internal const val BOING_BALL_COLUMNS = 16
 
@@ -123,14 +123,15 @@ fun BoingBall(
     LaunchedEffect(isResumed) {
         if (!isResumed) return@LaunchedEffect
 
-        while (isResumed) {
-            if (direction) {
-                angle += ROTATION_SPEED // radians per frame
-            } else {
-                angle -= ROTATION_SPEED // radians per frame
-            }
+        var lastFrameNanos = withFrameNanos { it }
 
-            withFrameNanos { /* keep looping */ }
+        while (isResumed) {
+            val frameNanos = withFrameNanos { it }
+            val deltaSeconds = (frameNanos - lastFrameNanos) / 1_000_000_000f
+            lastFrameNanos = frameNanos
+
+            val sign = if (direction) 1f else -1f
+            angle += sign * ROTATION_SPEED_RADIANS_PER_SECOND * deltaSeconds
         }
     }
 
