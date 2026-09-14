@@ -3,12 +3,14 @@ package com.rff.boingballdemo.di
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import com.rff.boingballdemo.about.AboutViewModel
+import com.rff.boingballdemo.calculator.CalculatorViewModel
 import com.rff.boingballdemo.data.local.AppSettings
 import com.rff.boingballdemo.data.local.createPreferencesDataStore
 import com.rff.boingballdemo.clock.ClockViewModel
 import com.rff.boingballdemo.copper.CopperBarsViewModel
 import com.rff.boingballdemo.main.BoingBallViewModel
 import com.rff.boingballdemo.preferences.PreferencesViewModel
+import com.rff.boingballdemo.shell.ShellViewModel
 import org.koin.core.module.Module
 import org.koin.core.module.dsl.singleOf
 import org.koin.core.module.dsl.viewModelOf
@@ -24,5 +26,7 @@ val sharedModule = module {
     viewModelOf(::PreferencesViewModel)
     viewModelOf(::ClockViewModel)
     viewModelOf(::CopperBarsViewModel)
+    viewModelOf(::CalculatorViewModel)
+    viewModelOf(::ShellViewModel)
     viewModelOf(::AboutViewModel)
 }

@@ -7,6 +7,9 @@
     <string name="clock">Clock</string>
     <string name="about">About</string>
     <string name="copper" translatable="false">Copper</string>
+    <string name="calculator">Calculator</string>
+    <string name="shell" translatable="false">Shell</string>
+    <string name="shell13" translatable="false">CLI</string>
     <string name="preferences_pick_main_bb_color">Pick main BB color</string>
     <string name="preferences_pick_alternate_bb_color">Pick alternate BB color</string>
     <string name="preferences_draw_bb_square_borders">Draw BB square borders</string>

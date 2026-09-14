@@ -37,11 +37,14 @@ import boingball.shared.generated.resources.Res
 import boingball.shared.generated.resources.about
 import boingball.shared.generated.resources.about30
 import boingball.shared.generated.resources.app_name
+import boingball.shared.generated.resources.calculator
 import boingball.shared.generated.resources.clock
 import boingball.shared.generated.resources.clock30
 import boingball.shared.generated.resources.copper
 import boingball.shared.generated.resources.preferences
 import boingball.shared.generated.resources.prefs30
+import boingball.shared.generated.resources.shell
+import boingball.shared.generated.resources.shell13
 import boingball.shared.generated.resources.workbench
 import com.rff.boingballdemo.component.AmigaScreenTitleBar
 import com.rff.boingballdemo.component.AmigaTextBox
@@ -51,6 +54,7 @@ import com.rff.boingballdemo.component.BoingBallView
 import com.rff.boingballdemo.component.OSStyle
 import com.rff.boingballdemo.ui.theme.BoingBallDemoTheme
 import com.rff.boingballdemo.ui.theme.amigaOs13Blue
+import com.rff.boingballdemo.ui.theme.amigaOs13Orange
 import com.rff.boingballdemo.ui.theme.amigaOs30Blue
 import com.rff.boingballdemo.ui.theme.backgroundColor
 import com.rff.boingballdemo.ui.theme.blackColor
@@ -68,8 +72,9 @@ import org.koin.compose.viewmodel.koinViewModel
  * - [*DONE*] About window (3rd desktop icon, shows app/device info in Amiga Topaz style)
  * - [*DONE*] Clock window
  * - [*DONE*] Copper bars demo
- * - simple Calculator app
- * - AmigaDOS Shell - simple, no commands, just opens the window with a prompt. clicking anywhere closes it
+ * - [*DONE*] simple Calculator app
+ * - [*DONE*] AmigaDOS Shell - simple, no commands, just opens the window with a prompt. clicking anywhere closes it
+ *   (built as ghost-typing demo: tap runs next canned command, close via toolbar gadget)
  *
  * PHASE 2 — additional features:
  * - History of Amiga logo by year
@@ -96,6 +101,8 @@ fun BoingBallScreenRoot(
     onClockClick: () -> Unit = {},
     onAboutClick: () -> Unit = {},
     onCopperBarsClick: () -> Unit = {},
+    onCalculatorClick: () -> Unit = {},
+    onShellClick: () -> Unit = {},
     onCloseClick: () -> Unit = {},
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
@@ -109,6 +116,8 @@ fun BoingBallScreenRoot(
                 BoingBallAction.Back -> onCloseClick()
                 BoingBallAction.About -> onAboutClick()
                 BoingBallAction.CopperBars -> onCopperBarsClick()
+                BoingBallAction.Calculator -> onCalculatorClick()
+                BoingBallAction.Shell -> onShellClick()
             }
         }
     )
@@ -166,22 +175,42 @@ fun BoingBallScreen(
                             verticalArrangement = Arrangement.spacedBy(16.dp),
                             horizontalAlignment = Alignment.CenterHorizontally,
                         ) {
-                            PreferencesShortcut(
-                                state = state,
-                                onClick = { onAction(BoingBallAction.Preferences) },
-                            )
-                            ClockShortcut(
-                                state = state,
-                                onClick = { onAction(BoingBallAction.Clock) },
-                            )
-                            AboutShortcut(
-                                state = state,
-                                onClick = { onAction(BoingBallAction.About) },
-                            )
-                            CopperBarsShortcut(
-                                state = state,
-                                onClick = { onAction(BoingBallAction.CopperBars) },
-                            )
+                            Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
+                                Column(
+                                    verticalArrangement = Arrangement.spacedBy(16.dp),
+                                    horizontalAlignment = Alignment.CenterHorizontally,
+                                ) {
+                                    CopperBarsShortcut(
+                                        state = state,
+                                        onClick = { onAction(BoingBallAction.CopperBars) },
+                                    )
+                                    CalculatorShortcut(
+                                        state = state,
+                                        onClick = { onAction(BoingBallAction.Calculator) },
+                                    )
+                                    ShellShortcut(
+                                        state = state,
+                                        onClick = { onAction(BoingBallAction.Shell) },
+                                    )
+                                }
+                                Column(
+                                    verticalArrangement = Arrangement.spacedBy(16.dp),
+                                    horizontalAlignment = Alignment.CenterHorizontally,
+                                ) {
+                                    PreferencesShortcut(
+                                        state = state,
+                                        onClick = { onAction(BoingBallAction.Preferences) },
+                                    )
+                                    ClockShortcut(
+                                        state = state,
+                                        onClick = { onAction(BoingBallAction.Clock) },
+                                    )
+                                    AboutShortcut(
+                                        state = state,
+                                        onClick = { onAction(BoingBallAction.About) },
+                                    )
+                                }
+                            }
                         }
                     }
                 } else {
@@ -191,28 +220,45 @@ fun BoingBallScreen(
                             .fillMaxWidth()
                             .padding(16.dp)
                     ) {
-                        Row(
+                        Column(
                             modifier = Modifier
                                 .align(Alignment.TopEnd)
                                 .padding(16.dp),
-                            horizontalArrangement = Arrangement.spacedBy(16.dp),
+                            verticalArrangement = Arrangement.spacedBy(12.dp),
+                            horizontalAlignment = Alignment.End,
                         ) {
-                            CopperBarsShortcut(
-                                state = state,
-                                onClick = { onAction(BoingBallAction.CopperBars) },
-                            )
-                            AboutShortcut(
-                                state = state,
-                                onClick = { onAction(BoingBallAction.About) },
-                            )
-                            ClockShortcut(
-                                state = state,
-                                onClick = { onAction(BoingBallAction.Clock) },
-                            )
-                            PreferencesShortcut(
-                                state = state,
-                                onClick = { onAction(BoingBallAction.Preferences) },
-                            )
+                            Row(
+                                horizontalArrangement = Arrangement.spacedBy(16.dp),
+                            ) {
+                                AboutShortcut(
+                                    state = state,
+                                    onClick = { onAction(BoingBallAction.About) },
+                                )
+                                ClockShortcut(
+                                    state = state,
+                                    onClick = { onAction(BoingBallAction.Clock) },
+                                )
+                                PreferencesShortcut(
+                                    state = state,
+                                    onClick = { onAction(BoingBallAction.Preferences) },
+                                )
+                            }
+                            Row(
+                                horizontalArrangement = Arrangement.spacedBy(16.dp),
+                            ) {
+                                ShellShortcut(
+                                    state = state,
+                                    onClick = { onAction(BoingBallAction.Shell) },
+                                )
+                                CalculatorShortcut(
+                                    state = state,
+                                    onClick = { onAction(BoingBallAction.Calculator) },
+                                )
+                                CopperBarsShortcut(
+                                    state = state,
+                                    onClick = { onAction(BoingBallAction.CopperBars) },
+                                )
+                            }
                         }
                         BoingBallWindow(
                             state = state,
@@ -419,6 +465,151 @@ private fun CopperBarsIcon(modifier: Modifier = Modifier) {
                 size = Size(size.width - 4 * border, barHeight),
             )
         }
+    }
+}
+
+@Composable
+private fun CalculatorShortcut(
+    state: BoingBallState,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    Column(
+        modifier = modifier.clickable(onClick = onClick),
+        horizontalAlignment = Alignment.CenterHorizontally,
+    ) {
+        CalculatorIcon(
+            osStyle = state.osStyle,
+            modifier = Modifier
+                .width(40.dp)
+                .height(40.dp)
+        )
+        AmigaTextBox(
+            text = stringResource(Res.string.calculator),
+            osStyle = state.osStyle
+        )
+    }
+}
+
+@Composable
+private fun CalculatorIcon(
+    osStyle: OSStyle,
+    modifier: Modifier = Modifier,
+) {
+    val body = if (osStyle == OSStyle.AmigaOS13) amigaOs13Blue else backgroundColor
+    val keyColor = if (osStyle == OSStyle.AmigaOS13) Color.White else blackColor
+
+    Canvas(modifier = modifier) {
+        val border = size.minDimension * 0.08f
+        drawRect(color = Color.White)
+        drawRect(
+            color = body,
+            topLeft = Offset(border, border),
+            size = Size(size.width - 2 * border, size.height - 2 * border),
+        )
+
+        // display
+        val inset = border * 3
+        drawRect(
+            color = blackColor,
+            topLeft = Offset(inset, inset),
+            size = Size(size.width - 2 * inset, size.height * 0.18f),
+        )
+
+        // 3 x 3 keys
+        val keyTop = inset + size.height * 0.26f
+        val keyArea = size.height - keyTop - inset
+        val step = keyArea / 3f
+        val keySize = step * 0.62f
+        val columnStep = (size.width - 2 * inset) / 3f
+        repeat(3) { row ->
+            repeat(3) { column ->
+                drawRect(
+                    color = keyColor,
+                    topLeft = Offset(inset + column * columnStep, keyTop + row * step),
+                    size = Size(minOf(keySize, columnStep * 0.62f), keySize),
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun ShellShortcut(
+    state: BoingBallState,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    val label = if (state.osStyle == OSStyle.AmigaOS13) {
+        stringResource(Res.string.shell13)
+    } else {
+        stringResource(Res.string.shell)
+    }
+
+    Column(
+        modifier = modifier.clickable(onClick = onClick),
+        horizontalAlignment = Alignment.CenterHorizontally,
+    ) {
+        ShellIcon(
+            osStyle = state.osStyle,
+            modifier = Modifier
+                .width(40.dp)
+                .height(40.dp)
+        )
+        AmigaTextBox(
+            text = label,
+            osStyle = state.osStyle
+        )
+    }
+}
+
+@Composable
+private fun ShellIcon(
+    osStyle: OSStyle,
+    modifier: Modifier = Modifier,
+) {
+    val isOs13 = osStyle == OSStyle.AmigaOS13
+    val console = if (isOs13) amigaOs13Blue else whiteColor
+    val ink = if (isOs13) whiteColor else blackColor
+
+    Canvas(modifier = modifier) {
+        val border = size.minDimension * 0.08f
+        drawRect(color = if (isOs13) whiteColor else blackColor)
+        drawRect(
+            color = console,
+            topLeft = Offset(border, border),
+            size = Size(size.width - 2 * border, size.height - 2 * border),
+        )
+
+        // title strip
+        drawRect(
+            color = ink,
+            topLeft = Offset(border, border),
+            size = Size(size.width - 2 * border, border * 1.5f),
+        )
+
+        // prompt marks and cursor block
+        val lineHeight = border * 1.2f
+        val lineTop = border * 4f
+        val left = border * 2.5f
+        repeat(3) { row ->
+            val top = lineTop + row * border * 3f
+            drawRect(
+                color = ink,
+                topLeft = Offset(left, top),
+                size = Size(border * 2f, lineHeight),
+            )
+            drawRect(
+                color = ink,
+                topLeft = Offset(left + border * 3f, top),
+                size = Size(size.width * (0.3f + 0.15f * row), lineHeight),
+            )
+        }
+        drawRect(
+            color = if (isOs13) amigaOs13Orange else blackColor,
+            topLeft = Offset(left, lineTop + 3 * border * 3f),
+            size = Size(border * 2f, lineHeight * 1.4f),
+        )
     }
 }
 

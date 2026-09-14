@@ -1,6 +1,7 @@
 <resources>
     <string name="preferences">Ustawienia</string>
     <string name="clock">Zegar</string>
+    <string name="calculator">Kalkulator</string>
     <string name="preferences_pick_main_bb_color">Kolor główny dla BB</string>
     <string name="preferences_pick_alternate_bb_color">Kolor dodatkowy dla BB</string>
     <string name="preferences_draw_bb_square_borders">Rysuj ramki wokół ścianek BB</string>

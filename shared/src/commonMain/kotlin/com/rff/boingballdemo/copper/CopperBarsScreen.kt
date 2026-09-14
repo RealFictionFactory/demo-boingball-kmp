@@ -113,8 +113,7 @@ private fun CopperBarsContent(
                         .padding(bottom = 1.dp)
                 },
             )
-            .background(color = backgroundColor)
-            .padding(4.dp),
+            .background(color = backgroundColor),
     ) {
         CopperBarsView(
             modifier = Modifier
