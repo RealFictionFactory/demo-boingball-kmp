@@ -169,7 +169,7 @@ private fun ShellConsole(
                         .padding(bottom = 1.dp)
                 },
             )
-            .background(color = consoleBackground)
+            .background(color = if (state.osStyle == OSStyle.AmigaOS13) amigaOs13Blue else backgroundColor)
             .height(consoleHeight)
             .clickable(
                 interactionSource = interactionSource,

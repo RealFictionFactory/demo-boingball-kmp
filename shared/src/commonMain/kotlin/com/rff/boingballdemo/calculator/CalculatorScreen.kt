@@ -111,11 +111,11 @@ fun CalculatorScreen(
         contentAlignment = Alignment.Center,
     ) {
         val isLandscape = maxWidth > maxHeight
-        val windowWidth = if (isLandscape) {
-            minOf(maxHeight * 0.72f, maxWidth * 0.5f)
-        } else {
-            maxWidth * 0.82f
-        }
+        // Chrome + display above the keypad; the keypad itself is ~1.04 * window width.
+        val chromeHeight = 165.dp
+        val widthLimitedByHeight = ((maxHeight - chromeHeight) / 1.04f).coerceAtLeast(0.dp)
+        val preferredWidth = if (isLandscape) maxWidth * 0.5f else maxWidth * 0.82f
+        val windowWidth = minOf(preferredWidth, widthLimitedByHeight)
 
         Column(modifier = Modifier.fillMaxSize()) {
             AmigaScreenTitleBar(

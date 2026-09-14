@@ -61,7 +61,13 @@ fun CopperBarsScreen(
         contentAlignment = Alignment.Center,
     ) {
         val isLandscape = maxWidth > maxHeight
-        val windowWidth = if (isLandscape) maxWidth * 0.6f else maxWidth * 0.9f
+        // Window chrome: screen title bar, toolbar, borders and padding.
+        val chromeHeight = 80.dp
+        val contentHeight = (maxHeight - chromeHeight).coerceAtLeast(0.dp)
+        // Content is 4:3, so never let it get wider than the free height allows.
+        val widthLimitedByHeight = contentHeight * 4f / 3f
+        val preferredWidth = if (isLandscape) maxWidth * 0.6f else maxWidth * 0.9f
+        val windowWidth = minOf(preferredWidth, widthLimitedByHeight)
 
         Column(modifier = Modifier.fillMaxSize()) {
             AmigaScreenTitleBar(
