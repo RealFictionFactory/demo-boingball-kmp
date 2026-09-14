@@ -7,9 +7,12 @@ import androidx.navigation3.runtime.rememberNavBackStack
 import androidx.navigation3.ui.NavDisplay
 import androidx.savedstate.serialization.SavedStateConfiguration
 import com.rff.boingballdemo.about.AboutScreenRoot
+import com.rff.boingballdemo.calculator.CalculatorScreenRoot
 import com.rff.boingballdemo.clock.ClockScreenRoot
+import com.rff.boingballdemo.copper.CopperBarsScreenRoot
 import com.rff.boingballdemo.main.BoingBallScreenRoot
 import com.rff.boingballdemo.preferences.PreferencesScreenRoot
+import com.rff.boingballdemo.shell.ShellScreenRoot
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.modules.SerializersModule
@@ -31,6 +34,15 @@ data object Clock : AppRoute
 @Serializable
 data object About : AppRoute
 
+@Serializable
+data object Copper : AppRoute
+
+@Serializable
+data object Calculator : AppRoute
+
+@Serializable
+data object Shell : AppRoute
+
 @OptIn(ExperimentalSerializationApi::class)
 private val navConfig = SavedStateConfiguration {
     serializersModule = SerializersModule {
@@ -39,6 +51,9 @@ private val navConfig = SavedStateConfiguration {
             subclass(Prefs::class)
             subclass(Clock::class)
             subclass(About::class)
+            subclass(Copper::class)
+            subclass(Calculator::class)
+            subclass(Shell::class)
         }
     }
 }
@@ -63,6 +78,15 @@ fun NavigationRoot(
                             },
                             onAboutClick = {
                                 backStack.add(About)
+                            },
+                            onCopperBarsClick = {
+                                backStack.add(Copper)
+                            },
+                            onCalculatorClick = {
+                                backStack.add(Calculator)
+                            },
+                            onShellClick = {
+                                backStack.add(Shell)
                             },
                             onCloseClick = onExitApp
                         )
@@ -89,6 +113,33 @@ fun NavigationRoot(
                 About -> {
                     NavEntry(key = key) {
                         AboutScreenRoot(
+                            onCloseClick = {
+                                backStack.removeLastOrNull()
+                            }
+                        )
+                    }
+                }
+                Copper -> {
+                    NavEntry(key = key) {
+                        CopperBarsScreenRoot(
+                            onCloseClick = {
+                                backStack.removeLastOrNull()
+                            }
+                        )
+                    }
+                }
+                Calculator -> {
+                    NavEntry(key = key) {
+                        CalculatorScreenRoot(
+                            onCloseClick = {
+                                backStack.removeLastOrNull()
+                            }
+                        )
+                    }
+                }
+                Shell -> {
+                    NavEntry(key = key) {
+                        ShellScreenRoot(
                             onCloseClick = {
                                 backStack.removeLastOrNull()
                             }
