@@ -4,5 +4,6 @@ sealed interface BoingBallAction {
     data object Preferences : BoingBallAction
     data object About : BoingBallAction
     data object Clock : BoingBallAction
+    data object CopperBars : BoingBallAction
     data object Back : BoingBallAction
 }

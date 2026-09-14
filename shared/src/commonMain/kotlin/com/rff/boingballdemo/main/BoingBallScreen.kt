@@ -1,6 +1,7 @@
 package com.rff.boingballdemo.main
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -26,6 +27,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -36,6 +39,7 @@ import boingball.shared.generated.resources.about30
 import boingball.shared.generated.resources.app_name
 import boingball.shared.generated.resources.clock
 import boingball.shared.generated.resources.clock30
+import boingball.shared.generated.resources.copper
 import boingball.shared.generated.resources.preferences
 import boingball.shared.generated.resources.prefs30
 import boingball.shared.generated.resources.workbench
@@ -63,6 +67,9 @@ import org.koin.compose.viewmodel.koinViewModel
  * - [*DONE*] Guru Meditation easter egg (long-press triggers iconic red/black error screen)
  * - [*DONE*] About window (3rd desktop icon, shows app/device info in Amiga Topaz style)
  * - [*DONE*] Clock window
+ * - [*DONE*] Copper bars demo
+ * - simple Calculator app
+ * - AmigaDOS Shell - simple, no commands, just opens the window with a prompt. clicking anywhere closes it
  *
  * PHASE 2 — additional features:
  * - History of Amiga logo by year
@@ -88,6 +95,7 @@ fun BoingBallScreenRoot(
     onPreferencesClick: () -> Unit,
     onClockClick: () -> Unit = {},
     onAboutClick: () -> Unit = {},
+    onCopperBarsClick: () -> Unit = {},
     onCloseClick: () -> Unit = {},
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
@@ -100,6 +108,7 @@ fun BoingBallScreenRoot(
                 BoingBallAction.Clock -> onClockClick()
                 BoingBallAction.Back -> onCloseClick()
                 BoingBallAction.About -> onAboutClick()
+                BoingBallAction.CopperBars -> onCopperBarsClick()
             }
         }
     )
@@ -169,6 +178,10 @@ fun BoingBallScreen(
                                 state = state,
                                 onClick = { onAction(BoingBallAction.About) },
                             )
+                            CopperBarsShortcut(
+                                state = state,
+                                onClick = { onAction(BoingBallAction.CopperBars) },
+                            )
                         }
                     }
                 } else {
@@ -182,8 +195,12 @@ fun BoingBallScreen(
                             modifier = Modifier
                                 .align(Alignment.TopEnd)
                                 .padding(16.dp),
-                            horizontalArrangement = Arrangement.spacedBy(24.dp),
+                            horizontalArrangement = Arrangement.spacedBy(16.dp),
                         ) {
+                            CopperBarsShortcut(
+                                state = state,
+                                onClick = { onAction(BoingBallAction.CopperBars) },
+                            )
                             AboutShortcut(
                                 state = state,
                                 onClick = { onAction(BoingBallAction.About) },
@@ -349,6 +366,59 @@ private fun AboutShortcut(
             text = stringResource(Res.string.about),
             osStyle = state.osStyle
         )
+    }
+}
+
+@Composable
+private fun CopperBarsShortcut(
+    state: BoingBallState,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    Column(
+        modifier = modifier.clickable(onClick = onClick),
+        horizontalAlignment = Alignment.CenterHorizontally,
+    ) {
+        CopperBarsIcon(
+            modifier = Modifier
+                .width(40.dp)
+                .height(40.dp)
+        )
+        AmigaTextBox(
+            text = stringResource(Res.string.copper),
+            osStyle = state.osStyle
+        )
+    }
+}
+
+@Composable
+private fun CopperBarsIcon(modifier: Modifier = Modifier) {
+    val barColors = listOf(
+        Color(0xFFFF2200),
+        Color(0xFFFF8800),
+        Color(0xFF00CC33),
+        Color(0xFF00AAFF),
+    )
+
+    Canvas(modifier = modifier) {
+        val border = size.minDimension * 0.08f
+        drawRect(color = Color.White)
+        drawRect(
+            color = Color.Black,
+            topLeft = Offset(border, border),
+            size = Size(size.width - 2 * border, size.height - 2 * border),
+        )
+
+        val inner = size.height - 2 * border
+        val barHeight = inner / (barColors.size * 2f)
+        barColors.forEachIndexed { index, color ->
+            val top = border + barHeight * (index * 2 + 0.5f)
+            drawRect(
+                color = color,
+                topLeft = Offset(border * 2, top),
+                size = Size(size.width - 4 * border, barHeight),
+            )
+        }
     }
 }
 
