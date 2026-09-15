@@ -63,6 +63,15 @@ fun NavigationRoot(
     onExitApp: () -> Unit = {},
 ) {
     val backStack = rememberNavBackStack(navConfig, Home)
+    val popBackStack: () -> Unit = {
+        // Guard against popping the last remaining entry, which would leave
+        // NavDisplay with an empty backstack and crash. This can happen if
+        // onCloseClick fires more than once before recomposition settles
+        // (e.g. a duplicate click or a click racing the back gesture).
+        if (backStack.size > 1) {
+            backStack.removeLastOrNull()
+        }
+    }
     NavDisplay(
         backStack = backStack,
         entryProvider = { key ->
@@ -96,7 +105,7 @@ fun NavigationRoot(
                     NavEntry(key = key) {
                         PreferencesScreenRoot(
                             onCloseClick = {
-                                backStack.removeLastOrNull()
+                                popBackStack()
                             }
                         )
                     }
@@ -105,7 +114,7 @@ fun NavigationRoot(
                     NavEntry(key = key) {
                         ClockScreenRoot(
                             onCloseClick = {
-                                backStack.removeLastOrNull()
+                                popBackStack()
                             }
                         )
                     }
@@ -114,7 +123,7 @@ fun NavigationRoot(
                     NavEntry(key = key) {
                         AboutScreenRoot(
                             onCloseClick = {
-                                backStack.removeLastOrNull()
+                                popBackStack()
                             }
                         )
                     }
@@ -123,7 +132,7 @@ fun NavigationRoot(
                     NavEntry(key = key) {
                         CopperBarsScreenRoot(
                             onCloseClick = {
-                                backStack.removeLastOrNull()
+                                popBackStack()
                             }
                         )
                     }
@@ -132,7 +141,7 @@ fun NavigationRoot(
                     NavEntry(key = key) {
                         CalculatorScreenRoot(
                             onCloseClick = {
-                                backStack.removeLastOrNull()
+                                popBackStack()
                             }
                         )
                     }
@@ -141,7 +150,7 @@ fun NavigationRoot(
                     NavEntry(key = key) {
                         ShellScreenRoot(
                             onCloseClick = {
-                                backStack.removeLastOrNull()
+                                popBackStack()
                             }
                         )
                     }
