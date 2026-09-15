@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -154,23 +155,36 @@ fun BoingBallScreen(
                 )
 
                 if (isLandscape) {
-                    Box(
+                    // Window and icons are placed in a Row (instead of overlaid) so the
+                    // window is constrained to the space left after the icon column,
+                    // guaranteeing no overlap on narrower/shorter landscape screens.
+                    Row(
                         modifier = Modifier
                             .weight(1f)
                             .fillMaxWidth()
                             .padding(16.dp),
                     ) {
-                        BoingBallWindow(
-                            state = state,
-                            onCloseClick = { onAction(BoingBallAction.Back) },
+                        BoxWithConstraints(
                             modifier = Modifier
-                                .align(Alignment.TopStart)
-                                .widthIn(max = availableWidth * 0.72f)
-                        )
+                                .weight(1f)
+                                .fillMaxHeight(),
+                            contentAlignment = Alignment.TopStart,
+                        ) {
+                            // Cap the window width by both the available width and the
+                            // width implied by the available height (ball view is 4:3,
+                            // plus ~66dp of toolbar/border/padding chrome) so the window
+                            // shrinks to fit instead of overflowing past this area.
+                            val maxWidthForHeight = ((maxHeight - 66.dp) / 0.65f).coerceAtLeast(0.dp)
+                            BoingBallWindow(
+                                state = state,
+                                onCloseClick = { onAction(BoingBallAction.Back) },
+                                modifier = Modifier
+                                    .widthIn(max = minOf(maxWidth, maxWidthForHeight))
+                            )
+                        }
                         Column(
                             modifier = Modifier
-                                .align(Alignment.TopEnd)
-                                .padding(16.dp),
+                                .padding(start = 16.dp),
                             verticalArrangement = Arrangement.spacedBy(16.dp),
                             horizontalAlignment = Alignment.CenterHorizontally,
                         ) {
@@ -213,7 +227,10 @@ fun BoingBallScreen(
                         }
                     }
                 } else {
-                    Box(
+                    // Icons are stacked above the window (instead of overlaid) so the
+                    // window always gets to shrink into the remaining space rather
+                    // than overlapping the icons on smaller screens.
+                    Column(
                         modifier = Modifier
                             .weight(1f)
                             .fillMaxWidth()
@@ -221,8 +238,8 @@ fun BoingBallScreen(
                     ) {
                         Column(
                             modifier = Modifier
-                                .align(Alignment.TopEnd)
-                                .padding(16.dp),
+                                .fillMaxWidth()
+                                .padding(bottom = 16.dp),
                             verticalArrangement = Arrangement.spacedBy(12.dp),
                             horizontalAlignment = Alignment.End,
                         ) {
@@ -249,23 +266,34 @@ fun BoingBallScreen(
                                     state = state,
                                     onClick = { onAction(BoingBallAction.Shell) },
                                 )
-                                CalculatorShortcut(
-                                    state = state,
-                                    onClick = { onAction(BoingBallAction.Calculator) },
-                                )
                                 CopperBarsShortcut(
                                     state = state,
                                     onClick = { onAction(BoingBallAction.CopperBars) },
                                 )
+                                CalculatorShortcut(
+                                    state = state,
+                                    onClick = { onAction(BoingBallAction.Calculator) },
+                                )
                             }
                         }
-                        BoingBallWindow(
-                            state = state,
-                            onCloseClick = { onAction(BoingBallAction.Back) },
+                        BoxWithConstraints(
                             modifier = Modifier
-                                .align(Alignment.Center)
-                                .widthIn(max = availableWidth)
-                        )
+                                .weight(1f)
+                                .fillMaxWidth(),
+                            contentAlignment = Alignment.Center,
+                        ) {
+                            // Cap the window width by both the available width and the
+                            // width implied by the remaining height (ball view is 4:3,
+                            // plus ~66dp of toolbar/border/padding chrome) so the window
+                            // shrinks to fit instead of overflowing past this area.
+                            val maxWidthForHeight = ((maxHeight - 66.dp) / 0.75f).coerceAtLeast(0.dp)
+                            BoingBallWindow(
+                                state = state,
+                                onCloseClick = { onAction(BoingBallAction.Back) },
+                                modifier = Modifier
+                                    .widthIn(max = minOf(availableWidth, maxWidthForHeight))
+                            )
+                        }
                     }
                 } // end if/else landscape
             } // end Column
