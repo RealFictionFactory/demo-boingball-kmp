@@ -36,10 +36,8 @@ import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import com.rff.boingballdemo.ui.theme.BoingBallDemoTheme
 import com.rff.boingballdemo.ui.theme.amigaOs13Blue
-import com.rff.boingballdemo.utils.Face
 import com.rff.boingballdemo.utils.Point3D
 import com.rff.boingballdemo.utils.TAU
-import com.rff.boingballdemo.utils.sameAs
 import com.rff.boingballdemo.utils.toRadians
 import kotlin.math.PI
 import kotlin.math.cos
@@ -194,11 +192,12 @@ private fun DrawScope.boingBall(
 ) {
     val columns = BOING_BALL_COLUMNS
     val rows = BOING_BALL_ROWS
+    // Camera is on +Z. Quad winding is clockwise from outside, so normals point inward;
+    // inward · (0, 0, -1) > 0 keeps the front (+Z) hemisphere.
     val view = Point3D(0f, 0f, -1f)
 
-    // Pre-calculate all vertices once to avoid redundant calculations
-    // This creates (rows+1) × columns vertices = 9 × 16 = 144 vertices
-    // instead of calculating ~256 times in the loop (each vertex used by ~4 quads)
+    // Unit-sphere vertices, cached so each is computed once then shared by neighbouring faces.
+    // rotateY is the spin; rotateZ is the on-screen axial tilt (poles stay on the silhouette).
     val vertexCache = Array(rows + 1) { rowIndex ->
         Array(columns) { colIndex ->
             val lat = ((PI / rows) * (rowIndex - rows / 2f)).toFloat()   // -π/2 → +π/2
@@ -213,13 +212,15 @@ private fun DrawScope.boingBall(
         }
     }
 
-    // Helper to get vertex from cache with wraparound for column
+    // Longitude wraps: the last column shares its east edge with column 0.
     fun getVertex(rowIndex: Int, colIndex: Int): Point3D {
         return vertexCache[rowIndex][colIndex % columns]
     }
 
-    val faces = mutableListOf<Face>()
-
+    // Each band is a ring of quads v1→v2→v3→v4 (SW, SE, NE, NW).
+    // At the poles every longitude collapses to one point, so those bands are triangles:
+    //   south (row 0):    v1 == v2  →  v1→v3→v4
+    //   north (last row): v3 == v4  →  v1→v2→v3
     for (row in 0 until rows) {
         for (column in 0 until columns) {
             val v1 = getVertex(row, column)
@@ -227,51 +228,39 @@ private fun DrawScope.boingBall(
             val v3 = getVertex(row + 1, column + 1)
             val v4 = getVertex(row + 1, column)
 
-            // Edges for the generic quad
-            val e1 = v2 - v1
-            val e2 = v3 - v1
+            val south = row == 0
+            val north = row == rows - 1
 
-            // Pick edges that match the actual path winding at the poles:
-            // - south pole triangle uses (v1 -> v3 -> v4)
-            // - north pole triangle uses (v1 -> v2 -> v3)
-            val normal = when {
-                e1.isZero() -> (v3 - v1).cross(v4 - v1)             // south pole
-                (v3 - v4).isZero() -> (v2 - v1).cross(v3 - v1)      // north pole
-                else -> e1.cross(e2)                                // regular quad
-            }
+            // South cannot use (v2−v1)×(v3−v1): that edge is zero. North matches the regular quad.
+            val normal = if (south) (v3 - v1).cross(v4 - v1) else (v2 - v1).cross(v3 - v1)
 
-            val facing = normal dot view
-            // Single, unified cull (drop back-facing)
-            if (facing <= 0f) continue
+            if ((normal dot view) <= 0f) continue
 
-            // Build path in screen space
             val p1 = v1.project(cx, cy, radius)
             val p2 = v2.project(cx, cy, radius)
             val p3 = v3.project(cx, cy, radius)
             val p4 = v4.project(cx, cy, radius)
 
+            // Drop the collapsed pole vertex so the path is a triangle, not a sliver quad.
             val path = Path().apply {
                 moveTo(p1.x, p1.y)
-                if (!p1.sameAs(p2)) lineTo(p2.x, p2.y)   // keeps north-pole triangle as v1->v2->v3
+
+                if (!south) lineTo(p2.x, p2.y)
+
                 lineTo(p3.x, p3.y)
-                if (!p3.sameAs(p4)) lineTo(p4.x, p4.y)   // keeps south-pole triangle as v1->v3->v4
+
+                if (!north) lineTo(p4.x, p4.y)
+
                 close()
             }
 
-            val col = if (((row + column) and 1) == 0) ballThemeColor else ballAltColor
-            // Use minimum Z (farthest point from camera) for more stable depth sorting
-            // This prevents z-fighting when faces have similar average depth but different extents
-            val depth = minOf(v1.z, v2.z, v3.z, v4.z)
-            faces += Face(path, depth, col)
-        }
-    }
+            // Checkerboard. Convex mesh + back-face cull ⇒ no overlapping fills, no depth sort.
+            val color = if (((row + column) and 1) == 0) ballThemeColor else ballAltColor
+            drawPath(path, color = color)
 
-    // Sort in-place instead of creating a new sorted list
-    faces.sortBy { it.depth }
-    faces.forEach { f ->
-        drawPath(f.path, color = f.color)
-        if (drawBorders) {
-            drawPath(f.path, color = Color.Black, style = Stroke(width = 0.8f))
+            if (drawBorders) {
+                drawPath(path, color = Color.Black, style = Stroke(width = 0.8f))
+            }
         }
     }
 }
