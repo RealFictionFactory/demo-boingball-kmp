@@ -42,29 +42,20 @@ import kotlin.math.sin
 
 internal const val BOING_BALL_ROWS = 8
 internal const val BOING_BALL_COLUMNS = 16
-/**
- * Original Boing does not spin a mesh. It paints the ball once, then cycles
- * 14 color registers (pens 2–15) by one slot every WaitTOF / vblank. Those 14
- * pens encode one red check plus one white check, so a full cycle shifts the
- * pattern by 2 of this mesh's 16 meridians (45°). Apparent spin is therefore:
- *   (2π × 2 / 16) × (vblankHz / 14)
- * PAL uses 50 Hz, NTSC 60 Hz.
- */
-internal const val ORIGINAL_COLOR_CYCLE_LENGTH = 14
-/** PAL wall-to-wall travel; NTSC is scaled by 50/60. */
+/** PAL reference speeds; NTSC is 60/50 of these. */
+internal const val ROTATION_SPEED_RADIANS_PER_SECOND = 2.8f
 internal const val HORIZONTAL_TRAVEL_MS = 3000
-internal const val VERTICAL_FALL_MS = 500
-internal const val VERTICAL_RISE_MS = 900
+internal const val VERTICAL_FALL_MS = 600
+internal const val VERTICAL_RISE_MS = 1100
 internal const val HORIZONTAL_START_FRACTION = 0.5f
 internal const val INITIAL_MOVING_LEFT = true
 
 internal fun rotationSpeedRadiansPerSecond(vblankHz: Int): Float =
-    (TAU * 2f / BOING_BALL_COLUMNS) * (vblankHz.toFloat() / ORIGINAL_COLOR_CYCLE_LENGTH)
+    ROTATION_SPEED_RADIANS_PER_SECOND * vblankHz / VideoSystem.PAL.vblankHz
 
 internal fun scaledDurationMs(palDurationMs: Int, vblankHz: Int): Int =
     (palDurationMs * VideoSystem.PAL.vblankHz / vblankHz).coerceAtLeast(1)
 
-/** Horizontal travel target: 0 is the left edge, 1 is the right edge. */
 internal fun nextHorizontalFraction(movingLeft: Boolean): Float = if (movingLeft) 0f else 1f
 
 /** Positive Y rotation moves the front-facing tiles to the right. */
@@ -73,7 +64,7 @@ internal fun rotationSign(movingLeft: Boolean): Float = if (movingLeft) 1f else 
 internal fun horizontalTravelDurationMs(
     from: Float,
     to: Float,
-    fullMs: Int = HORIZONTAL_TRAVEL_MS,
+    fullMs: Int,
 ): Int = (fullMs * abs(to - from)).toInt().coerceAtLeast(1)
 
 @Composable
@@ -124,19 +115,15 @@ fun BoingBall(
         }
     }
 
-    // Consolidated animation loop to avoid duplicate angle updates
     LaunchedEffect(isResumed, videoSystem) {
         if (!isResumed) return@LaunchedEffect
 
         while (isResumed) {
-            // Handle bounce animation
-            // fall quickly
             vBounce.animateTo(
                 targetValue = 1f,
                 animationSpec = tween(fallMs, easing = FastOutLinearInEasing)
             )
             boing?.play()
-            // rise more slowly
             vBounce.animateTo(
                 targetValue = 0f,
                 animationSpec = tween(riseMs, easing = LinearOutSlowInEasing)
@@ -144,7 +131,6 @@ fun BoingBall(
         }
     }
 
-    // Separate rotation animation loop
     LaunchedEffect(isResumed, videoSystem) {
         if (!isResumed) return@LaunchedEffect
 
@@ -159,7 +145,6 @@ fun BoingBall(
         }
     }
 
-    // Original demo: start centered, first travel is left, then bounce between the walls.
     LaunchedEffect(isResumed, videoSystem) {
         if (!isResumed) return@LaunchedEffect
 
