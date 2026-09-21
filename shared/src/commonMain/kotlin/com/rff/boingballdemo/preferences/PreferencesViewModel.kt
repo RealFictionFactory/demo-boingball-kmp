@@ -3,6 +3,7 @@ package com.rff.boingballdemo.preferences
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.rff.boingballdemo.component.OSStyle
+import com.rff.boingballdemo.component.VideoSystem
 import com.rff.boingballdemo.data.local.AppSettings
 import com.rff.boingballdemo.data.local.BoingBallPrefs
 import kotlinx.coroutines.NonCancellable
@@ -30,6 +31,7 @@ class PreferencesViewModel(
                         altColorIndex = prefs.altColorIndex,
                         drawBorders = prefs.drawBorders,
                         osStyle = prefs.osStyle,
+                        videoSystem = prefs.videoSystem,
                     )
                 }
             }
@@ -50,12 +52,17 @@ class PreferencesViewModel(
                 _uiState.update { it.copy(drawBorders = action.draw) }
                 saveCurrentSettings()
             }
+            is PreferencesAction.SetVideoSystem -> {
+                _uiState.update { it.copy(videoSystem = action.videoSystem) }
+                saveCurrentSettings()
+            }
             PreferencesAction.BringDefaults -> {
                 _uiState.update {
                     it.copy(
                         themeColorIndex = 0,
                         altColorIndex = 3,
                         drawBorders = false,
+                        videoSystem = VideoSystem.NTSC,
                     )
                 }
                 saveCurrentSettings()
@@ -67,6 +74,7 @@ class PreferencesViewModel(
                         altColorIndex = 3,
                         drawBorders = true,
                         osStyle = OSStyle.AmigaOS13,
+                        videoSystem = VideoSystem.PAL,
                     )
                 }
                 saveCurrentSettings()
@@ -91,6 +99,7 @@ class PreferencesViewModel(
                         altColorIndex = _uiState.value.altColorIndex,
                         drawBorders = _uiState.value.drawBorders,
                         osStyle = _uiState.value.osStyle,
+                        videoSystem = _uiState.value.videoSystem,
                     )
                 )
             }

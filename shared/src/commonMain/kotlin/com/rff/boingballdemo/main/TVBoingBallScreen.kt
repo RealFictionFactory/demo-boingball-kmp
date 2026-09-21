@@ -31,6 +31,7 @@ fun TVBoingBallScreen() {
             themeColor = state.themeColor,
             altColor = state.altColor,
             drawBorders = state.drawBorders,
+            videoSystem = state.videoSystem,
         )
     }
 }

@@ -163,7 +163,7 @@ fun BoingBallScreen(
                         modifier = Modifier
                             .weight(1f)
                             .fillMaxWidth()
-                            .padding(16.dp),
+                            .padding(2.dp),
                     ) {
                         BoxWithConstraints(
                             modifier = Modifier
@@ -185,7 +185,7 @@ fun BoingBallScreen(
                         }
                         Column(
                             modifier = Modifier
-                                .padding(start = 16.dp),
+                                .padding(16.dp),
                             verticalArrangement = Arrangement.spacedBy(16.dp),
                             horizontalAlignment = Alignment.CenterHorizontally,
                         ) {
@@ -235,12 +235,12 @@ fun BoingBallScreen(
                         modifier = Modifier
                             .weight(1f)
                             .fillMaxWidth()
-                            .padding(16.dp)
+                            .padding(2.dp)
                     ) {
                         Column(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .padding(bottom = 16.dp),
+                                .padding(16.dp),
                             verticalArrangement = Arrangement.spacedBy(12.dp),
                             horizontalAlignment = Alignment.End,
                         ) {
@@ -351,6 +351,7 @@ private fun BoingBallWindow(
                 themeColor = state.themeColor,
                 altColor = state.altColor,
                 drawBorders = state.drawBorders,
+                videoSystem = state.videoSystem,
             )
         }
     }

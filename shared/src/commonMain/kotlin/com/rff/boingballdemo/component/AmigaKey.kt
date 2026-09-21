@@ -97,7 +97,7 @@ private fun AmigaOs30Key(
     Box(
         modifier = modifier
             .drawBehind {
-                drawAmigaOs30Frame(
+                drawFrame(
                     strokePx = size.minDimension / 24f,
                     fillColor = if (isPressed) amigaOs30Blue else amigaOs30Grey,
                     topLeftColor = if (isPressed) blackColor else whiteColor,

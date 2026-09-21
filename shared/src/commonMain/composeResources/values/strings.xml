@@ -13,6 +13,9 @@
     <string name="preferences_pick_main_bb_color">Pick main BB color</string>
     <string name="preferences_pick_alternate_bb_color">Pick alternate BB color</string>
     <string name="preferences_draw_bb_square_borders">Draw BB square borders</string>
+    <string name="preferences_video_system">Video system</string>
+    <string name="preferences_video_pal" translatable="false">PAL</string>
+    <string name="preferences_video_ntsc" translatable="false">NTSC</string>
     <string name="preferences_set_demo_defaults">Set Boing Ball Demo defaults</string>
     <string name="preferences_set_app_defaults">Set app defaults</string>
     <string name="preferences_set_amigaos_2_style">Set AmigaOS 2+ style</string>

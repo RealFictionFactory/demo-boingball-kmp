@@ -30,6 +30,7 @@ import boingball.shared.generated.resources.preferences_set_amigaos_1_3_style
 import boingball.shared.generated.resources.preferences_set_amigaos_2_style
 import boingball.shared.generated.resources.preferences_set_app_defaults
 import boingball.shared.generated.resources.preferences_set_demo_defaults
+import boingball.shared.generated.resources.preferences_video_system
 import boingball.shared.generated.resources.workbench
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
@@ -37,9 +38,11 @@ import com.rff.boingballdemo.component.AmigaButton
 import com.rff.boingballdemo.component.AmigaScreenTitleBar
 import com.rff.boingballdemo.component.AmigaCheckBox
 import com.rff.boingballdemo.component.AmigaColorPicker
+import com.rff.boingballdemo.component.AmigaSelect
 import com.rff.boingballdemo.component.AmigaTextBox
 import com.rff.boingballdemo.component.AmigaToolbar
 import com.rff.boingballdemo.component.OSStyle
+import com.rff.boingballdemo.component.VideoSystem
 import com.rff.boingballdemo.main.conditional
 import com.rff.boingballdemo.ui.theme.AltAmigaOs13PickerColors
 import com.rff.boingballdemo.ui.theme.BoingBallDemoTheme
@@ -55,6 +58,7 @@ import com.rff.boingballdemo.ui.theme.whiteColor
  * - Boing Ball colors (main [red, blue, green] and alternate [white, other?])
  * - Draw Boing Ball square borders (true/false)
  * - OS 1.3 / 2.0+ - changes toolbar and font
+ * - PAL / NTSC video system (ball speed)
  * IN PROGRESS:
  * UPCOMING:
  * - Boing Ball segments number
@@ -104,7 +108,7 @@ fun PreferencesScreen(
                 modifier = Modifier
                     .weight(1f)
                     .fillMaxWidth()
-                    .padding(16.dp),
+                    .padding(2.dp),
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
             AmigaToolbar(
@@ -154,7 +158,7 @@ fun PortraitPreferencesLayout(
                         .background(color = backgroundColor)
                 }
             )
-            .padding(16.dp)
+            .padding(8.dp)
     ) {
         AmigaTextBox(
             text = stringResource(Res.string.preferences_pick_main_bb_color),
@@ -182,7 +186,6 @@ fun PortraitPreferencesLayout(
         )
         Spacer(modifier = Modifier.height(8.dp))
         Row(
-            modifier = Modifier.padding(vertical = 8.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
             AmigaTextBox(
@@ -198,6 +201,8 @@ fun PortraitPreferencesLayout(
                 }
             )
         }
+        Spacer(modifier = Modifier.height(8.dp))
+        VideoSystemSelector(state = state, onAction = onAction)
         Spacer(modifier = Modifier.height(8.dp))
         AmigaButton(
             text = stringResource(
@@ -258,7 +263,7 @@ fun LandscapePreferencesLayout(
                         .background(color = backgroundColor)
                 }
             )
-            .padding(16.dp)
+            .padding(8.dp)
     ) {
         Row(
             modifier = modifier.fillMaxWidth()
@@ -290,7 +295,6 @@ fun LandscapePreferencesLayout(
                 )
                 Spacer(modifier = Modifier.height(8.dp))
                 Row(
-                    modifier = Modifier.padding(vertical = 8.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     AmigaTextBox(
@@ -306,6 +310,8 @@ fun LandscapePreferencesLayout(
                         }
                     )
                 }
+                Spacer(modifier = Modifier.height(8.dp))
+                VideoSystemSelector(state = state, onAction = onAction)
             }
             Spacer(modifier = Modifier.width(16.dp))
             Column(modifier = Modifier.weight(1f)) {
@@ -336,6 +342,31 @@ fun LandscapePreferencesLayout(
                 )
             }
         }
+    }
+}
+
+@Composable
+private fun VideoSystemSelector(
+    state: PreferencesState,
+    onAction: (PreferencesAction) -> Unit,
+) {
+    val labels = VideoSystem.entries.associateWith { stringResource(it.labelRes) }
+
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        AmigaSelect(
+            modifier = Modifier.width(120.dp),
+            text = stringResource(Res.string.preferences_video_system),
+            options = VideoSystem.entries.map { labels.getValue(it) },
+            selectedOption = labels.getValue(state.videoSystem),
+            osStyle = state.osStyle,
+            onOptionSelected = { selectedOption ->
+                VideoSystem.fromLabel(selectedOption, labels)?.let { system ->
+                    onAction(PreferencesAction.SetVideoSystem(system))
+                }
+            },
+        )
     }
 }
 

@@ -53,6 +53,7 @@ import com.rff.boingballdemo.ui.theme.whiteColor
 import kotlinx.coroutines.delay
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
+import kotlin.time.Duration.Companion.milliseconds
 
 private const val CURSOR_BLINK_MS = 500L
 
@@ -137,7 +138,7 @@ private fun ShellConsole(
 
     LaunchedEffect(Unit) {
         while (true) {
-            delay(CURSOR_BLINK_MS)
+            delay(CURSOR_BLINK_MS.milliseconds)
             cursorVisible = !cursorVisible
         }
     }

@@ -18,6 +18,7 @@ fun BoingBallView(
     themeColor: Color,
     altColor: Color,
     drawBorders: Boolean,
+    videoSystem: VideoSystem = VideoSystem.PAL,
 ) {
     Box(
         modifier = modifier
@@ -34,6 +35,7 @@ fun BoingBallView(
             themeColor = themeColor,
             altColor = altColor,
             drawBorders = drawBorders,
+            videoSystem = videoSystem,
         )
     }
 }

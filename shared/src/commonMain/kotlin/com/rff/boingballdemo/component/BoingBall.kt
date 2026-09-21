@@ -4,10 +4,6 @@ import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.FastOutLinearInEasing
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.LinearOutSlowInEasing
-import androidx.compose.animation.core.RepeatMode
-import androidx.compose.animation.core.animateFloat
-import androidx.compose.animation.core.infiniteRepeatable
-import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.Box
@@ -40,12 +36,45 @@ import com.rff.boingballdemo.utils.Point3D
 import com.rff.boingballdemo.utils.TAU
 import com.rff.boingballdemo.utils.toRadians
 import kotlin.math.PI
+import kotlin.math.abs
 import kotlin.math.cos
 import kotlin.math.sin
 
-internal const val ROTATION_SPEED_RADIANS_PER_SECOND = 3.6f
 internal const val BOING_BALL_ROWS = 8
 internal const val BOING_BALL_COLUMNS = 16
+/**
+ * Original Boing does not spin a mesh. It paints the ball once, then cycles
+ * 14 color registers (pens 2–15) by one slot every WaitTOF / vblank. Those 14
+ * pens encode one red check plus one white check, so a full cycle shifts the
+ * pattern by 2 of this mesh's 16 meridians (45°). Apparent spin is therefore:
+ *   (2π × 2 / 16) × (vblankHz / 14)
+ * PAL uses 50 Hz, NTSC 60 Hz.
+ */
+internal const val ORIGINAL_COLOR_CYCLE_LENGTH = 14
+/** PAL wall-to-wall travel; NTSC is scaled by 50/60. */
+internal const val HORIZONTAL_TRAVEL_MS = 3000
+internal const val VERTICAL_FALL_MS = 500
+internal const val VERTICAL_RISE_MS = 900
+internal const val HORIZONTAL_START_FRACTION = 0.5f
+internal const val INITIAL_MOVING_LEFT = true
+
+internal fun rotationSpeedRadiansPerSecond(vblankHz: Int): Float =
+    (TAU * 2f / BOING_BALL_COLUMNS) * (vblankHz.toFloat() / ORIGINAL_COLOR_CYCLE_LENGTH)
+
+internal fun scaledDurationMs(palDurationMs: Int, vblankHz: Int): Int =
+    (palDurationMs * VideoSystem.PAL.vblankHz / vblankHz).coerceAtLeast(1)
+
+/** Horizontal travel target: 0 is the left edge, 1 is the right edge. */
+internal fun nextHorizontalFraction(movingLeft: Boolean): Float = if (movingLeft) 0f else 1f
+
+/** Positive Y rotation moves the front-facing tiles to the right. */
+internal fun rotationSign(movingLeft: Boolean): Float = if (movingLeft) 1f else -1f
+
+internal fun horizontalTravelDurationMs(
+    from: Float,
+    to: Float,
+    fullMs: Int = HORIZONTAL_TRAVEL_MS,
+): Int = (fullMs * abs(to - from)).toInt().coerceAtLeast(1)
 
 @Composable
 fun BoingBall(
@@ -54,21 +83,19 @@ fun BoingBall(
     themeColor: Color,
     altColor: Color,
     drawBorders: Boolean,
+    videoSystem: VideoSystem = VideoSystem.PAL,
 ) {
+    val vblankHz = videoSystem.vblankHz
+    val rotationSpeed = rotationSpeedRadiansPerSecond(vblankHz)
+    val fullTravelMs = scaledDurationMs(HORIZONTAL_TRAVEL_MS, vblankHz)
+    val fallMs = scaledDurationMs(VERTICAL_FALL_MS, vblankHz)
+    val riseMs = scaledDurationMs(VERTICAL_RISE_MS, vblankHz)
     val vBounce = remember { Animatable(0f) }
+    val hBounce = remember { Animatable(HORIZONTAL_START_FRACTION) }
     var angle by remember { mutableFloatStateOf(0f) }
-    var direction by remember { mutableStateOf(false) }
-    var hBouncePrev by remember { mutableFloatStateOf(0f) }
+    // true = travelling left; front-facing tiles rotate to the right.
+    var direction by remember { mutableStateOf(INITIAL_MOVING_LEFT) }
     val boing = rememberBoingBallAudio()
-    // Horizontal movement fraction [0..1]
-    val hBounce = rememberInfiniteTransition().animateFloat(
-        initialValue = 0f,
-        targetValue = 1f,
-        animationSpec = infiniteRepeatable(
-            animation = tween(3000, easing = LinearEasing),
-            repeatMode = RepeatMode.Reverse
-        )
-    ).value
 
     // Get the current lifecycle owner
     val lifecycleOwner = LocalLifecycleOwner.current
@@ -98,7 +125,7 @@ fun BoingBall(
     }
 
     // Consolidated animation loop to avoid duplicate angle updates
-    LaunchedEffect(isResumed) {
+    LaunchedEffect(isResumed, videoSystem) {
         if (!isResumed) return@LaunchedEffect
 
         while (isResumed) {
@@ -106,19 +133,19 @@ fun BoingBall(
             // fall quickly
             vBounce.animateTo(
                 targetValue = 1f,
-                animationSpec = tween(500, easing = FastOutLinearInEasing)
+                animationSpec = tween(fallMs, easing = FastOutLinearInEasing)
             )
             boing?.play()
             // rise more slowly
             vBounce.animateTo(
                 targetValue = 0f,
-                animationSpec = tween(900, easing = LinearOutSlowInEasing)
+                animationSpec = tween(riseMs, easing = LinearOutSlowInEasing)
             )
         }
     }
 
     // Separate rotation animation loop
-    LaunchedEffect(isResumed) {
+    LaunchedEffect(isResumed, videoSystem) {
         if (!isResumed) return@LaunchedEffect
 
         var lastFrameNanos = withFrameNanos { it }
@@ -128,23 +155,28 @@ fun BoingBall(
             val deltaSeconds = (frameNanos - lastFrameNanos) / 1_000_000_000f
             lastFrameNanos = frameNanos
 
-            val sign = if (direction) 1f else -1f
-            angle += sign * ROTATION_SPEED_RADIANS_PER_SECOND * deltaSeconds
+            angle += rotationSign(direction) * rotationSpeed * deltaSeconds
         }
     }
 
-    LaunchedEffect(direction, isResumed) {
+    // Original demo: start centered, first travel is left, then bounce between the walls.
+    LaunchedEffect(isResumed, videoSystem) {
         if (!isResumed) return@LaunchedEffect
 
-        if (direction)
-            boing?.playRight()
-        else
-            boing?.playLeft()
-    }
-
-    LaunchedEffect(hBounce) {
-        direction = hBouncePrev > hBounce
-        hBouncePrev = hBounce
+        while (isResumed) {
+            val target = nextHorizontalFraction(direction)
+            val duration = horizontalTravelDurationMs(hBounce.value, target, fullTravelMs)
+            hBounce.animateTo(
+                targetValue = target,
+                animationSpec = tween(duration, easing = LinearEasing)
+            )
+            direction = !direction
+            if (direction) {
+                boing?.playRight()
+            } else {
+                boing?.playLeft()
+            }
+        }
     }
 
     Canvas(modifier = modifier) {
@@ -155,7 +187,7 @@ fun BoingBall(
         val offsetY = lerp(bounceMin, bounceMax, vBounce.value)
 
         val maxX = size.width - radius
-        val cx = radius + (maxX - radius) * hBounce
+        val cx = radius + (maxX - radius) * hBounce.value
         val tz = tilt.toRadians()
 
         // shadow

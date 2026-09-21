@@ -8,6 +8,7 @@ import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.emptyPreferences
 import androidx.datastore.preferences.core.intPreferencesKey
 import com.rff.boingballdemo.component.OSStyle
+import com.rff.boingballdemo.component.VideoSystem
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.map
@@ -29,7 +30,10 @@ class AppSettings(
                 themeColorIndex =  preferences[KEY_THEME_COLOR_INDEX] ?: 1,
                 altColorIndex = preferences[KEY_ALT_COLOR_INDEX] ?: 3,
                 drawBorders = preferences[KEY_DRAW_BORDERS] ?: true,
-                osStyle = OSStyle.entries[preferences[KEY_OS_STYLE] ?: OSStyle.AmigaOS13.ordinal]
+                osStyle = OSStyle.entries[preferences[KEY_OS_STYLE] ?: OSStyle.AmigaOS13.ordinal],
+                videoSystem = VideoSystem.entries.getOrElse(
+                    preferences[KEY_VIDEO_SYSTEM] ?: VideoSystem.PAL.ordinal
+                ) { VideoSystem.PAL },
             )
         }
 
@@ -41,6 +45,7 @@ class AppSettings(
             preferences[KEY_ALT_COLOR_INDEX] = value.altColorIndex
             preferences[KEY_DRAW_BORDERS] = value.drawBorders
             preferences[KEY_OS_STYLE] = value.osStyle.ordinal
+            preferences[KEY_VIDEO_SYSTEM] = value.videoSystem.ordinal
         }
     }
 
@@ -49,6 +54,7 @@ class AppSettings(
         private val KEY_ALT_COLOR_INDEX = intPreferencesKey("alt_color_index")
         private val KEY_DRAW_BORDERS = booleanPreferencesKey("draw_borders")
         private val KEY_OS_STYLE = intPreferencesKey("os_style")
+        private val KEY_VIDEO_SYSTEM = intPreferencesKey("video_system")
     }
 }
 
@@ -56,5 +62,6 @@ data class BoingBallPrefs(
     val themeColorIndex: Int,
     val altColorIndex: Int,
     val drawBorders: Boolean,
-    val osStyle: OSStyle = OSStyle.AmigaOS13
+    val osStyle: OSStyle = OSStyle.AmigaOS13,
+    val videoSystem: VideoSystem = VideoSystem.PAL,
 )

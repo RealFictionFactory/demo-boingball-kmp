@@ -44,6 +44,7 @@ class BoingBallViewModel(
                         altColor = AltAmigaOs13PickerColors[altColorIndex],
                         drawBorders = prefs.drawBorders,
                         osStyle = prefs.osStyle,
+                        videoSystem = prefs.videoSystem,
                     )
                 }
             }
