@@ -27,6 +27,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -41,6 +42,8 @@ import boingball.shared.generated.resources.clock
 import boingball.shared.generated.resources.clock30
 import boingball.shared.generated.resources.copper
 import boingball.shared.generated.resources.copper30
+import boingball.shared.generated.resources.ic_play
+import boingball.shared.generated.resources.music_player
 import boingball.shared.generated.resources.preferences
 import boingball.shared.generated.resources.prefs30
 import boingball.shared.generated.resources.shell
@@ -104,6 +107,7 @@ fun BoingBallScreenRoot(
     onCopperBarsClick: () -> Unit = {},
     onCalculatorClick: () -> Unit = {},
     onShellClick: () -> Unit = {},
+    onMusicPlayerClick: () -> Unit = {},
     onCloseClick: () -> Unit = {},
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
@@ -119,6 +123,7 @@ fun BoingBallScreenRoot(
                 BoingBallAction.CopperBars -> onCopperBarsClick()
                 BoingBallAction.Calculator -> onCalculatorClick()
                 BoingBallAction.Shell -> onShellClick()
+                BoingBallAction.MusicPlayer -> onMusicPlayerClick()
             }
         }
     )
@@ -206,6 +211,10 @@ fun BoingBallScreen(
                                         state = state,
                                         onClick = { onAction(BoingBallAction.Shell) },
                                     )
+                                    MusicPlayerShortcut(
+                                        state = state,
+                                        onClick = { onAction(BoingBallAction.MusicPlayer) },
+                                    )
                                 }
                                 Column(
                                     verticalArrangement = Arrangement.spacedBy(8.dp),
@@ -274,6 +283,14 @@ fun BoingBallScreen(
                                 CalculatorShortcut(
                                     state = state,
                                     onClick = { onAction(BoingBallAction.Calculator) },
+                                )
+                            }
+                            Row(
+                                horizontalArrangement = Arrangement.spacedBy(16.dp),
+                            ) {
+                                MusicPlayerShortcut(
+                                    state = state,
+                                    onClick = { onAction(BoingBallAction.MusicPlayer) },
                                 )
                             }
                         }
@@ -532,6 +549,33 @@ private fun ShellShortcut(
         )
         AmigaTextBox(
             text = label,
+            osStyle = state.osStyle
+        )
+    }
+}
+
+@Composable
+private fun MusicPlayerShortcut(
+    state: BoingBallState,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    Column(
+        modifier = modifier.clickable(onClick = onClick),
+        horizontalAlignment = Alignment.CenterHorizontally,
+    ) {
+        Image(
+            modifier = Modifier
+                .width(40.dp)
+                .height(40.dp),
+            painter = painterResource(Res.drawable.ic_play),
+            contentDescription = stringResource(Res.string.music_player),
+            colorFilter = ColorFilter.tint(
+                if (state.osStyle == OSStyle.AmigaOS13) whiteColor else blackColor
+            ),
+        )
+        AmigaTextBox(
+            text = stringResource(Res.string.music_player),
             osStyle = state.osStyle
         )
     }

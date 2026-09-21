@@ -11,6 +11,7 @@ import com.rff.boingballdemo.calculator.CalculatorScreenRoot
 import com.rff.boingballdemo.clock.ClockScreenRoot
 import com.rff.boingballdemo.copper.CopperBarsScreenRoot
 import com.rff.boingballdemo.main.BoingBallScreenRoot
+import com.rff.boingballdemo.musicplayer.MusicPlayerScreenRoot
 import com.rff.boingballdemo.preferences.PreferencesScreenRoot
 import com.rff.boingballdemo.shell.ShellScreenRoot
 import kotlinx.serialization.ExperimentalSerializationApi
@@ -43,6 +44,9 @@ data object Calculator : AppRoute
 @Serializable
 data object Shell : AppRoute
 
+@Serializable
+data object MusicPlayer : AppRoute
+
 @OptIn(ExperimentalSerializationApi::class)
 private val navConfig = SavedStateConfiguration {
     serializersModule = SerializersModule {
@@ -54,6 +58,7 @@ private val navConfig = SavedStateConfiguration {
             subclass(Copper::class)
             subclass(Calculator::class)
             subclass(Shell::class)
+            subclass(MusicPlayer::class)
         }
     }
 }
@@ -96,6 +101,9 @@ fun NavigationRoot(
                             },
                             onShellClick = {
                                 backStack.add(Shell)
+                            },
+                            onMusicPlayerClick = {
+                                backStack.add(MusicPlayer)
                             },
                             onCloseClick = onExitApp
                         )
@@ -149,6 +157,15 @@ fun NavigationRoot(
                 Shell -> {
                     NavEntry(key = key) {
                         ShellScreenRoot(
+                            onCloseClick = {
+                                popBackStack()
+                            }
+                        )
+                    }
+                }
+                MusicPlayer -> {
+                    NavEntry(key = key) {
+                        MusicPlayerScreenRoot(
                             onCloseClick = {
                                 popBackStack()
                             }

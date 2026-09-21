@@ -9,6 +9,7 @@ import com.rff.boingballdemo.data.local.createPreferencesDataStore
 import com.rff.boingballdemo.clock.ClockViewModel
 import com.rff.boingballdemo.copper.CopperBarsViewModel
 import com.rff.boingballdemo.main.BoingBallViewModel
+import com.rff.boingballdemo.musicplayer.MusicPlayerViewModel
 import com.rff.boingballdemo.preferences.PreferencesViewModel
 import com.rff.boingballdemo.shell.ShellViewModel
 import org.koin.core.module.Module
@@ -29,4 +30,5 @@ val sharedModule = module {
     viewModelOf(::CalculatorViewModel)
     viewModelOf(::ShellViewModel)
     viewModelOf(::AboutViewModel)
+    viewModelOf(::MusicPlayerViewModel)
 }

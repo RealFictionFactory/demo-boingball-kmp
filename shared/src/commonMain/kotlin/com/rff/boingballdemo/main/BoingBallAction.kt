@@ -7,5 +7,6 @@ sealed interface BoingBallAction {
     data object CopperBars : BoingBallAction
     data object Calculator : BoingBallAction
     data object Shell : BoingBallAction
+    data object MusicPlayer : BoingBallAction
     data object Back : BoingBallAction
 }
