@@ -80,7 +80,7 @@ import org.koin.compose.viewmodel.koinViewModel
  *   (built as ghost-typing demo: tap runs next canned command, close via toolbar gadget)
  *
  * PHASE 2 — additional features:
- * - music player with a list of most iconic Amiga musics
+ * - [*DONE*] music player with a list of most iconic Amiga musics
  * - History of Amiga logo by year
  * - Allow user to change rotation speed
  * - Add full screen Boing Ball view like real demo, some back button may be necessary

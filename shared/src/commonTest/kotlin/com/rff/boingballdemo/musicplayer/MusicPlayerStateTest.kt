@@ -8,8 +8,8 @@ import kotlin.test.assertTrue
 class MusicPlayerStateTest {
 
     private val tracks = listOf(
-        MusicTrack("A", "One", 1_000L),
-        MusicTrack("B", "Two", 2_000L),
+        MusicTrack("A", "One", 1_000L, "files/a.mp3"),
+        MusicTrack("B", "Two", 2_000L, "files/b.mp3"),
     )
     private val state = MusicPlayerState(tracks = tracks)
 
@@ -59,6 +59,48 @@ class MusicPlayerStateTest {
         val next = state.copy(positionMs = 800L)
             .reduce(MusicPlayerAction.Seek(500L))
         assertEquals(1_000L, next.positionMs)
+    }
+
+    @Test
+    fun playCommandsCurrentFile() {
+        val step = state.step(MusicPlayerAction.Play)
+        assertEquals(PlaybackCommand.Play("files/a.mp3", 0L), step.command)
+        assertTrue(step.state.isPlaying)
+    }
+
+    @Test
+    fun pauseAndStopCommandPlayback() {
+        val playing = state.step(MusicPlayerAction.Play).state
+        assertEquals(PlaybackCommand.Pause, playing.step(MusicPlayerAction.Pause).command)
+        assertEquals(PlaybackCommand.Stop, playing.step(MusicPlayerAction.Stop).command)
+    }
+
+    @Test
+    fun nextWhilePlayingCommandsNextFile() {
+        val playing = state.step(MusicPlayerAction.Play).state
+        val step = playing.step(MusicPlayerAction.Next)
+        assertEquals(PlaybackCommand.Play("files/b.mp3", 0L), step.command)
+        assertEquals(0L, step.state.positionMs)
+    }
+
+    @Test
+    fun nextWhilePausedStopsPlayback() {
+        val step = state.step(MusicPlayerAction.Next)
+        assertEquals(PlaybackCommand.Stop, step.command)
+        assertEquals(1, step.state.currentTrackIndex)
+    }
+
+    @Test
+    fun seekCommandsClampedPosition() {
+        val step = state.copy(positionMs = 800L).step(MusicPlayerAction.Seek(500L))
+        assertEquals(PlaybackCommand.Seek(1_000L), step.command)
+    }
+
+    @Test
+    fun selectTrackOutOfRangeDoesNotCommandPlayback() {
+        val step = state.step(MusicPlayerAction.SelectTrack(9))
+        assertEquals(null, step.command)
+        assertEquals(state, step.state)
     }
 
     @Test

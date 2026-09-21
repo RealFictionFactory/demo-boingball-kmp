@@ -6,6 +6,7 @@ data class MusicTrack(
     val title: String,
     val composer: String,
     val durationMs: Long,
+    val resourcePath: String,
 )
 
 data class MusicPlayerState(

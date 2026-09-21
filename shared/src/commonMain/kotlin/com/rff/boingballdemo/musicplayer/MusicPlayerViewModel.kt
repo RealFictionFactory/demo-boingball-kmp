@@ -16,18 +16,59 @@ import kotlinx.coroutines.launch
 private const val PROGRESS_TICK_MS = 200L
 
 internal val AMIGA_MUSIC_TRACKS = listOf(
-    MusicTrack("Shadow of the Beast", "David Whittaker", 224_000L),
-    MusicTrack("Turrican II", "Chris Huelsbeck", 198_000L),
-    MusicTrack("Lotus III", "Barry Leitch", 186_000L),
-    MusicTrack("Lemmings", "Tim Wright", 172_000L),
-    MusicTrack("Cannon Fodder", "Richard Joseph", 241_000L),
-    MusicTrack("IK+", "Rob Hubbard", 165_000L),
-    MusicTrack("Xenon 2", "David Whittaker", 203_000L),
-    MusicTrack("The Chaos Engine", "Richard Joseph", 190_000L),
+    MusicTrack(
+        "Shadow of the Beast",
+        "David Whittaker",
+        201_625L,
+        "files/Shadow.of.the.Beast.by.D.Whittaker.mp3",
+    ),
+    MusicTrack(
+        "Turrican 2 - The Final Fight",
+        "Chris Huelsbeck",
+        432_457L,
+        "files/Turrican.2.Title-The.Final.Fight.mp3",
+    ),
+    MusicTrack(
+        "Lotus 2",
+        "Barry Leitch",
+        170_000L,
+        "files/Lotus.2.title.mp3",
+    ),
+    MusicTrack(
+        "Lemmings 2",
+        "Raymond Usher",
+        115_836L,
+        "files/Lemmings.2.mp3",
+    ),
+    MusicTrack(
+        "Cannon Fodder",
+        "Richard Joseph",
+        146_661L,
+        "files/Cannon.Fodder.mp3",
+    ),
+    MusicTrack(
+        "IK+",
+        "Dave Lowe",
+        457_295L,
+        "files/IKPlus.by.Dave.Lowe.mp3",
+    ),
+    MusicTrack(
+        "Gods - Into the Wonderful",
+        "Nation 12",
+        153_624L,
+        "files/Gods.Into.the.Wonderful.mp3",
+    ),
+    MusicTrack(
+        "The Chaos Engine",
+        "Richard Joseph",
+        122_863L,
+        "files/Chaos.Engine.by.Richard.Joseph.mp3",
+    ),
 )
 
 class MusicPlayerViewModel(
     private val settings: AppSettings,
+    private val playback: MusicPlayback,
 ) : ViewModel() {
     private val _uiState = MutableStateFlow(
         MusicPlayerState(tracks = AMIGA_MUSIC_TRACKS)
@@ -43,12 +84,36 @@ class MusicPlayerViewModel(
     }
 
     fun onAction(action: MusicPlayerAction) {
-        val wasPlaying = _uiState.value.isPlaying
-        _uiState.update { it.reduce(action) }
-        val playing = _uiState.value.isPlaying
-        when {
-            playing && !wasPlaying -> startProgress()
-            !playing && wasPlaying -> stopProgress()
+        var command: PlaybackCommand? = null
+        _uiState.update { state ->
+            val step = state.step(action)
+            command = step.command
+            step.state
+        }
+        dispatch(command)
+    }
+
+    override fun onCleared() {
+        progressJob?.cancel()
+        playback.release()
+    }
+
+    private fun dispatch(command: PlaybackCommand?) {
+        when (command) {
+            is PlaybackCommand.Play -> {
+                playback.play(command.resourcePath, command.positionMs)
+                startProgress()
+            }
+            PlaybackCommand.Pause -> {
+                playback.pause()
+                stopProgress()
+            }
+            PlaybackCommand.Stop -> {
+                playback.stop()
+                stopProgress()
+            }
+            is PlaybackCommand.Seek -> playback.seekTo(command.positionMs)
+            null -> Unit
         }
     }
 
@@ -57,14 +122,14 @@ class MusicPlayerViewModel(
         progressJob = viewModelScope.launch {
             while (true) {
                 delay(PROGRESS_TICK_MS)
-                val state = _uiState.value
-                if (!state.isPlaying) continue
-                val duration = state.currentTrack?.durationMs ?: continue
-                val nextPosition = state.positionMs + PROGRESS_TICK_MS
-                if (nextPosition >= duration) {
-                    _uiState.update { it.reduce(MusicPlayerAction.Next) }
-                } else {
-                    _uiState.update { it.copy(positionMs = nextPosition) }
+                if (!_uiState.value.isPlaying) continue
+                if (playback.hasEnded()) {
+                    onAction(MusicPlayerAction.Next)
+                    return@launch
+                }
+                val position = playback.currentPositionMs()
+                _uiState.update { state ->
+                    if (!state.isPlaying) state else state.copy(positionMs = position)
                 }
             }
         }
@@ -73,6 +138,47 @@ class MusicPlayerViewModel(
     private fun stopProgress() {
         progressJob?.cancel()
         progressJob = null
+    }
+}
+
+internal sealed interface PlaybackCommand {
+    data class Play(val resourcePath: String, val positionMs: Long) : PlaybackCommand
+    data object Pause : PlaybackCommand
+    data object Stop : PlaybackCommand
+    data class Seek(val positionMs: Long) : PlaybackCommand
+}
+
+internal data class PlaybackStep(
+    val state: MusicPlayerState,
+    val command: PlaybackCommand?,
+)
+
+internal fun MusicPlayerState.step(action: MusicPlayerAction): PlaybackStep {
+    val after = reduce(action)
+    val command = when (action) {
+        MusicPlayerAction.Play -> after.currentTrack?.let {
+            PlaybackCommand.Play(it.resourcePath, after.positionMs)
+        }
+        MusicPlayerAction.Pause -> PlaybackCommand.Pause
+        MusicPlayerAction.Stop -> PlaybackCommand.Stop
+        is MusicPlayerAction.Seek -> PlaybackCommand.Seek(after.positionMs)
+        MusicPlayerAction.Next,
+        MusicPlayerAction.Previous,
+        -> trackChangeCommand(after)
+        is MusicPlayerAction.SelectTrack -> {
+            if (action.index !in tracks.indices) null
+            else trackChangeCommand(after)
+        }
+    }
+    return PlaybackStep(after, command)
+}
+
+private fun trackChangeCommand(after: MusicPlayerState): PlaybackCommand {
+    val path = after.currentTrack?.resourcePath
+    return if (after.isPlaying && path != null) {
+        PlaybackCommand.Play(path, 0L)
+    } else {
+        PlaybackCommand.Stop
     }
 }
 
