@@ -8,5 +8,5 @@ import org.koin.dsl.module
 
 actual val platformModule = module {
     singleOf(::BoingBallAudioPlayer)
-    single<MusicPlayback> { AndroidMusicPlayback(get()) }
+    factory<MusicPlayback> { AndroidMusicPlayback(get()) }
 }
