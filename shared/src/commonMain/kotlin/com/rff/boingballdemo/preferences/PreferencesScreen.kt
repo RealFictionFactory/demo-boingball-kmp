@@ -1,5 +1,6 @@
 package com.rff.boingballdemo.preferences
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
@@ -15,7 +16,6 @@ import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.windowInsetsPadding
-import androidx.compose.foundation.Image
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -23,7 +23,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -40,27 +39,22 @@ import boingball.shared.generated.resources.preferences_video_system
 import boingball.shared.generated.resources.preferences_video_system_help
 import boingball.shared.generated.resources.questionmark
 import boingball.shared.generated.resources.workbench
-import org.jetbrains.compose.resources.stringResource
-import org.jetbrains.compose.resources.painterResource
-import org.koin.compose.viewmodel.koinViewModel
 import com.rff.boingballdemo.component.AmigaButton
-import com.rff.boingballdemo.component.AmigaScreenTitleBar
 import com.rff.boingballdemo.component.AmigaCheckBox
 import com.rff.boingballdemo.component.AmigaColorPicker
+import com.rff.boingballdemo.component.AmigaScreenTitleBar
 import com.rff.boingballdemo.component.AmigaSelect
 import com.rff.boingballdemo.component.AmigaTextBox
-import com.rff.boingballdemo.component.AmigaToolbar
 import com.rff.boingballdemo.component.AmigaWindow
 import com.rff.boingballdemo.component.OSStyle
 import com.rff.boingballdemo.component.VideoSystem
-import com.rff.boingballdemo.main.conditional
 import com.rff.boingballdemo.ui.theme.AltAmigaOs13PickerColors
 import com.rff.boingballdemo.ui.theme.BoingBallDemoTheme
 import com.rff.boingballdemo.ui.theme.amigaOs13Blue
-import com.rff.boingballdemo.ui.theme.amigaOs30Blue
 import com.rff.boingballdemo.ui.theme.backgroundColor
-import com.rff.boingballdemo.ui.theme.blackColor
-import com.rff.boingballdemo.ui.theme.whiteColor
+import org.jetbrains.compose.resources.painterResource
+import org.jetbrains.compose.resources.stringResource
+import org.koin.compose.viewmodel.koinViewModel
 
 /**
  * possible settings to change:
@@ -115,25 +109,21 @@ fun PreferencesScreen(
                 text = stringResource(Res.string.workbench),
                 osStyle = state.osStyle
             )
-            Column(
+            AmigaWindow(
                 modifier = Modifier
                     .weight(1f)
                     .fillMaxWidth()
                     .padding(4.dp),
-                horizontalAlignment = Alignment.CenterHorizontally,
-            ) {
-            AmigaToolbar(
                 title = stringResource(Res.string.preferences),
                 osStyle = state.osStyle,
-                onCloseClick = onCloseClick
-            )
-
-            if (isLandscape) {
-                LandscapePreferencesLayout(state, onAction, onVideoSystemHelpClick = { showVideoSystemHelp = true })
-            } else {
-                PortraitPreferencesLayout(state, onAction, onVideoSystemHelpClick = { showVideoSystemHelp = true })
+                onCloseClick = onCloseClick,
+            ) { contentModifier ->
+                if (isLandscape) {
+                    LandscapePreferencesLayout(state, onAction, { showVideoSystemHelp = true }, contentModifier)
+                } else {
+                    PortraitPreferencesLayout(state, onAction, { showVideoSystemHelp = true }, contentModifier)
+                }
             }
-            } // end inner Column
         } // end outer Column
 
         if (showVideoSystemHelp) {
@@ -157,28 +147,6 @@ fun PortraitPreferencesLayout(
     Column(
         modifier = modifier
             .fillMaxSize()
-            .conditional(
-                condition = state.osStyle == OSStyle.AmigaOS13,
-                ifTrue = {
-                    background(color = Color.White)
-                        .padding(horizontal = 2.dp)
-                        .padding(bottom = 2.dp)
-                        .background(color = amigaOs13Blue)
-                },
-                ifFalse = {
-                    background(color = Color.White)
-                        .padding(horizontal = 1.dp)
-                        .background(color = amigaOs30Blue)
-                        .padding(horizontal = 2.dp)
-                        .background(color = blackColor)
-                        .padding(horizontal = 1.dp)
-                        .background(color = blackColor)
-                        .padding(bottom = 1.dp)
-                        .background(color = whiteColor)
-                        .padding(bottom = 1.dp)
-                        .background(color = backgroundColor)
-                }
-            )
             .padding(8.dp)
     ) {
         AmigaTextBox(
@@ -263,28 +231,6 @@ fun LandscapePreferencesLayout(
     Column(
         modifier = modifier
             .fillMaxSize()
-            .conditional(
-                condition = state.osStyle == OSStyle.AmigaOS13,
-                ifTrue = {
-                    background(color = Color.White)
-                        .padding(horizontal = 2.dp)
-                        .padding(bottom = 2.dp)
-                        .background(color = amigaOs13Blue)
-                },
-                ifFalse = {
-                    background(color = Color.White)
-                        .padding(horizontal = 1.dp)
-                        .background(color = amigaOs30Blue)
-                        .padding(horizontal = 2.dp)
-                        .background(color = blackColor)
-                        .padding(horizontal = 1.dp)
-                        .background(color = blackColor)
-                        .padding(bottom = 1.dp)
-                        .background(color = whiteColor)
-                        .padding(bottom = 1.dp)
-                        .background(color = backgroundColor)
-                }
-            )
             .padding(8.dp)
     ) {
         Row(
@@ -418,7 +364,7 @@ private fun VideoSystemHelpWindow(
             title = stringResource(Res.string.preferences_video_system),
             osStyle = osStyle,
             onCloseClick = onDismiss,
-        ) {
+        ) { _ ->
             Row(
                 modifier = Modifier
                     .fillMaxWidth()

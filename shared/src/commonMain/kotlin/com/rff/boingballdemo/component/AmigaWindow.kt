@@ -20,7 +20,7 @@ fun AmigaWindow(
     osStyle: OSStyle,
     onCloseClick: () -> Unit,
     modifier: Modifier = Modifier,
-    content: @Composable () -> Unit,
+    content: @Composable (Modifier) -> Unit,
 ) {
     Column(modifier = modifier.fillMaxWidth()) {
         AmigaToolbar(title = title, osStyle = osStyle, onCloseClick = onCloseClick)
@@ -29,7 +29,7 @@ fun AmigaWindow(
                 .fillMaxWidth()
                 .amigaWindowFrame(osStyle),
         ) {
-            content()
+            content(Modifier.fillMaxWidth())
         }
     }
 }

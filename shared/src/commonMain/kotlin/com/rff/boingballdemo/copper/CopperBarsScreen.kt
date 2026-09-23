@@ -26,6 +26,7 @@ import boingball.shared.generated.resources.copper
 import boingball.shared.generated.resources.workbench
 import com.rff.boingballdemo.component.AmigaScreenTitleBar
 import com.rff.boingballdemo.component.AmigaToolbar
+import com.rff.boingballdemo.component.AmigaWindow
 import com.rff.boingballdemo.component.CopperBarsView
 import com.rff.boingballdemo.component.OSStyle
 import com.rff.boingballdemo.main.conditional
@@ -93,13 +94,13 @@ private fun CopperBarsLayout(state: CopperBarsState, onCloseClick: () -> Unit, w
                 modifier = Modifier.weight(1f).fillMaxWidth(),
                 contentAlignment = Alignment.Center,
             ) {
-                Column(modifier = Modifier.width(windowWidth)) {
-                    AmigaToolbar(
-                        title = stringResource(Res.string.copper),
-                        osStyle = state.osStyle,
-                        onCloseClick = onCloseClick,
-                    )
-                    CopperBarsContent(state = state)
+                AmigaWindow(
+                    modifier = Modifier.width(windowWidth),
+                    title = stringResource(Res.string.copper),
+                    osStyle = state.osStyle,
+                    onCloseClick = onCloseClick,
+                ) { contentModifier ->
+                    CopperBarsContent(state = state, modifier = contentModifier)
                 }
             }
         }
@@ -113,26 +114,6 @@ private fun CopperBarsContent(
     Box(
         modifier = modifier
             .fillMaxWidth()
-            .conditional(
-                condition = state.osStyle == OSStyle.AmigaOS13,
-                ifTrue = {
-                    background(color = Color.White)
-                        .padding(horizontal = 2.dp)
-                        .padding(bottom = 2.dp)
-                },
-                ifFalse = {
-                    background(color = Color.White)
-                        .padding(horizontal = 1.dp)
-                        .background(color = amigaOs30Blue)
-                        .padding(horizontal = 2.dp)
-                        .background(color = blackColor)
-                        .padding(horizontal = 1.dp)
-                        .background(color = blackColor)
-                        .padding(bottom = 1.dp)
-                        .background(color = whiteColor)
-                        .padding(bottom = 1.dp)
-                },
-            )
             .background(color = backgroundColor),
     ) {
         CopperBarsView(

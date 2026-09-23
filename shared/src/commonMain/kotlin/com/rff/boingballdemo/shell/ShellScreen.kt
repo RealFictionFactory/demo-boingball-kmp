@@ -39,6 +39,7 @@ import boingball.shared.generated.resources.shell13
 import boingball.shared.generated.resources.workbench
 import com.rff.boingballdemo.component.AmigaScreenTitleBar
 import com.rff.boingballdemo.component.AmigaToolbar
+import com.rff.boingballdemo.component.AmigaWindow
 import com.rff.boingballdemo.component.OSStyle
 import com.rff.boingballdemo.main.conditional
 import com.rff.boingballdemo.ui.theme.BoingBallDemoTheme
@@ -118,16 +119,17 @@ private fun ShellLayout(state: ShellState, onTap: () -> Unit, onCloseClick: () -
                 modifier = Modifier.weight(1f).fillMaxWidth(),
                 contentAlignment = Alignment.Center,
             ) {
-                Column(modifier = Modifier.width(windowWidth)) {
-                    AmigaToolbar(
-                        title = title,
-                        osStyle = state.osStyle,
-                        onCloseClick = onCloseClick,
-                    )
+                AmigaWindow(
+                    modifier = Modifier.width(windowWidth),
+                    title = title,
+                    osStyle = state.osStyle,
+                    onCloseClick = onCloseClick,
+                ) { contentModifier ->
                     ShellConsole(
                         state = state,
                         consoleHeight = consoleHeight,
                         onTap = onTap,
+                        modifier = contentModifier,
                     )
                 }
             }
@@ -164,26 +166,6 @@ private fun ShellConsole(
     Box(
         modifier = modifier
             .fillMaxWidth()
-            .conditional(
-                condition = isOs13,
-                ifTrue = {
-                    background(color = Color.White)
-                        .padding(horizontal = 2.dp)
-                        .padding(bottom = 2.dp)
-                },
-                ifFalse = {
-                    background(color = Color.White)
-                        .padding(horizontal = 1.dp)
-                        .background(color = amigaOs30Blue)
-                        .padding(horizontal = 2.dp)
-                        .background(color = blackColor)
-                        .padding(horizontal = 1.dp)
-                        .background(color = blackColor)
-                        .padding(bottom = 1.dp)
-                        .background(color = whiteColor)
-                        .padding(bottom = 1.dp)
-                },
-            )
             .background(color = if (state.osStyle == OSStyle.AmigaOS13) amigaOs13Blue else backgroundColor)
             .height(consoleHeight)
             .clickable(

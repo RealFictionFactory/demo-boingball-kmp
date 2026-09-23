@@ -28,6 +28,7 @@ import boingball.shared.generated.resources.workbench
 import com.rff.boingballdemo.component.AmigaScreenTitleBar
 import com.rff.boingballdemo.component.AmigaTextBox
 import com.rff.boingballdemo.component.AmigaToolbar
+import com.rff.boingballdemo.component.AmigaWindow
 import com.rff.boingballdemo.component.OSStyle
 import com.rff.boingballdemo.main.conditional
 import com.rff.boingballdemo.ui.theme.BoingBallDemoTheme
@@ -89,16 +90,13 @@ private fun ClockLayout(state: ClockState, onCloseClick: () -> Unit, windowWidth
                 modifier = Modifier.weight(1f).fillMaxWidth(),
                 contentAlignment = Alignment.Center,
             ) {
-                Column(
+                AmigaWindow(
                     modifier = Modifier.width(windowWidth),
-                    horizontalAlignment = Alignment.CenterHorizontally,
+                    title = stringResource(Res.string.clock),
+                    osStyle = state.osStyle,
+                    onCloseClick = onCloseClick,
                 ) {
-                    AmigaToolbar(
-                        title = stringResource(Res.string.clock),
-                        osStyle = state.osStyle,
-                        onCloseClick = onCloseClick,
-                    )
-                    ClockContent(state = state)
+                    contentModifier -> ClockContent(state = state, modifier = contentModifier)
                 }
             }
         }
@@ -116,27 +114,6 @@ private fun ClockContent(
 
     Column(
         modifier = modifier
-            .conditional(
-                condition = state.osStyle == OSStyle.AmigaOS13,
-                ifTrue = {
-                    background(color = Color.White)
-                        .padding(horizontal = 2.dp)
-                        .padding(bottom = 2.dp)
-                        .background(color = amigaOs13Blue)
-                },
-                ifFalse = {
-                    background(color = Color.White)
-                        .padding(horizontal = 1.dp)
-                        .background(color = amigaOs30Blue)
-                        .padding(horizontal = 2.dp)
-                        .background(color = blackColor)
-                        .padding(horizontal = 1.dp)
-                        .background(color = blackColor)
-                        .padding(bottom = 1.dp)
-                        .background(color = whiteColor)
-                        .padding(bottom = 1.dp)
-                },
-            )
             .background(color = bg)
             .padding(4.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
