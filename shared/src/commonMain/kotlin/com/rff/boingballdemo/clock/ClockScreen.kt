@@ -64,7 +64,9 @@ fun ClockScreen(
         contentAlignment = Alignment.Center,
     ) {
         if (maxWidth > maxHeight) {
-            LandscapeClockLayout(state, onCloseClick, minOf(maxHeight * 0.78f, maxWidth * 0.55f))
+            // Reserve space for the Workbench bar, window chrome, padding, and date below the square face.
+            val faceWidthLimitedByHeight = (maxHeight - 120.dp).coerceAtLeast(0.dp)
+            LandscapeClockLayout(state, onCloseClick, minOf(faceWidthLimitedByHeight, maxWidth * 0.55f))
         } else {
             PortraitClockLayout(state, onCloseClick, maxWidth * 0.82f)
         }
