@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
@@ -50,7 +51,7 @@ private data class CalculatorKey(
     val action: CalculatorAction,
 )
 
-private val CalculatorKeypad: List<List<CalculatorKey>> = listOf(
+private val CalculatorKeypad: List<List<CalculatorKey?>> = listOf(
     listOf(
         CalculatorKey("CE", CalculatorAction.ClearEntry),
         CalculatorKey("C", CalculatorAction.Clear),
@@ -83,6 +84,36 @@ private val CalculatorKeypad: List<List<CalculatorKey>> = listOf(
     ),
 )
 
+private val LandscapeCalculatorKeypad: List<List<CalculatorKey?>> = listOf(
+    listOf(
+        CalculatorKey("CE", CalculatorAction.ClearEntry),
+        CalculatorKey("7", CalculatorAction.Digit(7)),
+        CalculatorKey("8", CalculatorAction.Digit(8)),
+        CalculatorKey("9", CalculatorAction.Digit(9)),
+        CalculatorKey("%", CalculatorAction.Percent),
+        CalculatorKey("/", CalculatorAction.Operator(CalculatorOperator.Divide)),
+        CalculatorKey("*", CalculatorAction.Operator(CalculatorOperator.Multiply)),
+    ),
+    listOf(
+        CalculatorKey("C", CalculatorAction.Clear),
+        CalculatorKey("4", CalculatorAction.Digit(4)),
+        CalculatorKey("5", CalculatorAction.Digit(5)),
+        CalculatorKey("6", CalculatorAction.Digit(6)),
+        CalculatorKey("+", CalculatorAction.Operator(CalculatorOperator.Add)),
+        CalculatorKey("-", CalculatorAction.Operator(CalculatorOperator.Subtract)),
+        CalculatorKey("=", CalculatorAction.Equals),
+    ),
+    listOf(
+        null,
+        CalculatorKey("3", CalculatorAction.Digit(3)),
+        CalculatorKey("2", CalculatorAction.Digit(2)),
+        CalculatorKey("1", CalculatorAction.Digit(1)),
+        CalculatorKey("0", CalculatorAction.Digit(0)),
+        CalculatorKey(".", CalculatorAction.Decimal),
+        CalculatorKey("+/-", CalculatorAction.ToggleSign),
+    ),
+)
+
 @Composable
 fun CalculatorScreenRoot(
     viewModel: CalculatorViewModel = koinViewModel(),
@@ -111,12 +142,20 @@ fun CalculatorScreen(
             .windowInsetsPadding(WindowInsets.safeDrawing),
         contentAlignment = Alignment.Center,
     ) {
-        // Chrome + display above the keypad; the keypad itself is ~1.04 * window width.
-        val chromeHeight = 165.dp
-        val widthLimitedByHeight = ((maxHeight - chromeHeight) / 1.04f).coerceAtLeast(0.dp)
         if (maxWidth > maxHeight) {
-            LandscapeCalculatorLayout(state, onAction, onCloseClick, minOf(maxWidth * 0.5f, widthLimitedByHeight))
+            // Three rows of seven columns: keypad height is roughly 0.36 * its width.
+            val chromeHeight = 120.dp
+            val widthLimitedByHeight = ((maxHeight - chromeHeight) / 0.36f).coerceAtLeast(0.dp)
+            LandscapeCalculatorLayout(
+                state,
+                onAction,
+                onCloseClick,
+                minOf(maxWidth * 0.72f, widthLimitedByHeight, 640.dp),
+            )
         } else {
+            // Chrome + display above the five-row keypad; the keypad itself is ~1.04 * window width.
+            val chromeHeight = 165.dp
+            val widthLimitedByHeight = ((maxHeight - chromeHeight) / 1.04f).coerceAtLeast(0.dp)
             PortraitCalculatorLayout(state, onAction, onCloseClick, minOf(maxWidth * 0.82f, widthLimitedByHeight))
         }
     }
@@ -128,10 +167,16 @@ private fun PortraitCalculatorLayout(state: CalculatorState, onAction: (Calculat
 
 @Composable
 private fun LandscapeCalculatorLayout(state: CalculatorState, onAction: (CalculatorAction) -> Unit, onCloseClick: () -> Unit, windowWidth: Dp) =
-    CalculatorLayout(state, onAction, onCloseClick, windowWidth)
+    CalculatorLayout(state, onAction, onCloseClick, windowWidth, LandscapeCalculatorKeypad)
 
 @Composable
-private fun CalculatorLayout(state: CalculatorState, onAction: (CalculatorAction) -> Unit, onCloseClick: () -> Unit, windowWidth: Dp) {
+private fun CalculatorLayout(
+    state: CalculatorState,
+    onAction: (CalculatorAction) -> Unit,
+    onCloseClick: () -> Unit,
+    windowWidth: Dp,
+    keypad: List<List<CalculatorKey?>> = CalculatorKeypad,
+) {
         Column(modifier = Modifier.fillMaxSize()) {
             AmigaScreenTitleBar(
                 text = stringResource(Res.string.workbench),
@@ -147,7 +192,7 @@ private fun CalculatorLayout(state: CalculatorState, onAction: (CalculatorAction
                         osStyle = state.osStyle,
                         onCloseClick = onCloseClick,
                     )
-                    CalculatorContent(state = state, onAction = onAction)
+                    CalculatorContent(state = state, onAction = onAction, keypad = keypad)
                 }
             }
         }
@@ -157,6 +202,7 @@ private fun CalculatorLayout(state: CalculatorState, onAction: (CalculatorAction
 private fun CalculatorContent(
     state: CalculatorState,
     onAction: (CalculatorAction) -> Unit,
+    keypad: List<List<CalculatorKey?>>,
     modifier: Modifier = Modifier,
 ) {
     Column(
@@ -188,18 +234,26 @@ private fun CalculatorContent(
     ) {
         CalculatorDisplay(state = state)
 
-        CalculatorKeypad.forEach { row ->
+        val columnCount = keypad.maxOf { it.size }
+        keypad.forEach { row ->
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(4.dp),
             ) {
                 row.forEach { key ->
-                    AmigaKey(
-                        text = key.label,
-                        osStyle = state.osStyle,
-                        modifier = Modifier.weight(1f).aspectRatio(1.2f),
-                        onClick = { onAction(key.action) },
-                    )
+                    if (key == null) {
+                        Spacer(modifier = Modifier.weight(1f))
+                    } else {
+                        AmigaKey(
+                            text = key.label,
+                            osStyle = state.osStyle,
+                            modifier = Modifier.weight(1f).aspectRatio(1.2f),
+                            onClick = { onAction(key.action) },
+                        )
+                    }
+                }
+                repeat(columnCount - row.size) {
+                    Spacer(modifier = Modifier.weight(1f))
                 }
             }
         }

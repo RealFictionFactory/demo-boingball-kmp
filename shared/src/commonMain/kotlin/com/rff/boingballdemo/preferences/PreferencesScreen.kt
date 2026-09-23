@@ -1,6 +1,7 @@
 package com.rff.boingballdemo.preferences
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -11,10 +12,15 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.windowInsetsPadding
+import androidx.compose.foundation.Image
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -31,8 +37,11 @@ import boingball.shared.generated.resources.preferences_set_amigaos_2_style
 import boingball.shared.generated.resources.preferences_set_app_defaults
 import boingball.shared.generated.resources.preferences_set_demo_defaults
 import boingball.shared.generated.resources.preferences_video_system
+import boingball.shared.generated.resources.preferences_video_system_help
+import boingball.shared.generated.resources.questionmark
 import boingball.shared.generated.resources.workbench
 import org.jetbrains.compose.resources.stringResource
+import org.jetbrains.compose.resources.painterResource
 import org.koin.compose.viewmodel.koinViewModel
 import com.rff.boingballdemo.component.AmigaButton
 import com.rff.boingballdemo.component.AmigaScreenTitleBar
@@ -41,6 +50,7 @@ import com.rff.boingballdemo.component.AmigaColorPicker
 import com.rff.boingballdemo.component.AmigaSelect
 import com.rff.boingballdemo.component.AmigaTextBox
 import com.rff.boingballdemo.component.AmigaToolbar
+import com.rff.boingballdemo.component.AmigaWindow
 import com.rff.boingballdemo.component.OSStyle
 import com.rff.boingballdemo.component.VideoSystem
 import com.rff.boingballdemo.main.conditional
@@ -85,6 +95,7 @@ fun PreferencesScreen(
     onCloseClick: () -> Unit = {},
     onAction: (PreferencesAction) -> Unit,
 ) {
+    var showVideoSystemHelp by remember { mutableStateOf(false) }
     val bg = if (state.osStyle == OSStyle.AmigaOS20)
         backgroundColor
     else
@@ -118,12 +129,21 @@ fun PreferencesScreen(
             )
 
             if (isLandscape) {
-                LandscapePreferencesLayout(state, onAction)
+                LandscapePreferencesLayout(state, onAction, onVideoSystemHelpClick = { showVideoSystemHelp = true })
             } else {
-                PortraitPreferencesLayout(state, onAction)
+                PortraitPreferencesLayout(state, onAction, onVideoSystemHelpClick = { showVideoSystemHelp = true })
             }
             } // end inner Column
         } // end outer Column
+
+        if (showVideoSystemHelp) {
+            VideoSystemHelpWindow(
+                osStyle = state.osStyle,
+                isLandscape = isLandscape,
+                maxWidth = maxWidth,
+                onDismiss = { showVideoSystemHelp = false },
+            )
+        }
     }
 }
 
@@ -131,6 +151,7 @@ fun PreferencesScreen(
 fun PortraitPreferencesLayout(
     state: PreferencesState,
     onAction: (PreferencesAction) -> Unit,
+    onVideoSystemHelpClick: () -> Unit = {},
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -202,8 +223,8 @@ fun PortraitPreferencesLayout(
             )
         }
         Spacer(modifier = Modifier.height(8.dp))
-        VideoSystemSelector(state = state, onAction = onAction)
-        Spacer(modifier = Modifier.height(8.dp))
+        VideoSystemSelector(state = state, onAction = onAction, onHelpClick = onVideoSystemHelpClick)
+        Spacer(modifier = Modifier.height(16.dp))
         AmigaButton(
             text = stringResource(
                 if (state.osStyle == OSStyle.AmigaOS13) Res.string.preferences_set_amigaos_2_style
@@ -236,6 +257,7 @@ fun PortraitPreferencesLayout(
 fun LandscapePreferencesLayout(
     state: PreferencesState,
     onAction: (PreferencesAction) -> Unit,
+    onVideoSystemHelpClick: () -> Unit = {},
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -310,11 +332,11 @@ fun LandscapePreferencesLayout(
                         }
                     )
                 }
-                Spacer(modifier = Modifier.height(8.dp))
-                VideoSystemSelector(state = state, onAction = onAction)
             }
             Spacer(modifier = Modifier.width(16.dp))
             Column(modifier = Modifier.weight(1f)) {
+                VideoSystemSelector(state = state, onAction = onAction, onHelpClick = onVideoSystemHelpClick)
+                Spacer(modifier = Modifier.height(16.dp))
                 AmigaButton(
                     text = stringResource(
                         if (state.osStyle == OSStyle.AmigaOS13) Res.string.preferences_set_amigaos_2_style
@@ -349,11 +371,12 @@ fun LandscapePreferencesLayout(
 private fun VideoSystemSelector(
     state: PreferencesState,
     onAction: (PreferencesAction) -> Unit,
+    onHelpClick: () -> Unit,
 ) {
     val labels = VideoSystem.entries.associateWith { stringResource(it.labelRes) }
 
-    Column(
-        horizontalAlignment = Alignment.CenterHorizontally
+    Row(
+        verticalAlignment = Alignment.CenterVertically
     ) {
         AmigaSelect(
             modifier = Modifier.width(120.dp),
@@ -367,6 +390,55 @@ private fun VideoSystemSelector(
                 }
             },
         )
+        Spacer(modifier = Modifier.width(16.dp))
+        AmigaButton(
+            text = "?",
+            osStyle = state.osStyle,
+            onClick = onHelpClick,
+        )
+    }
+}
+
+@Composable
+private fun VideoSystemHelpWindow(
+    osStyle: OSStyle,
+    isLandscape: Boolean,
+    maxWidth: androidx.compose.ui.unit.Dp,
+    onDismiss: () -> Unit,
+) {
+    val windowWidth = if (isLandscape) maxWidth * 0.5f else maxWidth - 48.dp
+    val background = if (osStyle == OSStyle.AmigaOS13) amigaOs13Blue else backgroundColor
+
+    Box(
+        modifier = Modifier.fillMaxSize(),
+        contentAlignment = Alignment.Center,
+    ) {
+        AmigaWindow(
+            modifier = Modifier.width(windowWidth),
+            title = stringResource(Res.string.preferences_video_system),
+            osStyle = osStyle,
+            onCloseClick = onDismiss,
+        ) {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(background)
+                    .padding(16.dp),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Image(
+                    painter = painterResource(Res.drawable.questionmark),
+                    contentDescription = null,
+                    modifier = Modifier.size(width = 80.dp, height = 96.dp),
+                )
+                Spacer(modifier = Modifier.width(16.dp))
+                AmigaTextBox(
+                    text = stringResource(Res.string.preferences_video_system_help),
+                    osStyle = osStyle,
+                    modifier = Modifier.weight(1f),
+                )
+            }
+        }
     }
 }
 
@@ -415,5 +487,24 @@ private fun PreferencesScreenLandscapeOs30Preview() {
             state = previewState,
             onAction = {}
         )
+    }
+}
+
+@Preview
+@Composable
+private fun VideoSystemHelpWindowPreview() {
+    BoingBallDemoTheme {
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(backgroundColor),
+        ) {
+            VideoSystemHelpWindow(
+                osStyle = previewState.osStyle,
+                isLandscape = false,
+                maxWidth = 360.dp,
+                onDismiss = {},
+            )
+        }
     }
 }

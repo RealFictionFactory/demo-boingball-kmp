@@ -27,7 +27,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -42,7 +41,8 @@ import boingball.shared.generated.resources.clock
 import boingball.shared.generated.resources.clock30
 import boingball.shared.generated.resources.copper
 import boingball.shared.generated.resources.copper30
-import boingball.shared.generated.resources.ic_play
+import boingball.shared.generated.resources.mplayer
+import boingball.shared.generated.resources.mplayer30
 import boingball.shared.generated.resources.music_player
 import boingball.shared.generated.resources.preferences
 import boingball.shared.generated.resources.prefs30
@@ -199,21 +199,26 @@ fun BoingBallScreen(
                                     verticalArrangement = Arrangement.spacedBy(8.dp),
                                     horizontalAlignment = Alignment.CenterHorizontally,
                                 ) {
-                                    CopperBarsShortcut(
+                                    AboutShortcut(
                                         state = state,
-                                        onClick = { onAction(BoingBallAction.CopperBars) },
+                                        onClick = { onAction(BoingBallAction.About) },
                                     )
-                                    CalculatorShortcut(
+                                }
+                                Column(
+                                    verticalArrangement = Arrangement.spacedBy(8.dp),
+                                    horizontalAlignment = Alignment.CenterHorizontally,
+                                ) {
+                                    ClockShortcut(
                                         state = state,
-                                        onClick = { onAction(BoingBallAction.Calculator) },
+                                        onClick = { onAction(BoingBallAction.Clock) },
                                     )
                                     ShellShortcut(
                                         state = state,
                                         onClick = { onAction(BoingBallAction.Shell) },
                                     )
-                                    MusicPlayerShortcut(
+                                    CopperBarsShortcut(
                                         state = state,
-                                        onClick = { onAction(BoingBallAction.MusicPlayer) },
+                                        onClick = { onAction(BoingBallAction.CopperBars) },
                                     )
                                 }
                                 Column(
@@ -224,13 +229,13 @@ fun BoingBallScreen(
                                         state = state,
                                         onClick = { onAction(BoingBallAction.Preferences) },
                                     )
-                                    ClockShortcut(
+                                    CalculatorShortcut(
                                         state = state,
-                                        onClick = { onAction(BoingBallAction.Clock) },
+                                        onClick = { onAction(BoingBallAction.Calculator) },
                                     )
-                                    AboutShortcut(
+                                    MusicPlayerShortcut(
                                         state = state,
-                                        onClick = { onAction(BoingBallAction.About) },
+                                        onClick = { onAction(BoingBallAction.MusicPlayer) },
                                     )
                                 }
                             }
@@ -276,10 +281,6 @@ fun BoingBallScreen(
                                     state = state,
                                     onClick = { onAction(BoingBallAction.Shell) },
                                 )
-                                CopperBarsShortcut(
-                                    state = state,
-                                    onClick = { onAction(BoingBallAction.CopperBars) },
-                                )
                                 CalculatorShortcut(
                                     state = state,
                                     onClick = { onAction(BoingBallAction.Calculator) },
@@ -288,6 +289,10 @@ fun BoingBallScreen(
                             Row(
                                 horizontalArrangement = Arrangement.spacedBy(16.dp),
                             ) {
+                                CopperBarsShortcut(
+                                    state = state,
+                                    onClick = { onAction(BoingBallAction.CopperBars) },
+                                )
                                 MusicPlayerShortcut(
                                     state = state,
                                     onClick = { onAction(BoingBallAction.MusicPlayer) },
@@ -568,11 +573,8 @@ private fun MusicPlayerShortcut(
             modifier = Modifier
                 .width(40.dp)
                 .height(40.dp),
-            painter = painterResource(Res.drawable.ic_play),
+            painter = painterResource(if (state.osStyle == OSStyle.AmigaOS13) Res.drawable.mplayer else Res.drawable.mplayer30),
             contentDescription = stringResource(Res.string.music_player),
-            colorFilter = ColorFilter.tint(
-                if (state.osStyle == OSStyle.AmigaOS13) whiteColor else blackColor
-            ),
         )
         AmigaTextBox(
             text = stringResource(Res.string.music_player),
@@ -622,7 +624,7 @@ private fun BoingBallScreenPreview() {
     }
 }
 
-@Preview(device = "spec:parent=Nexus 4,orientation=landscape")
+@Preview(showSystemUi = true, device = "spec:parent=Nexus 4,orientation=landscape")
 @Composable
 private fun BoingBallScreenLandscapePreview() {
     BoingBallDemoTheme {
