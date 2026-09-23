@@ -18,6 +18,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import boingball.shared.generated.resources.Res
@@ -61,9 +62,24 @@ fun ClockScreen(
             .windowInsetsPadding(WindowInsets.safeDrawing),
         contentAlignment = Alignment.Center,
     ) {
-        val isLandscape = maxWidth > maxHeight
-        val windowWidth = if (isLandscape) minOf(maxHeight * 0.78f, maxWidth * 0.55f) else maxWidth * 0.82f
+        if (maxWidth > maxHeight) {
+            LandscapeClockLayout(state, onCloseClick, minOf(maxHeight * 0.78f, maxWidth * 0.55f))
+        } else {
+            PortraitClockLayout(state, onCloseClick, maxWidth * 0.82f)
+        }
+    }
+}
 
+@Composable
+private fun PortraitClockLayout(state: ClockState, onCloseClick: () -> Unit, windowWidth: Dp) =
+    ClockLayout(state, onCloseClick, windowWidth)
+
+@Composable
+private fun LandscapeClockLayout(state: ClockState, onCloseClick: () -> Unit, windowWidth: Dp) =
+    ClockLayout(state, onCloseClick, windowWidth)
+
+@Composable
+private fun ClockLayout(state: ClockState, onCloseClick: () -> Unit, windowWidth: Dp) {
         Column(modifier = Modifier.fillMaxSize()) {
             AmigaScreenTitleBar(
                 text = stringResource(Res.string.workbench),
@@ -86,7 +102,6 @@ fun ClockScreen(
                 }
             }
         }
-    }
 }
 
 @Composable

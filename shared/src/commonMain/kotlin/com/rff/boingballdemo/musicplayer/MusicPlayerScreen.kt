@@ -33,6 +33,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -97,13 +98,24 @@ fun MusicPlayerScreen(
             .windowInsetsPadding(WindowInsets.safeDrawing),
         contentAlignment = Alignment.Center,
     ) {
-        val isLandscape = maxWidth > maxHeight
-        val windowWidth = if (isLandscape) {
-            minOf(maxWidth * 0.72f, 520.dp)
+        if (maxWidth > maxHeight) {
+            LandscapeMusicPlayerLayout(state, onAction, onCloseClick, minOf(maxWidth * 0.72f, 520.dp))
         } else {
-            maxWidth * 0.92f
+            PortraitMusicPlayerLayout(state, onAction, onCloseClick, maxWidth * 0.92f)
         }
+    }
+}
 
+@Composable
+private fun PortraitMusicPlayerLayout(state: MusicPlayerState, onAction: (MusicPlayerAction) -> Unit, onCloseClick: () -> Unit, windowWidth: Dp) =
+    MusicPlayerLayout(state, onAction, onCloseClick, windowWidth)
+
+@Composable
+private fun LandscapeMusicPlayerLayout(state: MusicPlayerState, onAction: (MusicPlayerAction) -> Unit, onCloseClick: () -> Unit, windowWidth: Dp) =
+    MusicPlayerLayout(state, onAction, onCloseClick, windowWidth)
+
+@Composable
+private fun MusicPlayerLayout(state: MusicPlayerState, onAction: (MusicPlayerAction) -> Unit, onCloseClick: () -> Unit, windowWidth: Dp) {
         Column(modifier = Modifier.fillMaxSize()) {
             AmigaScreenTitleBar(
                 text = stringResource(Res.string.workbench),
@@ -125,7 +137,6 @@ fun MusicPlayerScreen(
                 }
             }
         }
-    }
 }
 
 @Composable

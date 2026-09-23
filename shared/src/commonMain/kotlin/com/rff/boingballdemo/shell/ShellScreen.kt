@@ -90,10 +90,25 @@ fun ShellScreen(
             .windowInsetsPadding(WindowInsets.safeDrawing),
         contentAlignment = Alignment.Center,
     ) {
-        val isLandscape = maxWidth > maxHeight
-        val windowWidth = if (isLandscape) maxWidth * 0.7f else maxWidth * 0.92f
-        val consoleHeight = if (isLandscape) maxHeight * 0.6f else windowWidth * 0.9f
+        if (maxWidth > maxHeight) {
+            LandscapeShellLayout(state, onTap, onCloseClick, maxWidth * 0.7f, maxHeight * 0.6f, title)
+        } else {
+            val windowWidth = maxWidth * 0.92f
+            PortraitShellLayout(state, onTap, onCloseClick, windowWidth, windowWidth * 0.9f, title)
+        }
+    }
+}
 
+@Composable
+private fun PortraitShellLayout(state: ShellState, onTap: () -> Unit, onCloseClick: () -> Unit, windowWidth: Dp, consoleHeight: Dp, title: String) =
+    ShellLayout(state, onTap, onCloseClick, windowWidth, consoleHeight, title)
+
+@Composable
+private fun LandscapeShellLayout(state: ShellState, onTap: () -> Unit, onCloseClick: () -> Unit, windowWidth: Dp, consoleHeight: Dp, title: String) =
+    ShellLayout(state, onTap, onCloseClick, windowWidth, consoleHeight, title)
+
+@Composable
+private fun ShellLayout(state: ShellState, onTap: () -> Unit, onCloseClick: () -> Unit, windowWidth: Dp, consoleHeight: Dp, title: String) {
         Column(modifier = Modifier.fillMaxSize()) {
             AmigaScreenTitleBar(
                 text = stringResource(Res.string.workbench),
@@ -117,7 +132,6 @@ fun ShellScreen(
                 }
             }
         }
-    }
 }
 
 @Composable

@@ -21,6 +21,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import boingball.shared.generated.resources.Res
@@ -67,9 +68,24 @@ fun AboutScreen(
             .windowInsetsPadding(WindowInsets.safeDrawing),
         contentAlignment = Alignment.Center,
     ) {
-        val isLandscape = maxWidth > maxHeight
-        val windowWidth = if (isLandscape) minOf(maxWidth * 0.55f, 420.dp) else maxWidth * 0.86f
+        if (maxWidth > maxHeight) {
+            LandscapeAboutLayout(state, onCloseClick, minOf(maxWidth * 0.55f, 420.dp))
+        } else {
+            PortraitAboutLayout(state, onCloseClick, maxWidth * 0.86f)
+        }
+    }
+}
 
+@Composable
+private fun PortraitAboutLayout(state: AboutState, onCloseClick: () -> Unit, windowWidth: Dp) =
+    AboutLayout(state, onCloseClick, windowWidth)
+
+@Composable
+private fun LandscapeAboutLayout(state: AboutState, onCloseClick: () -> Unit, windowWidth: Dp) =
+    AboutLayout(state, onCloseClick, windowWidth)
+
+@Composable
+private fun AboutLayout(state: AboutState, onCloseClick: () -> Unit, windowWidth: Dp) {
         Column(modifier = Modifier.fillMaxSize()) {
             AmigaScreenTitleBar(
                 text = stringResource(Res.string.workbench),
@@ -92,7 +108,6 @@ fun AboutScreen(
                 }
             }
         }
-    }
 }
 
 @Composable

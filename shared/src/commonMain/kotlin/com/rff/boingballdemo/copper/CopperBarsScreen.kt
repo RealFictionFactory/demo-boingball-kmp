@@ -18,6 +18,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import boingball.shared.generated.resources.Res
@@ -60,15 +61,29 @@ fun CopperBarsScreen(
             .windowInsetsPadding(WindowInsets.safeDrawing),
         contentAlignment = Alignment.Center,
     ) {
-        val isLandscape = maxWidth > maxHeight
         // Window chrome: screen title bar, toolbar, borders and padding.
         val chromeHeight = 80.dp
         val contentHeight = (maxHeight - chromeHeight).coerceAtLeast(0.dp)
         // Content is 4:3, so never let it get wider than the free height allows.
         val widthLimitedByHeight = contentHeight * 4f / 3f
-        val preferredWidth = if (isLandscape) maxWidth * 0.6f else maxWidth * 0.9f
-        val windowWidth = minOf(preferredWidth, widthLimitedByHeight)
+        if (maxWidth > maxHeight) {
+            LandscapeCopperBarsLayout(state, onCloseClick, minOf(maxWidth * 0.6f, widthLimitedByHeight))
+        } else {
+            PortraitCopperBarsLayout(state, onCloseClick, minOf(maxWidth * 0.9f, widthLimitedByHeight))
+        }
+    }
+}
 
+@Composable
+private fun PortraitCopperBarsLayout(state: CopperBarsState, onCloseClick: () -> Unit, windowWidth: Dp) =
+    CopperBarsLayout(state, onCloseClick, windowWidth)
+
+@Composable
+private fun LandscapeCopperBarsLayout(state: CopperBarsState, onCloseClick: () -> Unit, windowWidth: Dp) =
+    CopperBarsLayout(state, onCloseClick, windowWidth)
+
+@Composable
+private fun CopperBarsLayout(state: CopperBarsState, onCloseClick: () -> Unit, windowWidth: Dp) {
         Column(modifier = Modifier.fillMaxSize()) {
             AmigaScreenTitleBar(
                 text = stringResource(Res.string.workbench),
@@ -88,7 +103,6 @@ fun CopperBarsScreen(
                 }
             }
         }
-    }
 }
 
 @Composable

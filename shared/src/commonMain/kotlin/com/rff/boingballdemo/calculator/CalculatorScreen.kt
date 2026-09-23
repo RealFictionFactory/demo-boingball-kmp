@@ -22,6 +22,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -110,13 +111,27 @@ fun CalculatorScreen(
             .windowInsetsPadding(WindowInsets.safeDrawing),
         contentAlignment = Alignment.Center,
     ) {
-        val isLandscape = maxWidth > maxHeight
         // Chrome + display above the keypad; the keypad itself is ~1.04 * window width.
         val chromeHeight = 165.dp
         val widthLimitedByHeight = ((maxHeight - chromeHeight) / 1.04f).coerceAtLeast(0.dp)
-        val preferredWidth = if (isLandscape) maxWidth * 0.5f else maxWidth * 0.82f
-        val windowWidth = minOf(preferredWidth, widthLimitedByHeight)
+        if (maxWidth > maxHeight) {
+            LandscapeCalculatorLayout(state, onAction, onCloseClick, minOf(maxWidth * 0.5f, widthLimitedByHeight))
+        } else {
+            PortraitCalculatorLayout(state, onAction, onCloseClick, minOf(maxWidth * 0.82f, widthLimitedByHeight))
+        }
+    }
+}
 
+@Composable
+private fun PortraitCalculatorLayout(state: CalculatorState, onAction: (CalculatorAction) -> Unit, onCloseClick: () -> Unit, windowWidth: Dp) =
+    CalculatorLayout(state, onAction, onCloseClick, windowWidth)
+
+@Composable
+private fun LandscapeCalculatorLayout(state: CalculatorState, onAction: (CalculatorAction) -> Unit, onCloseClick: () -> Unit, windowWidth: Dp) =
+    CalculatorLayout(state, onAction, onCloseClick, windowWidth)
+
+@Composable
+private fun CalculatorLayout(state: CalculatorState, onAction: (CalculatorAction) -> Unit, onCloseClick: () -> Unit, windowWidth: Dp) {
         Column(modifier = Modifier.fillMaxSize()) {
             AmigaScreenTitleBar(
                 text = stringResource(Res.string.workbench),
@@ -136,7 +151,6 @@ fun CalculatorScreen(
                 }
             }
         }
-    }
 }
 
 @Composable
