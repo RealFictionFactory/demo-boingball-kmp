@@ -108,7 +108,7 @@ fun PreferencesScreen(
                 modifier = Modifier
                     .weight(1f)
                     .fillMaxWidth()
-                    .padding(2.dp),
+                    .padding(4.dp),
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
             AmigaToolbar(

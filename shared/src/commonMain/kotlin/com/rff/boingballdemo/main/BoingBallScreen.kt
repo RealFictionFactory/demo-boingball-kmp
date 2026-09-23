@@ -168,7 +168,7 @@ fun BoingBallScreen(
                         modifier = Modifier
                             .weight(1f)
                             .fillMaxWidth()
-                            .padding(2.dp),
+                            .padding(4.dp),
                     ) {
                         BoxWithConstraints(
                             modifier = Modifier
@@ -244,7 +244,7 @@ fun BoingBallScreen(
                         modifier = Modifier
                             .weight(1f)
                             .fillMaxWidth()
-                            .padding(2.dp)
+                            .padding(4.dp)
                     ) {
                         Column(
                             modifier = Modifier
