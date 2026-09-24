@@ -1,6 +1,7 @@
 package com.rff.boingballdemo.component
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -20,17 +21,20 @@ fun AmigaWindow(
     osStyle: OSStyle,
     onCloseClick: () -> Unit,
     modifier: Modifier = Modifier,
-    content: @Composable (Modifier) -> Unit,
+    content: @Composable (contentModifier: Modifier) -> Unit,
 ) {
-    Column(modifier = modifier.fillMaxWidth()) {
-        AmigaToolbar(title = title, osStyle = osStyle, onCloseClick = onCloseClick)
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .amigaWindowFrame(osStyle),
-        ) {
-            content(Modifier.fillMaxWidth())
+    Box(modifier = modifier.fillMaxWidth()) {
+        Column(modifier = Modifier.fillMaxWidth()) {
+            AmigaToolbar(title = title, osStyle = osStyle)
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .amigaWindowFrame(osStyle),
+            ) {
+                content(Modifier.fillMaxWidth())
+            }
         }
+        AmigaCloseTouchOverlay(onCloseClick = onCloseClick)
     }
 }
 

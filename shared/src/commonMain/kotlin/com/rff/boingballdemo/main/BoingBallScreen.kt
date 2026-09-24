@@ -50,6 +50,7 @@ import boingball.shared.generated.resources.shell
 import boingball.shared.generated.resources.shell13
 import boingball.shared.generated.resources.shell30
 import boingball.shared.generated.resources.workbench
+import com.rff.boingballdemo.component.AmigaCloseTouchOverlay
 import com.rff.boingballdemo.component.AmigaScreenTitleBar
 import com.rff.boingballdemo.component.AmigaTextBox
 import com.rff.boingballdemo.component.AmigaToolbar
@@ -336,46 +337,48 @@ private fun BoingBallWindow(
     onCloseClick: () -> Unit = {},
     modifier: Modifier = Modifier,
 ) {
-    Column(modifier = modifier) {
-        AmigaToolbar(
-            title = stringResource(Res.string.app_name),
-            osStyle = state.osStyle,
-            onCloseClick = onCloseClick
-        )
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .conditional(
-                    condition = state.osStyle == OSStyle.AmigaOS13,
-                    ifTrue = {
-                        background(color = Color.White)
-                            .padding(horizontal = 2.dp)
-                            .padding(bottom = 2.dp)
-                    },
-                    ifFalse = {
-                        background(color = Color.White)
-                            .padding(horizontal = 1.dp)
-                            .background(color = amigaOs30Blue)
-                            .padding(horizontal = 2.dp)
-                            .background(color = blackColor)
-                            .padding(horizontal = 1.dp)
-                            .background(color = blackColor)
-                            .padding(bottom = 1.dp)
-                            .background(color = whiteColor)
-                            .padding(bottom = 1.dp)
-                    }
-                )
-                .background(color = backgroundColor),
-            contentAlignment = Alignment.Center
-        ) {
-            BoingBallView(
-                modifier = Modifier.padding(16.dp),
-                themeColor = state.themeColor,
-                altColor = state.altColor,
-                drawBorders = state.drawBorders,
-                videoSystem = state.videoSystem,
+    Box(modifier = modifier) {
+        Column {
+            AmigaToolbar(
+                title = stringResource(Res.string.app_name),
+                osStyle = state.osStyle,
             )
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .conditional(
+                        condition = state.osStyle == OSStyle.AmigaOS13,
+                        ifTrue = {
+                            background(color = Color.White)
+                                .padding(horizontal = 2.dp)
+                                .padding(bottom = 2.dp)
+                        },
+                        ifFalse = {
+                            background(color = Color.White)
+                                .padding(horizontal = 1.dp)
+                                .background(color = amigaOs30Blue)
+                                .padding(horizontal = 2.dp)
+                                .background(color = blackColor)
+                                .padding(horizontal = 1.dp)
+                                .background(color = blackColor)
+                                .padding(bottom = 1.dp)
+                                .background(color = whiteColor)
+                                .padding(bottom = 1.dp)
+                        }
+                    )
+                    .background(color = backgroundColor),
+                contentAlignment = Alignment.Center
+            ) {
+                BoingBallView(
+                    modifier = Modifier.padding(16.dp),
+                    themeColor = state.themeColor,
+                    altColor = state.altColor,
+                    drawBorders = state.drawBorders,
+                    videoSystem = state.videoSystem,
+                )
+            }
         }
+        AmigaCloseTouchOverlay(onCloseClick = onCloseClick)
     }
 }
 
