@@ -8,17 +8,17 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.layout.windowInsetsPadding
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -50,19 +50,14 @@ import boingball.shared.generated.resources.shell
 import boingball.shared.generated.resources.shell13
 import boingball.shared.generated.resources.shell30
 import boingball.shared.generated.resources.workbench
-import com.rff.boingballdemo.component.AmigaCloseTouchOverlay
 import com.rff.boingballdemo.component.AmigaScreenTitleBar
 import com.rff.boingballdemo.component.AmigaTextBox
-import com.rff.boingballdemo.component.AmigaToolbar
 import com.rff.boingballdemo.component.BoingBallView
 import com.rff.boingballdemo.component.GuruMeditationOverlay
 import com.rff.boingballdemo.component.OSStyle
 import com.rff.boingballdemo.ui.theme.BoingBallDemoTheme
 import com.rff.boingballdemo.ui.theme.amigaOs13Blue
-import com.rff.boingballdemo.ui.theme.amigaOs30Blue
 import com.rff.boingballdemo.ui.theme.backgroundColor
-import com.rff.boingballdemo.ui.theme.blackColor
-import com.rff.boingballdemo.ui.theme.whiteColor
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
@@ -82,7 +77,7 @@ import org.koin.compose.viewmodel.koinViewModel
  *
  * PHASE 2 — additional features:
  * - [*DONE*] music player with a list of most iconic Amiga musics
- * - History of Amiga logo by year
+ * - [*DROPPED*] History of Amiga logo by year
  * - Allow user to change rotation speed
  * - Add full screen Boing Ball view like real demo, some back button may be necessary
  *
@@ -100,8 +95,9 @@ import org.koin.compose.viewmodel.koinViewModel
  * - Workbench top menu bar items wired to real actions (About Workbench, etc.)
  */
 @Composable
-fun BoingBallScreenRoot(
+fun WorkbenchScreenRoot(
     viewModel: BoingBallViewModel = koinViewModel(),
+    onBoingBallClick: () -> Unit = {},
     onPreferencesClick: () -> Unit,
     onClockClick: () -> Unit = {},
     onAboutClick: () -> Unit = {},
@@ -113,10 +109,11 @@ fun BoingBallScreenRoot(
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
 
-    BoingBallScreen(
+    WorkbenchScreen(
         state = state,
         onAction = { action ->
             when (action) {
+                BoingBallAction.BoingBall -> onBoingBallClick()
                 BoingBallAction.Preferences -> onPreferencesClick()
                 BoingBallAction.Clock -> onClockClick()
                 BoingBallAction.Back -> onCloseClick()
@@ -131,7 +128,7 @@ fun BoingBallScreenRoot(
 }
 
 @Composable
-fun BoingBallScreen(
+fun WorkbenchScreen(
     state: BoingBallState,
     onAction: (BoingBallAction) -> Unit = {},
 ) {
@@ -152,174 +149,35 @@ fun BoingBallScreen(
                     detectTapGestures(onLongPress = { showGuruMeditation = true })
                 },
         ) {
-            val availableWidth = maxWidth
-            val isLandscape = maxWidth > maxHeight
-
             Column(modifier = Modifier.fillMaxSize()) {
                 AmigaScreenTitleBar(
                     text = stringResource(Res.string.workbench),
                     osStyle = state.osStyle
                 )
 
-                if (isLandscape) {
-                    // Window and icons are placed in a Row (instead of overlaid) so the
-                    // window is constrained to the space left after the icon column,
-                    // guaranteeing no overlap on narrower/shorter landscape screens.
-                    Row(
-                        modifier = Modifier
-                            .weight(1f)
-                            .fillMaxWidth()
-                            .padding(4.dp),
-                    ) {
-                        BoxWithConstraints(
-                            modifier = Modifier
-                                .weight(1f)
-                                .fillMaxHeight(),
-                            contentAlignment = Alignment.TopStart,
-                        ) {
-                            // Cap the window width by both the available width and the
-                            // width implied by the available height (ball view is 4:3,
-                            // plus ~66dp of toolbar/border/padding chrome) so the window
-                            // shrinks to fit instead of overflowing past this area.
-                            val maxWidthForHeight = ((maxHeight - 66.dp) / 0.65f).coerceAtLeast(0.dp)
-                            BoingBallWindow(
-                                state = state,
-                                onCloseClick = { onAction(BoingBallAction.Back) },
-                                modifier = Modifier
-                                    .widthIn(max = minOf(maxWidth, maxWidthForHeight))
-                            )
-                        }
-                        Column(
-                            modifier = Modifier
-                                .padding(16.dp),
-                            verticalArrangement = Arrangement.spacedBy(16.dp),
-                            horizontalAlignment = Alignment.CenterHorizontally,
-                        ) {
-                            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                                Column(
-                                    verticalArrangement = Arrangement.spacedBy(8.dp),
-                                    horizontalAlignment = Alignment.CenterHorizontally,
-                                ) {
-                                    AboutShortcut(
-                                        state = state,
-                                        onClick = { onAction(BoingBallAction.About) },
-                                    )
-                                }
-                                Column(
-                                    verticalArrangement = Arrangement.spacedBy(8.dp),
-                                    horizontalAlignment = Alignment.CenterHorizontally,
-                                ) {
-                                    ClockShortcut(
-                                        state = state,
-                                        onClick = { onAction(BoingBallAction.Clock) },
-                                    )
-                                    ShellShortcut(
-                                        state = state,
-                                        onClick = { onAction(BoingBallAction.Shell) },
-                                    )
-                                    CopperBarsShortcut(
-                                        state = state,
-                                        onClick = { onAction(BoingBallAction.CopperBars) },
-                                    )
-                                }
-                                Column(
-                                    verticalArrangement = Arrangement.spacedBy(8.dp),
-                                    horizontalAlignment = Alignment.CenterHorizontally,
-                                ) {
-                                    PreferencesShortcut(
-                                        state = state,
-                                        onClick = { onAction(BoingBallAction.Preferences) },
-                                    )
-                                    CalculatorShortcut(
-                                        state = state,
-                                        onClick = { onAction(BoingBallAction.Calculator) },
-                                    )
-                                    MusicPlayerShortcut(
-                                        state = state,
-                                        onClick = { onAction(BoingBallAction.MusicPlayer) },
-                                    )
-                                }
-                            }
-                        }
+                val shortcuts = listOf<@Composable () -> Unit>(
+                    { BoingBallShortcut(state, onClick = { onAction(BoingBallAction.BoingBall) }) },
+                    { AboutShortcut(state, onClick = { onAction(BoingBallAction.About) }) },
+                    { ClockShortcut(state, onClick = { onAction(BoingBallAction.Clock) }) },
+                    { PreferencesShortcut(state, onClick = { onAction(BoingBallAction.Preferences) }) },
+                    { ShellShortcut(state, onClick = { onAction(BoingBallAction.Shell) }) },
+                    { CalculatorShortcut(state, onClick = { onAction(BoingBallAction.Calculator) }) },
+                    { CopperBarsShortcut(state, onClick = { onAction(BoingBallAction.CopperBars) }) },
+                    { MusicPlayerShortcut(state, onClick = { onAction(BoingBallAction.MusicPlayer) }) },
+                )
+                LazyVerticalGrid(
+                    columns = GridCells.Adaptive(minSize = 88.dp),
+                    modifier = Modifier
+                        .weight(1f)
+                        .fillMaxWidth()
+                        .padding(16.dp),
+                    horizontalArrangement = Arrangement.spacedBy(16.dp),
+                    verticalArrangement = Arrangement.spacedBy(16.dp),
+                ) {
+                    items(shortcuts) { shortcut ->
+                        Box(contentAlignment = Alignment.TopCenter) { shortcut() }
                     }
-                } else {
-                    // Icons are stacked above the window (instead of overlaid) so the
-                    // window always gets to shrink into the remaining space rather
-                    // than overlapping the icons on smaller screens.
-                    Column(
-                        modifier = Modifier
-                            .weight(1f)
-                            .fillMaxWidth()
-                            .padding(4.dp)
-                    ) {
-                        Column(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(16.dp),
-                            verticalArrangement = Arrangement.spacedBy(12.dp),
-                            horizontalAlignment = Alignment.End,
-                        ) {
-                            Row(
-                                horizontalArrangement = Arrangement.spacedBy(16.dp),
-                            ) {
-                                AboutShortcut(
-                                    state = state,
-                                    onClick = { onAction(BoingBallAction.About) },
-                                )
-                                ClockShortcut(
-                                    state = state,
-                                    onClick = { onAction(BoingBallAction.Clock) },
-                                )
-                                PreferencesShortcut(
-                                    state = state,
-                                    onClick = { onAction(BoingBallAction.Preferences) },
-                                )
-                            }
-                            Row(
-                                horizontalArrangement = Arrangement.spacedBy(16.dp),
-                            ) {
-                                ShellShortcut(
-                                    state = state,
-                                    onClick = { onAction(BoingBallAction.Shell) },
-                                )
-                                CalculatorShortcut(
-                                    state = state,
-                                    onClick = { onAction(BoingBallAction.Calculator) },
-                                )
-                            }
-                            Row(
-                                horizontalArrangement = Arrangement.spacedBy(16.dp),
-                            ) {
-                                CopperBarsShortcut(
-                                    state = state,
-                                    onClick = { onAction(BoingBallAction.CopperBars) },
-                                )
-                                MusicPlayerShortcut(
-                                    state = state,
-                                    onClick = { onAction(BoingBallAction.MusicPlayer) },
-                                )
-                            }
-                        }
-                        BoxWithConstraints(
-                            modifier = Modifier
-                                .weight(1f)
-                                .fillMaxWidth(),
-                            contentAlignment = Alignment.Center,
-                        ) {
-                            // Cap the window width by both the available width and the
-                            // width implied by the remaining height (ball view is 4:3,
-                            // plus ~66dp of toolbar/border/padding chrome) so the window
-                            // shrinks to fit instead of overflowing past this area.
-                            val maxWidthForHeight = ((maxHeight - 66.dp) / 0.75f).coerceAtLeast(0.dp)
-                            BoingBallWindow(
-                                state = state,
-                                onCloseClick = { onAction(BoingBallAction.Back) },
-                                modifier = Modifier
-                                    .widthIn(max = minOf(availableWidth, maxWidthForHeight))
-                            )
-                        }
-                    }
-                } // end if/else landscape
+                }
             } // end Column
         }
 
@@ -332,53 +190,24 @@ fun BoingBallScreen(
 }
 
 @Composable
-private fun BoingBallWindow(
+private fun BoingBallShortcut(
     state: BoingBallState,
-    onCloseClick: () -> Unit = {},
-    modifier: Modifier = Modifier,
+    onClick: () -> Unit,
 ) {
-    Box(modifier = modifier) {
-        Column {
-            AmigaToolbar(
-                title = stringResource(Res.string.app_name),
-                osStyle = state.osStyle,
-            )
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .conditional(
-                        condition = state.osStyle == OSStyle.AmigaOS13,
-                        ifTrue = {
-                            background(color = Color.White)
-                                .padding(horizontal = 2.dp)
-                                .padding(bottom = 2.dp)
-                        },
-                        ifFalse = {
-                            background(color = Color.White)
-                                .padding(horizontal = 1.dp)
-                                .background(color = amigaOs30Blue)
-                                .padding(horizontal = 2.dp)
-                                .background(color = blackColor)
-                                .padding(horizontal = 1.dp)
-                                .background(color = blackColor)
-                                .padding(bottom = 1.dp)
-                                .background(color = whiteColor)
-                                .padding(bottom = 1.dp)
-                        }
-                    )
-                    .background(color = backgroundColor),
-                contentAlignment = Alignment.Center
-            ) {
-                BoingBallView(
-                    modifier = Modifier.padding(16.dp),
-                    themeColor = state.themeColor,
-                    altColor = state.altColor,
-                    drawBorders = state.drawBorders,
-                    videoSystem = state.videoSystem,
-                )
-            }
-        }
-        AmigaCloseTouchOverlay(onCloseClick = onCloseClick)
+    Column(
+        modifier = Modifier.clickable(onClick = onClick),
+        horizontalAlignment = Alignment.CenterHorizontally,
+    ) {
+        BoingBallView(
+            modifier = Modifier
+                .width(72.dp)
+                .height(54.dp),
+            themeColor = state.themeColor,
+            altColor = state.altColor,
+            drawBorders = state.drawBorders,
+            videoSystem = state.videoSystem,
+        )
+        AmigaTextBox(text = stringResource(Res.string.app_name), osStyle = state.osStyle)
     }
 }
 
@@ -607,7 +436,7 @@ private val previewState = BoingBallState(
 @Composable
 private fun BoingBallScreenOs13Preview() {
     BoingBallDemoTheme {
-        BoingBallScreen(previewState)
+        WorkbenchScreen(previewState)
     }
 }
 
@@ -615,7 +444,7 @@ private fun BoingBallScreenOs13Preview() {
 @Composable
 private fun BoingBallScreenLandscapeOs13Preview() {
     BoingBallDemoTheme {
-        BoingBallScreen(previewState)
+        WorkbenchScreen(previewState)
     }
 }
 
@@ -623,7 +452,7 @@ private fun BoingBallScreenLandscapeOs13Preview() {
 @Composable
 private fun BoingBallScreenPreview() {
     BoingBallDemoTheme {
-        BoingBallScreen(previewState.copy(osStyle = OSStyle.AmigaOS20))
+        WorkbenchScreen(previewState.copy(osStyle = OSStyle.AmigaOS20))
     }
 }
 
@@ -631,6 +460,6 @@ private fun BoingBallScreenPreview() {
 @Composable
 private fun BoingBallScreenLandscapePreview() {
     BoingBallDemoTheme {
-        BoingBallScreen(previewState.copy(osStyle = OSStyle.AmigaOS20))
+        WorkbenchScreen(previewState.copy(osStyle = OSStyle.AmigaOS20))
     }
 }

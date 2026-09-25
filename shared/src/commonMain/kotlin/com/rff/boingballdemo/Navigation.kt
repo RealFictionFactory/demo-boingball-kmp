@@ -10,7 +10,8 @@ import com.rff.boingballdemo.about.AboutScreenRoot
 import com.rff.boingballdemo.calculator.CalculatorScreenRoot
 import com.rff.boingballdemo.clock.ClockScreenRoot
 import com.rff.boingballdemo.copper.CopperBarsScreenRoot
-import com.rff.boingballdemo.main.BoingBallScreenRoot
+import com.rff.boingballdemo.boingball.BoingBallScreenRoot
+import com.rff.boingballdemo.main.WorkbenchScreenRoot
 import com.rff.boingballdemo.musicplayer.MusicPlayerScreenRoot
 import com.rff.boingballdemo.preferences.PreferencesScreenRoot
 import com.rff.boingballdemo.shell.ShellScreenRoot
@@ -25,6 +26,9 @@ sealed interface AppRoute : NavKey
 
 @Serializable
 data object Home : AppRoute
+
+@Serializable
+data object FullScreenBoingBall : AppRoute
 
 @Serializable
 data object Prefs : AppRoute
@@ -52,6 +56,7 @@ private val navConfig = SavedStateConfiguration {
     serializersModule = SerializersModule {
         polymorphic(NavKey::class) {
             subclass(Home::class)
+            subclass(FullScreenBoingBall::class)
             subclass(Prefs::class)
             subclass(Clock::class)
             subclass(About::class)
@@ -67,7 +72,9 @@ private val navConfig = SavedStateConfiguration {
 fun NavigationRoot(
     onExitApp: () -> Unit = {},
 ) {
-    val backStack = rememberNavBackStack(navConfig, Home)
+    // The Workbench remains below the initially displayed demo. Dismissing the
+    // demo therefore reveals a desktop with no window open.
+    val backStack = rememberNavBackStack(navConfig, Home, FullScreenBoingBall)
     val popBackStack: () -> Unit = {
         // Guard against popping the last remaining entry, which would leave
         // NavDisplay with an empty backstack and crash. This can happen if
@@ -79,11 +86,21 @@ fun NavigationRoot(
     }
     NavDisplay(
         backStack = backStack,
+        onBack = {
+            if (backStack.size > 1) {
+                popBackStack()
+            } else {
+                onExitApp()
+            }
+        },
         entryProvider = { key ->
             when(key) {
                 Home -> {
                     NavEntry(key = key) {
-                        BoingBallScreenRoot(
+                        WorkbenchScreenRoot(
+                            onBoingBallClick = {
+                                backStack.add(FullScreenBoingBall)
+                            },
                             onPreferencesClick = {
                                 backStack.add(Prefs)
                             },
@@ -105,7 +122,13 @@ fun NavigationRoot(
                             onMusicPlayerClick = {
                                 backStack.add(MusicPlayer)
                             },
-                            onCloseClick = onExitApp
+                        )
+                    }
+                }
+                FullScreenBoingBall -> {
+                    NavEntry(key = key) {
+                        BoingBallScreenRoot(
+                            onDismiss = { popBackStack() }
                         )
                     }
                 }
