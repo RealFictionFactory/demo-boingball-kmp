@@ -11,7 +11,7 @@ import com.rff.boingballdemo.calculator.CalculatorScreenRoot
 import com.rff.boingballdemo.clock.ClockScreenRoot
 import com.rff.boingballdemo.copper.CopperBarsScreenRoot
 import com.rff.boingballdemo.boingball.BoingBallScreenRoot
-import com.rff.boingballdemo.main.WorkbenchScreenRoot
+import com.rff.boingballdemo.workbench.WorkbenchScreenRoot
 import com.rff.boingballdemo.musicplayer.MusicPlayerScreenRoot
 import com.rff.boingballdemo.preferences.PreferencesScreenRoot
 import com.rff.boingballdemo.shell.ShellScreenRoot

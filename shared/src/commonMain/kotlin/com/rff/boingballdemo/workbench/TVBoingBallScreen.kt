@@ -1,4 +1,4 @@
-package com.rff.boingballdemo.main
+package com.rff.boingballdemo.workbench
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box

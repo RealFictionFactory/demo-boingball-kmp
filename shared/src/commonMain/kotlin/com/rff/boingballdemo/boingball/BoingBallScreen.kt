@@ -2,7 +2,6 @@ package com.rff.boingballdemo.boingball
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
@@ -11,18 +10,17 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.rff.boingballdemo.component.BoingBallView
-import com.rff.boingballdemo.main.BoingBallState
-import com.rff.boingballdemo.main.BoingBallViewModel
+import com.rff.boingballdemo.workbench.BoingBallState
+import com.rff.boingballdemo.workbench.WorkbenchViewModel
 import com.rff.boingballdemo.ui.theme.backgroundColor
 import org.koin.compose.viewmodel.koinViewModel
 
 /** A chrome-free demo screen. A tap returns the user to the Workbench. */
 @Composable
 fun BoingBallScreenRoot(
-    viewModel: BoingBallViewModel = koinViewModel(),
+    viewModel: WorkbenchViewModel = koinViewModel(),
     onDismiss: () -> Unit,
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()

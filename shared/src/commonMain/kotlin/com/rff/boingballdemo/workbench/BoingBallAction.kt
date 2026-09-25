@@ -1,4 +1,4 @@
-package com.rff.boingballdemo.main
+package com.rff.boingballdemo.workbench
 
 sealed interface BoingBallAction {
     data object BoingBall : BoingBallAction

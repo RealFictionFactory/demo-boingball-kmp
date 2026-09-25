@@ -1,4 +1,4 @@
-package com.rff.boingballdemo.main
+package com.rff.boingballdemo.workbench
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -14,7 +14,7 @@ import kotlinx.coroutines.flow.update
 private const val DEFAULT_THEME_COLOR_INDEX = 1
 private const val DEFAULT_ALT_COLOR_INDEX = 3
 
-class BoingBallViewModel(
+class WorkbenchViewModel(
     private val settings: AppSettings
 ) : ViewModel() {
     private val _uiState : MutableStateFlow<BoingBallState> = MutableStateFlow(BoingBallState())

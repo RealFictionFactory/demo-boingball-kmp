@@ -1,4 +1,4 @@
-package com.rff.boingballdemo.main
+package com.rff.boingballdemo.workbench
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -97,7 +97,7 @@ import org.koin.compose.viewmodel.koinViewModel
  */
 @Composable
 fun WorkbenchScreenRoot(
-    viewModel: BoingBallViewModel = koinViewModel(),
+    viewModel: WorkbenchViewModel = koinViewModel(),
     onBoingBallClick: () -> Unit = {},
     onPreferencesClick: () -> Unit,
     onClockClick: () -> Unit = {},
@@ -475,7 +475,7 @@ private fun BoingBallScreenPreview() {
     }
 }
 
-@Preview(showSystemUi = true, device = "spec:parent=Nexus 4,orientation=landscape")
+@Preview(device = "spec:parent=Nexus 4,orientation=landscape")
 @Composable
 private fun BoingBallScreenLandscapePreview() {
     BoingBallDemoTheme {

@@ -1,4 +1,4 @@
-package com.rff.boingballdemo.main
+package com.rff.boingballdemo.workbench
 
 import androidx.compose.ui.graphics.Color
 import com.rff.boingballdemo.component.OSStyle

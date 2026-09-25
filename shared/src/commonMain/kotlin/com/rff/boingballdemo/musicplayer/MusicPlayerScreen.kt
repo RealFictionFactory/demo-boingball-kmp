@@ -29,7 +29,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawBehind
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
@@ -46,15 +45,13 @@ import boingball.shared.generated.resources.ic_play
 import boingball.shared.generated.resources.ic_skip_next
 import boingball.shared.generated.resources.ic_skip_previous
 import boingball.shared.generated.resources.ic_stop
-import boingball.shared.generated.resources.music_player
 import boingball.shared.generated.resources.music_player_version
 import boingball.shared.generated.resources.workbench
 import com.rff.boingballdemo.component.AmigaScreenTitleBar
 import com.rff.boingballdemo.component.OSStyle
-import com.rff.boingballdemo.component.AmigaToolbar
 import com.rff.boingballdemo.component.AmigaWindow
 import com.rff.boingballdemo.component.drawFrame
-import com.rff.boingballdemo.main.conditional
+import com.rff.boingballdemo.workbench.conditional
 import com.rff.boingballdemo.ui.theme.BoingBallDemoTheme
 import com.rff.boingballdemo.ui.theme.amigaOs13Blue
 import com.rff.boingballdemo.ui.theme.amigaOs13Orange

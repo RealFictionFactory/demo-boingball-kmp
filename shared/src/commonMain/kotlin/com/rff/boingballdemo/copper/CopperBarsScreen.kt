@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.windowInsetsPadding
@@ -16,7 +15,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -25,17 +23,12 @@ import boingball.shared.generated.resources.Res
 import boingball.shared.generated.resources.copper
 import boingball.shared.generated.resources.workbench
 import com.rff.boingballdemo.component.AmigaScreenTitleBar
-import com.rff.boingballdemo.component.AmigaToolbar
 import com.rff.boingballdemo.component.AmigaWindow
 import com.rff.boingballdemo.component.CopperBarsView
 import com.rff.boingballdemo.component.OSStyle
-import com.rff.boingballdemo.main.conditional
 import com.rff.boingballdemo.ui.theme.BoingBallDemoTheme
 import com.rff.boingballdemo.ui.theme.amigaOs13Blue
-import com.rff.boingballdemo.ui.theme.amigaOs30Blue
 import com.rff.boingballdemo.ui.theme.backgroundColor
-import com.rff.boingballdemo.ui.theme.blackColor
-import com.rff.boingballdemo.ui.theme.whiteColor
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 

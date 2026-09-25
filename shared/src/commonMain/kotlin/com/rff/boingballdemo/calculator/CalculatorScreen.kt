@@ -32,13 +32,11 @@ import boingball.shared.generated.resources.calculator
 import boingball.shared.generated.resources.workbench
 import com.rff.boingballdemo.component.AmigaKey
 import com.rff.boingballdemo.component.AmigaScreenTitleBar
-import com.rff.boingballdemo.component.AmigaToolbar
 import com.rff.boingballdemo.component.AmigaWindow
 import com.rff.boingballdemo.component.OSStyle
-import com.rff.boingballdemo.main.conditional
+import com.rff.boingballdemo.workbench.conditional
 import com.rff.boingballdemo.ui.theme.BoingBallDemoTheme
 import com.rff.boingballdemo.ui.theme.amigaOs13Blue
-import com.rff.boingballdemo.ui.theme.amigaOs30Blue
 import com.rff.boingballdemo.ui.theme.backgroundColor
 import com.rff.boingballdemo.ui.theme.blackColor
 import com.rff.boingballdemo.ui.theme.topazFont
