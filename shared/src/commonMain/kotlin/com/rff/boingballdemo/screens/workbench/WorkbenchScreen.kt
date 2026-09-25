@@ -60,6 +60,12 @@ import org.koin.compose.viewmodel.koinViewModel
  * PHASE 3 — more nice to have features (version 1.5.x):
  * - Allow user to change rotation speed
  * - Music Player interactive playlist window
+ * - Sine scroll demo
+ * - Starfield demo
+ * - Plasma screen demo
+ * - Raster bars demo
+ * - Twister demo
+ * - Parallax demo
  *
  * PHASE 4 — full Workbench rework (version 2.0.x):
  * - Amiga top menu bar on tap (menus: Workbench / Tools / Help, OS-style dropdowns)
