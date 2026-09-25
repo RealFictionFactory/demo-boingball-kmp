@@ -42,7 +42,7 @@ import org.koin.compose.viewmodel.koinViewModel
 /**
  * Future development plan — making this a real Workbench experience:
  *
- * PHASE 1 — current screen improvements (near term):
+ * PHASE 1 — current screen improvements (near term, version 1.3.x):
  * - [*DONE*] Amiga screen title bar at top (thin strip: "Workbench Screen", right-aligned, OS-style aware)
  * - [*DONE*] Guru Meditation easter egg (long-press triggers iconic red/black error screen)
  * - [*DONE*] About window (3rd desktop icon, shows app/device info in Amiga Topaz style)
@@ -52,13 +52,16 @@ import org.koin.compose.viewmodel.koinViewModel
  * - [*DONE*] AmigaDOS Shell - simple, no commands, just opens the window with a prompt. clicking anywhere closes it
  *   (built as ghost-typing demo: tap runs next canned command, close via toolbar gadget)
  *
- * PHASE 2 — additional features:
+ * PHASE 2 — additional features (version 1.4.x):
  * - [*DONE*] music player with a list of most iconic Amiga musics
  * - [*DROPPED*] History of Amiga logo by year
- * - Allow user to change rotation speed
- * - Add full screen Boing Ball view like real demo, some back button may be necessary
+ * - [*DONE*] Add full screen Boing Ball view like real demo, some back button may be necessary
  *
- * PHASE 3 — full Workbench rework:
+ * PHASE 3 — more nice to have features (version 1.5.x):
+ * - Allow user to change rotation speed
+ * - Music Player interactive playlist window
+ *
+ * PHASE 4 — full Workbench rework (version 2.0.x):
  * - Amiga top menu bar on tap (menus: Workbench / Tools / Help, OS-style dropdowns)
  * - Rework main screen to look like real Workbench desktop
  * - App starts at desktop; user taps disk icon to open a drawer window (like a folder)
@@ -66,7 +69,7 @@ import org.koin.compose.viewmodel.koinViewModel
  * - Each icon launches its window as an overlay on the desktop (multiple windows open at once)
  * - Windows are movable/stackable (bring to front / send to back gadgets become functional)
  *
- * PHASE 4 — polish:
+ * PHASE 5 — polish (version 2.1.x):
  * - Screen flip/push animation when switching OS style
  * - Amiga-style requester/dialog component (reusable, e.g. "Exit app?" confirmation)
  * - Workbench top menu bar items wired to real actions (About Workbench, etc.)
