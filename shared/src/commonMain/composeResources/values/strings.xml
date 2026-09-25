@@ -21,6 +21,7 @@
     <string name="preferences_video_pal" translatable="false">PAL</string>
     <string name="preferences_video_ntsc" translatable="false">NTSC</string>
     <string name="preferences_video_system_help">PAL uses a 50 Hz video refresh rate and NTSC uses 60 Hz. This setting adjusts the Boing Ball animation speed to match the selected video system.</string>
+    <string name="preferences_close">Close</string>
     <string name="preferences_set_demo_defaults">Set Boing Ball Demo defaults</string>
     <string name="preferences_set_app_defaults">Set app defaults</string>
     <string name="preferences_set_amigaos_2_style">Set AmigaOS 2+ style</string>

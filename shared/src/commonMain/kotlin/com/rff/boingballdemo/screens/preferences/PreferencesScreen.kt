@@ -21,8 +21,10 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.backhandler.BackHandler
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -32,6 +34,7 @@ import boingball.shared.generated.resources.preferences
 import boingball.shared.generated.resources.preferences_draw_bb_square_borders
 import boingball.shared.generated.resources.preferences_pick_alternate_bb_color
 import boingball.shared.generated.resources.preferences_pick_main_bb_color
+import boingball.shared.generated.resources.preferences_close
 import boingball.shared.generated.resources.preferences_set_amigaos_1_3_style
 import boingball.shared.generated.resources.preferences_set_amigaos_2_style
 import boingball.shared.generated.resources.preferences_set_app_defaults
@@ -347,13 +350,21 @@ private fun VideoSystemSelector(
 }
 
 @Composable
+@Suppress("DEPRECATION")
+@OptIn(ExperimentalComposeUiApi::class)
 private fun VideoSystemHelpWindow(
     osStyle: OSStyle,
     isLandscape: Boolean,
     maxWidth: Dp,
     onDismiss: () -> Unit,
 ) {
-    val windowWidth = if (isLandscape) maxWidth * 0.5f else maxWidth - 48.dp
+    BackHandler(onBack = onDismiss)
+
+    val windowWidth = if (isLandscape) {
+        (maxWidth * 0.5f).coerceAtLeast(0.dp)
+    } else {
+        (maxWidth - 48.dp).coerceAtLeast(0.dp)
+    }
     val background = if (osStyle == OSStyle.AmigaOS13) amigaOs13Blue else backgroundColor
 
     Box(
@@ -366,23 +377,34 @@ private fun VideoSystemHelpWindow(
             osStyle = osStyle,
             onCloseClick = onDismiss,
         ) { _ ->
-            Row(
+            Column(
                 modifier = Modifier
                     .fillMaxWidth()
                     .background(background)
                     .padding(16.dp),
-                verticalAlignment = Alignment.CenterVertically,
+                horizontalAlignment = Alignment.CenterHorizontally,
             ) {
-                Image(
-                    painter = painterResource(Res.drawable.questionmark),
-                    contentDescription = null,
-                    modifier = Modifier.size(width = 80.dp, height = 96.dp),
-                )
-                Spacer(modifier = Modifier.width(16.dp))
-                AmigaTextBox(
-                    text = stringResource(Res.string.preferences_video_system_help),
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    Image(
+                        painter = painterResource(Res.drawable.questionmark),
+                        contentDescription = null,
+                        modifier = Modifier.size(width = 80.dp, height = 96.dp),
+                    )
+                    Spacer(modifier = Modifier.width(16.dp))
+                    AmigaTextBox(
+                        text = stringResource(Res.string.preferences_video_system_help),
+                        osStyle = osStyle,
+                        modifier = Modifier.weight(1f),
+                    )
+                }
+                Spacer(modifier = Modifier.height(16.dp))
+                AmigaButton(
+                    text = stringResource(Res.string.preferences_close),
                     osStyle = osStyle,
-                    modifier = Modifier.weight(1f),
+                    onClick = onDismiss,
                 )
             }
         }
@@ -434,6 +456,25 @@ private fun PreferencesScreenLandscapeOs30Preview() {
             state = previewState,
             onAction = {}
         )
+    }
+}
+
+@Preview
+@Composable
+private fun VideoSystemHelpWindowOs13Preview() {
+    BoingBallDemoTheme {
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(backgroundColor),
+        ) {
+            VideoSystemHelpWindow(
+                osStyle = previewState.copy(osStyle = OSStyle.AmigaOS13).osStyle,
+                isLandscape = false,
+                maxWidth = 360.dp,
+                onDismiss = {},
+            )
+        }
     }
 }
 

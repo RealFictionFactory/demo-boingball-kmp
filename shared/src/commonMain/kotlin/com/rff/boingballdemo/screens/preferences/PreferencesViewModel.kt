@@ -85,7 +85,11 @@ class PreferencesViewModel(
             PreferencesAction.SetAmigaOS20 -> {
                 setStyle(OSStyle.AmigaOS20)
             }
-            PreferencesAction.Back -> TODO()
+            PreferencesAction.Back -> {
+                // Back is handled by the enclosing navigation layer; keeping this
+                // action as a safe no-op prevents crashes if the action is triggered
+                // from a non-window context.
+            }
         }
     }
 
