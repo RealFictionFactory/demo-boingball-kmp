@@ -27,9 +27,9 @@ class AppSettings(
         }
         .map { preferences ->
             BoingBallPrefs(
-                themeColorIndex =  preferences[KEY_THEME_COLOR_INDEX] ?: 1,
+                themeColorIndex =  preferences[KEY_THEME_COLOR_INDEX] ?: 0,
                 altColorIndex = preferences[KEY_ALT_COLOR_INDEX] ?: 3,
-                drawBorders = preferences[KEY_DRAW_BORDERS] ?: true,
+                drawBorders = preferences[KEY_DRAW_BORDERS] ?: false,
                 osStyle = OSStyle.entries[preferences[KEY_OS_STYLE] ?: OSStyle.AmigaOS13.ordinal],
                 videoSystem = VideoSystem.entries.getOrElse(
                     preferences[KEY_VIDEO_SYSTEM] ?: VideoSystem.PAL.ordinal

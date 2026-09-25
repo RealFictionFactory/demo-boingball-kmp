@@ -62,7 +62,7 @@ class PreferencesViewModel(
                         themeColorIndex = 0,
                         altColorIndex = 3,
                         drawBorders = false,
-                        videoSystem = VideoSystem.NTSC,
+                        videoSystem = VideoSystem.PAL,
                     )
                 }
                 saveCurrentSettings()
