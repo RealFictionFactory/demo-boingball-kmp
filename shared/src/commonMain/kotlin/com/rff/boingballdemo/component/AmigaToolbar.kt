@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -29,22 +30,31 @@ fun AmigaToolbar(
     osStyle: OSStyle,
     modifier: Modifier = Modifier,
     toolbarHeight: Dp = 28.dp,
-    onCloseClick: () -> Unit,
 ) {
     when (osStyle) {
         OSStyle.AmigaOS13 -> AmigaOs13Toolbar(
             title = title,
             modifier = modifier,
             toolbarHeight = toolbarHeight,
-            onCloseClick = onCloseClick,
         )
         OSStyle.AmigaOS20 -> AmigaOs30Toolbar(
             title = title,
             modifier = modifier,
             toolbarHeight = toolbarHeight,
-            onCloseClick = onCloseClick,
         )
     }
+}
+
+@Composable
+internal fun AmigaCloseTouchOverlay(
+    onCloseClick: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    Box(
+        modifier = modifier
+            .size(48.dp)
+            .clickable(onClick = onCloseClick)
+    )
 }
 
 @Composable
@@ -52,7 +62,6 @@ private fun AmigaOs13Toolbar(
     title: String,
     modifier: Modifier = Modifier,
     toolbarHeight: Dp = 28.dp,
-    onCloseClick: (() -> Unit)? = null,
 ) {
     Box(
         modifier
@@ -69,13 +78,7 @@ private fun AmigaOs13Toolbar(
         ) {
             Spacer(Modifier.width(4.dp))
             // Close gadget
-            if (onCloseClick != null) {
-                AmigaOs13CloseGadget(
-                    modifier = Modifier.clickable(onClick = onCloseClick)
-                )
-            } else {
-                AmigaOs13CloseGadget()
-            }
+            AmigaOs13CloseGadget()
             Spacer(Modifier.width(4.dp))
             // Title
             Text(
@@ -104,7 +107,6 @@ private fun AmigaOs30Toolbar(
     title: String,
     modifier: Modifier = Modifier,
     toolbarHeight: Dp = 28.dp,
-    onCloseClick: (() -> Unit)? = null,
 ) {
     Box(
         modifier
@@ -120,13 +122,7 @@ private fun AmigaOs30Toolbar(
             verticalAlignment = Alignment.CenterVertically
         ) {
             // Close gadget
-            if (onCloseClick != null) {
-                AmigaOs30CloseGadget(
-                    modifier = Modifier.clickable(onClick = onCloseClick)
-                )
-            } else {
-                AmigaOs30CloseGadget()
-            }
+            AmigaOs30CloseGadget()
             AmigaOs30ToolbarPlaceholderGadget(
                 text = title,
                 modifier = Modifier

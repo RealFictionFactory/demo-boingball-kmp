@@ -1,9 +1,12 @@
 package com.rff.boingballdemo.di
 
+import com.rff.boingballdemo.screens.boingball.audio.BoingBallAudioPlayer
+import com.rff.boingballdemo.screens.musicplayer.AndroidMusicPlayback
+import com.rff.boingballdemo.screens.musicplayer.MusicPlayback
 import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.module
-import com.rff.boingballdemo.audio.BoingBallAudioPlayer
 
 actual val platformModule = module {
     singleOf(::BoingBallAudioPlayer)
+    factory<MusicPlayback> { AndroidMusicPlayback(get()) }
 }

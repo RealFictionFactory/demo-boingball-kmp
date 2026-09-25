@@ -177,7 +177,7 @@ fun AmigaOs30ToolbarPlaceholderGadget(
         modifier = modifier
             .drawBehind {
                 val pixelSize = size.height / 15
-                drawAmigaOs30Frame(
+                drawFrame(
                     strokePx = pixelSize,
                     fillColor = amigaOs30Blue
                 )

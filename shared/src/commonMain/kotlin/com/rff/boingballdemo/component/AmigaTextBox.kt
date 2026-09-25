@@ -5,6 +5,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import com.rff.boingballdemo.ui.theme.amigaOs13Blue
 import com.rff.boingballdemo.ui.theme.blackColor
 import com.rff.boingballdemo.ui.theme.redColor
@@ -16,7 +17,10 @@ import com.rff.boingballdemo.ui.theme.topazFont20
 fun AmigaTextBox(
     text: String,
     osStyle: OSStyle,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    maxLines: Int = Int.MAX_VALUE,
+    overflow: TextOverflow = TextOverflow.Clip,
+    textAlign: TextAlign? = null,
 ) {
     val textStyle = if (osStyle == OSStyle.AmigaOS13)
         LocalTextStyle.current.copy(
@@ -32,7 +36,9 @@ fun AmigaTextBox(
     Text(
         modifier = modifier,
         text = text,
-        style = textStyle
+        style = textStyle.copy(textAlign = textAlign ?: textStyle.textAlign),
+        maxLines = maxLines,
+        overflow = overflow,
     )
 }
 

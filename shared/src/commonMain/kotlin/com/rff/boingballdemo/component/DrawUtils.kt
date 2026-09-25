@@ -8,10 +8,11 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import com.rff.boingballdemo.ui.theme.amigaOs13Blue
 import com.rff.boingballdemo.ui.theme.blackColor
 import com.rff.boingballdemo.ui.theme.whiteColor
 
-fun DrawScope.drawAmigaOs30Frame(
+fun DrawScope.drawFrame(
     strokePx: Float,
     fillColor: Color,
     topLeftColor: Color = whiteColor,
@@ -41,5 +42,14 @@ fun Modifier.amigaOs30Frame(
     topLeftColor: Color = whiteColor,
     bottomRightColor: Color = blackColor,
 ): Modifier = drawBehind {
-    drawAmigaOs30Frame(stroke.toPx(), fillColor, topLeftColor, bottomRightColor)
+    drawFrame(stroke.toPx(), fillColor, topLeftColor, bottomRightColor)
+}
+
+fun Modifier.amigaOs13Frame(
+    fillColor: Color = amigaOs13Blue,
+    stroke: Dp = 1.dp,
+    topLeftColor: Color = whiteColor,
+    bottomRightColor: Color = whiteColor,
+): Modifier = drawBehind {
+    drawFrame(stroke.toPx(), fillColor, topLeftColor, bottomRightColor)
 }

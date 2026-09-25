@@ -83,7 +83,7 @@ private fun AmigaOs30Button(
         modifier = Modifier
             .drawBehind {
                 val pixelSize = size.height / 24
-                drawAmigaOs30Frame(
+                drawFrame(
                     strokePx = pixelSize,
                     fillColor = backgroundColor,
                     topLeftColor = topLeftFrameColor,
