@@ -8,10 +8,12 @@
     <string name="about">About</string>
     <string name="copper" translatable="false">Copper</string>
     <string name="calculator">Calculator</string>
-    <string name="music_player" translatable="false">Chaotic Player</string>
+    <string name="music_player" translatable="false">Player</string>
+    <string name="chaotic_player" translatable="false">Chaotic Player</string>
     <string name="music_player_version" translatable="false">V1.0</string>
     <string name="shell" translatable="false">Shell</string>
     <string name="shell13" translatable="false">CLI</string>
+    <string name="boing" translatable="false">Boing</string>
     <string name="preferences_pick_main_bb_color">Pick main BB color</string>
     <string name="preferences_pick_alternate_bb_color">Pick alternate BB color</string>
     <string name="preferences_draw_bb_square_borders">Draw BB square borders</string>

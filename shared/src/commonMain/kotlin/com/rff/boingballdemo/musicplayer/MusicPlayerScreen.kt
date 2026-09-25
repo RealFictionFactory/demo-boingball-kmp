@@ -38,6 +38,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import boingball.shared.generated.resources.Res
+import boingball.shared.generated.resources.chaotic_player
 import boingball.shared.generated.resources.ic_fast_forward
 import boingball.shared.generated.resources.ic_fast_rewind
 import boingball.shared.generated.resources.ic_pause
@@ -130,7 +131,7 @@ private fun MusicPlayerLayout(state: MusicPlayerState, onAction: (MusicPlayerAct
             ) {
                 AmigaWindow(
                     modifier = Modifier.width(windowWidth),
-                    title = stringResource(Res.string.music_player) + " " + stringResource(Res.string.music_player_version),
+                    title = stringResource(Res.string.chaotic_player) + " " + stringResource(Res.string.music_player_version),
                     osStyle = state.osStyle,
                     onCloseClick = onCloseClick,
                 ) { contentModifier ->

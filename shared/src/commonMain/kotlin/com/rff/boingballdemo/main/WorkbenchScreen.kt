@@ -28,13 +28,15 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import boingball.shared.generated.resources.Res
 import boingball.shared.generated.resources.about
 import boingball.shared.generated.resources.about30
-import boingball.shared.generated.resources.app_name
+import boingball.shared.generated.resources.boing
 import boingball.shared.generated.resources.calculator
 import boingball.shared.generated.resources.calculator30
 import boingball.shared.generated.resources.clock
@@ -52,7 +54,6 @@ import boingball.shared.generated.resources.shell30
 import boingball.shared.generated.resources.workbench
 import com.rff.boingballdemo.component.AmigaScreenTitleBar
 import com.rff.boingballdemo.component.AmigaTextBox
-import com.rff.boingballdemo.component.BoingBallView
 import com.rff.boingballdemo.component.GuruMeditationOverlay
 import com.rff.boingballdemo.component.OSStyle
 import com.rff.boingballdemo.ui.theme.BoingBallDemoTheme
@@ -149,6 +150,8 @@ fun WorkbenchScreen(
                     detectTapGestures(onLongPress = { showGuruMeditation = true })
                 },
         ) {
+            val isLandscape = maxWidth > maxHeight
+            val landscapeGridWidth = minOf(maxWidth - 32.dp, 400.dp)
             Column(modifier = Modifier.fillMaxSize()) {
                 AmigaScreenTitleBar(
                     text = stringResource(Res.string.workbench),
@@ -158,24 +161,48 @@ fun WorkbenchScreen(
                 val shortcuts = listOf<@Composable () -> Unit>(
                     { BoingBallShortcut(state, onClick = { onAction(BoingBallAction.BoingBall) }) },
                     { AboutShortcut(state, onClick = { onAction(BoingBallAction.About) }) },
-                    { ClockShortcut(state, onClick = { onAction(BoingBallAction.Clock) }) },
                     { PreferencesShortcut(state, onClick = { onAction(BoingBallAction.Preferences) }) },
+                    { ClockShortcut(state, onClick = { onAction(BoingBallAction.Clock) }) },
                     { ShellShortcut(state, onClick = { onAction(BoingBallAction.Shell) }) },
                     { CalculatorShortcut(state, onClick = { onAction(BoingBallAction.Calculator) }) },
                     { CopperBarsShortcut(state, onClick = { onAction(BoingBallAction.CopperBars) }) },
                     { MusicPlayerShortcut(state, onClick = { onAction(BoingBallAction.MusicPlayer) }) },
                 )
-                LazyVerticalGrid(
-                    columns = GridCells.Adaptive(minSize = 88.dp),
-                    modifier = Modifier
-                        .weight(1f)
-                        .fillMaxWidth()
-                        .padding(16.dp),
-                    horizontalArrangement = Arrangement.spacedBy(16.dp),
-                    verticalArrangement = Arrangement.spacedBy(16.dp),
-                ) {
-                    items(shortcuts) { shortcut ->
-                        Box(contentAlignment = Alignment.TopCenter) { shortcut() }
+                if (isLandscape) {
+                    Box(
+                        modifier = Modifier
+                            .weight(1f)
+                            .fillMaxWidth()
+                            .padding(16.dp),
+                    ) {
+                        LazyVerticalGrid(
+                            columns = GridCells.Fixed(4),
+                            modifier = Modifier
+                                .width(landscapeGridWidth)
+                                .height(176.dp)
+                                .align(Alignment.TopEnd),
+                            horizontalArrangement = Arrangement.spacedBy(8.dp),
+                            verticalArrangement = Arrangement.spacedBy(16.dp),
+                            userScrollEnabled = false,
+                        ) {
+                            items(shortcuts) { shortcut ->
+                                Box(contentAlignment = Alignment.TopCenter) { shortcut() }
+                            }
+                        }
+                    }
+                } else {
+                    LazyVerticalGrid(
+                        columns = GridCells.Fixed(3),
+                        modifier = Modifier
+                            .weight(1f)
+                            .fillMaxWidth()
+                            .padding(16.dp),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                        verticalArrangement = Arrangement.spacedBy(16.dp),
+                    ) {
+                        items(shortcuts) { shortcut ->
+                            Box(contentAlignment = Alignment.TopCenter) { shortcut() }
+                        }
                     }
                 }
             } // end Column
@@ -198,17 +225,30 @@ private fun BoingBallShortcut(
         modifier = Modifier.clickable(onClick = onClick),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-        BoingBallView(
+        Image(
             modifier = Modifier
-                .width(72.dp)
-                .height(54.dp),
-            themeColor = state.themeColor,
-            altColor = state.altColor,
-            drawBorders = state.drawBorders,
-            videoSystem = state.videoSystem,
+                .width(40.dp)
+                .height(40.dp),
+            painter = painterResource(Res.drawable.boing),
+            contentDescription = stringResource(Res.string.about)
         )
-        AmigaTextBox(text = stringResource(Res.string.app_name), osStyle = state.osStyle)
+        DesktopShortcutLabel(text = stringResource(Res.string.boing), osStyle = state.osStyle)
     }
+}
+
+@Composable
+private fun DesktopShortcutLabel(
+    text: String,
+    osStyle: OSStyle,
+) {
+    AmigaTextBox(
+        text = text,
+        osStyle = osStyle,
+        modifier = Modifier.fillMaxWidth(),
+        maxLines = 1,
+        overflow = TextOverflow.Ellipsis,
+        textAlign = TextAlign.Center,
+    )
 }
 
 @Composable
@@ -233,10 +273,7 @@ private fun PreferencesShortcut(
             painter = painterResource(resId),
             contentDescription = stringResource(Res.string.preferences)
         )
-        AmigaTextBox(
-            text = stringResource(Res.string.preferences),
-            osStyle = state.osStyle
-        )
+        DesktopShortcutLabel(text = stringResource(Res.string.preferences), osStyle = state.osStyle)
     }
 }
 
@@ -262,10 +299,7 @@ private fun ClockShortcut(
             painter = painterResource(resId),
             contentDescription = stringResource(Res.string.clock)
         )
-        AmigaTextBox(
-            text = stringResource(Res.string.clock),
-            osStyle = state.osStyle
-        )
+        DesktopShortcutLabel(text = stringResource(Res.string.clock), osStyle = state.osStyle)
     }
 }
 
@@ -291,10 +325,7 @@ private fun AboutShortcut(
             painter = painterResource(resId),
             contentDescription = stringResource(Res.string.about)
         )
-        AmigaTextBox(
-            text = stringResource(Res.string.about),
-            osStyle = state.osStyle
-        )
+        DesktopShortcutLabel(text = stringResource(Res.string.about), osStyle = state.osStyle)
     }
 }
 
@@ -320,10 +351,7 @@ private fun CopperBarsShortcut(
             painter = painterResource(resId),
             contentDescription = stringResource(Res.string.about)
         )
-        AmigaTextBox(
-            text = stringResource(Res.string.copper),
-            osStyle = state.osStyle
-        )
+        DesktopShortcutLabel(text = stringResource(Res.string.copper), osStyle = state.osStyle)
     }
 }
 
@@ -349,10 +377,7 @@ private fun CalculatorShortcut(
             painter = painterResource(resId),
             contentDescription = stringResource(Res.string.about)
         )
-        AmigaTextBox(
-            text = stringResource(Res.string.calculator),
-            osStyle = state.osStyle
-        )
+        DesktopShortcutLabel(text = stringResource(Res.string.calculator), osStyle = state.osStyle)
     }
 }
 
@@ -384,10 +409,7 @@ private fun ShellShortcut(
             painter = painterResource(resId),
             contentDescription = stringResource(Res.string.about)
         )
-        AmigaTextBox(
-            text = label,
-            osStyle = state.osStyle
-        )
+        DesktopShortcutLabel(text = label, osStyle = state.osStyle)
     }
 }
 
@@ -408,10 +430,7 @@ private fun MusicPlayerShortcut(
             painter = painterResource(if (state.osStyle == OSStyle.AmigaOS13) Res.drawable.mplayer else Res.drawable.mplayer30),
             contentDescription = stringResource(Res.string.music_player),
         )
-        AmigaTextBox(
-            text = stringResource(Res.string.music_player),
-            osStyle = state.osStyle
-        )
+        DesktopShortcutLabel(text = stringResource(Res.string.music_player), osStyle = state.osStyle)
     }
 }
 

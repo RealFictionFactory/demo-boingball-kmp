@@ -74,6 +74,7 @@ fun BoingBall(
     themeColor: Color,
     altColor: Color,
     drawBorders: Boolean,
+    drawShadow: Boolean = true,
     videoSystem: VideoSystem = VideoSystem.PAL,
 ) {
     val vblankHz = videoSystem.vblankHz
@@ -175,13 +176,14 @@ fun BoingBall(
         val cx = radius + (maxX - radius) * hBounce.value
         val tz = tilt.toRadians()
 
-        // shadow
-        drawCircle(
-            color = Color.DarkGray,
-            radius = radius,
-            center = Offset(cx + 50f, offsetY - 10f),
-            alpha = .3f
-        )
+        if (drawShadow) {
+            drawCircle(
+                color = Color.DarkGray,
+                radius = radius,
+                center = Offset(cx + 50f, offsetY - 10f),
+                alpha = .3f
+            )
+        }
         boingBall(
             cx = cx,
             cy = offsetY,
@@ -296,6 +298,27 @@ private fun BoingBallPreview() {
                 themeColor = amigaOs13Blue,
                 altColor = Color.White,
                 drawBorders = true,
+            )
+        }
+    }
+}
+
+
+@Preview
+@Composable
+private fun BoingBallIconTemplatePreview() {
+    BoingBallDemoTheme {
+        Box(modifier = Modifier
+            .size(300.dp)
+            .padding(32.dp)
+        ) {
+            BoingBall(
+                modifier = Modifier.fillMaxSize(),
+                tilt = +23.5f,
+                themeColor = Color.Red,
+                altColor = Color.White,
+                drawBorders = false,
+                drawShadow = false,
             )
         }
     }
