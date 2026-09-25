@@ -30,6 +30,7 @@
             android:name=".TVActivity"
             android:banner="@drawable/tv_banner"
             android:screenOrientation="landscape"
+            android:taskAffinity="com.rff.boingballdemo.tv"
             android:theme="@android:style/Theme.Material.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
