@@ -169,6 +169,7 @@ internal fun MusicPlayerState.step(action: MusicPlayerAction): PlaybackStep {
             if (action.index !in tracks.indices) null
             else trackChangeCommand(after)
         }
+        is MusicPlayerAction.MoveTrack -> null
     }
     return PlaybackStep(after, command)
 }
@@ -204,6 +205,25 @@ internal fun MusicPlayerState.reduce(action: MusicPlayerAction): MusicPlayerStat
         is MusicPlayerAction.SelectTrack -> {
             if (action.index !in tracks.indices) this
             else copy(currentTrackIndex = action.index, positionMs = 0L)
+        }
+        is MusicPlayerAction.MoveTrack -> {
+            val target = action.index + action.direction
+            if (action.direction !in -1..1 || action.direction == 0 ||
+                action.index !in tracks.indices || target !in tracks.indices
+            ) this
+            else {
+                val reordered = tracks.toMutableList()
+                reordered[action.index] = tracks[target]
+                reordered[target] = tracks[action.index]
+                copy(
+                    tracks = reordered,
+                    currentTrackIndex = when (currentTrackIndex) {
+                        action.index -> target
+                        target -> action.index
+                        else -> currentTrackIndex
+                    },
+                )
+            }
         }
     }
 }

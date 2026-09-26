@@ -59,7 +59,7 @@ import org.koin.compose.viewmodel.koinViewModel
  *
  * PHASE 3 — more nice to have features (version 1.5.x):
  * - Allow user to change rotation speed
- * - Music Player interactive playlist window
+ * - [*DONE*] Music Player interactive playlist window
  * - Sine scroll demo
  * - Starfield demo
  * - Plasma screen demo

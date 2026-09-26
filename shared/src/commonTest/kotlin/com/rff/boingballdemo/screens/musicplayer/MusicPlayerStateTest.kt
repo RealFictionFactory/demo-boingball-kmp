@@ -111,6 +111,51 @@ class MusicPlayerStateTest {
     }
 
     @Test
+    fun movingCurrentTrackKeepsPlaybackAndPosition() {
+        val playing = state.copy(isPlaying = true, positionMs = 500L)
+        val step = playing.step(MusicPlayerAction.MoveTrack(0, 1))
+        assertEquals(listOf(tracks[1], tracks[0]), step.state.tracks)
+        assertEquals(1, step.state.currentTrackIndex)
+        assertEquals(tracks[0], step.state.currentTrack)
+        assertEquals(500L, step.state.positionMs)
+        assertTrue(step.state.isPlaying)
+        assertEquals(null, step.command)
+    }
+
+    @Test
+    fun movingOtherTrackAdjustsCurrentIndexWithoutRestarting() {
+        val playing = state.copy(isPlaying = true, currentTrackIndex = 1, positionMs = 700L)
+        val step = playing.step(MusicPlayerAction.MoveTrack(0, 1))
+        assertEquals(tracks[1], step.state.currentTrack)
+        assertEquals(0, step.state.currentTrackIndex)
+        assertEquals(700L, step.state.positionMs)
+        assertEquals(null, step.command)
+    }
+
+    @Test
+    fun nextUsesReorderedPlaylist() {
+        val reordered = state.reduce(MusicPlayerAction.MoveTrack(0, 1))
+        val step = reordered.copy(currentTrackIndex = 0, isPlaying = true)
+            .step(MusicPlayerAction.Next)
+        assertEquals(tracks[0], step.state.currentTrack)
+        assertEquals(PlaybackCommand.Play("files/a.mp3", 0L), step.command)
+    }
+
+    @Test
+    fun movingOutsidePlaylistDoesNothing() {
+        for (action in listOf(
+            MusicPlayerAction.MoveTrack(0, -1),
+            MusicPlayerAction.MoveTrack(1, 1),
+            MusicPlayerAction.MoveTrack(9, -1),
+            MusicPlayerAction.MoveTrack(0, 2),
+        )) {
+            val step = state.step(action)
+            assertEquals(state, step.state)
+            assertEquals(null, step.command)
+        }
+    }
+
+    @Test
     fun formatPlaybackTimePadsSeconds() {
         assertEquals("0:00", formatPlaybackTime(0L))
         assertEquals("1:12", formatPlaybackTime(72_000L))

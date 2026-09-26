@@ -8,4 +8,5 @@ sealed interface MusicPlayerAction {
     data object Previous : MusicPlayerAction
     data class Seek(val deltaMs: Long) : MusicPlayerAction
     data class SelectTrack(val index: Int) : MusicPlayerAction
+    data class MoveTrack(val index: Int, val direction: Int) : MusicPlayerAction
 }

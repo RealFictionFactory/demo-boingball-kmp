@@ -11,6 +11,9 @@
     <string name="music_player" translatable="false">Player</string>
     <string name="chaotic_player" translatable="false">Chaotic Player</string>
     <string name="music_player_version" translatable="false">V1.0</string>
+    <string name="playlist">Playlist</string>
+    <string name="playlist_move_up">Move track up</string>
+    <string name="playlist_move_down">Move track down</string>
     <string name="shell" translatable="false">Shell</string>
     <string name="shell13" translatable="false">CLI</string>
     <string name="boing" translatable="false">Boing</string>
