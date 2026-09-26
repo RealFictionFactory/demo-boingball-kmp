@@ -10,11 +10,13 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -42,6 +44,7 @@ import boingball.shared.generated.resources.ic_fast_forward
 import boingball.shared.generated.resources.ic_fast_rewind
 import boingball.shared.generated.resources.ic_pause
 import boingball.shared.generated.resources.ic_play
+import boingball.shared.generated.resources.ic_playlist
 import boingball.shared.generated.resources.ic_skip_next
 import boingball.shared.generated.resources.ic_skip_previous
 import boingball.shared.generated.resources.ic_stop
@@ -169,38 +172,54 @@ private fun NowPlayingPanel(
         append(formatPlaybackTime(state.currentTrack?.durationMs ?: 0L))
     }
 
-    Column(
+    Row(
         modifier = modifier
             .fillMaxWidth()
-            .conditional(
-                condition = isOs13,
-                ifTrue = { background(color = whiteColor).padding(1.dp) },
-                ifFalse = {
-                    background(color = blackColor)
-                        .padding(start = 1.dp, top = 1.dp)
-                        .background(color = whiteColor)
-                        .padding(end = 1.dp, bottom = 1.dp)
-                },
-            )
-            .background(color = blackColor)
-            .padding(horizontal = 8.dp, vertical = 8.dp),
+            .height(IntrinsicSize.Min),
     ) {
-        Text(
-            text = title,
-            fontFamily = if (isOs13) topazFont() else topazFont20(),
-            fontSize = 16.sp,
-            color = whiteColor,
-            maxLines = 1,
-            overflow = TextOverflow.Ellipsis,
-            modifier = Modifier.fillMaxWidth(),
-        )
-        Spacer(modifier = Modifier.height(4.dp))
-        Text(
-            text = timeText,
-            fontFamily = if (isOs13) topazFont() else topazFont20(),
-            fontSize = 16.sp,
-            color = whiteColor,
-            modifier = Modifier.fillMaxWidth(),
+        Column(
+            modifier = Modifier
+                .weight(1f)
+                .conditional(
+                    condition = isOs13,
+                    ifTrue = { background(color = whiteColor).padding(1.dp) },
+                    ifFalse = {
+                        background(color = blackColor)
+                            .padding(start = 1.dp, top = 1.dp)
+                            .background(color = whiteColor)
+                            .padding(end = 1.dp, bottom = 1.dp)
+                    },
+                )
+                .background(color = blackColor)
+                .padding(horizontal = 8.dp, vertical = 8.dp),
+        ) {
+            Text(
+                text = title,
+                fontFamily = if (isOs13) topazFont() else topazFont20(),
+                fontSize = 16.sp,
+                color = whiteColor,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+                modifier = Modifier.fillMaxWidth(),
+            )
+            Spacer(modifier = Modifier.height(4.dp))
+            Text(
+                text = timeText,
+                fontFamily = if (isOs13) topazFont() else topazFont20(),
+                fontSize = 16.sp,
+                color = whiteColor,
+                modifier = Modifier.fillMaxWidth(),
+            )
+        }
+        Spacer(modifier = Modifier.width(4.dp))
+        TransportButton(
+            modifier = Modifier
+                .fillMaxHeight()
+                .aspectRatio(1f, matchHeightConstraintsFirst = true),
+            icon = Res.drawable.ic_playlist,
+            osStyle = state.osStyle,
+            contentDescription = "",
+            onClick = {}
         )
     }
 }
