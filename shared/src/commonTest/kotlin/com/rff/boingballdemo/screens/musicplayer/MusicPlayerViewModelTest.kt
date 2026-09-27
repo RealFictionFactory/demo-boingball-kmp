@@ -1,16 +1,13 @@
 package com.rff.boingballdemo.screens.musicplayer
 
-import androidx.datastore.core.DataStore
-import androidx.datastore.preferences.core.Preferences
-import androidx.datastore.preferences.core.emptyPreferences
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelStore
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import com.rff.boingballdemo.data.local.AppSettings
+import com.rff.boingballdemo.testing.InMemoryDataStore
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -31,7 +28,7 @@ import kotlin.test.assertTrue
 class MusicPlayerViewModelTest {
     private val dispatcher = StandardTestDispatcher()
     private val playback = FakeMusicPlayback()
-    private val settings = AppSettings(EmptyDataStore)
+    private val settings = AppSettings(InMemoryDataStore())
 
     @BeforeTest
     fun setUp() {
@@ -118,12 +115,6 @@ class MusicPlayerViewModelTest {
 
         assertTrue(playback.released)
     }
-}
-
-private object EmptyDataStore : DataStore<Preferences> {
-    override val data: Flow<Preferences> = MutableStateFlow(emptyPreferences())
-    override suspend fun updateData(transform: suspend (t: Preferences) -> Preferences): Preferences =
-        transform(emptyPreferences())
 }
 
 private class FakeMusicPlayback : MusicPlayback {

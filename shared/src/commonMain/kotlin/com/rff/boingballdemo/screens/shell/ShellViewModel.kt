@@ -6,12 +6,13 @@ import com.rff.boingballdemo.component.OSStyle
 import com.rff.boingballdemo.data.local.AppSettings
 import com.rff.boingballdemo.utils.toAmigaDateText
 import com.rff.boingballdemo.utils.toAmigaTimeText
+import com.rff.boingballdemo.utils.stateInWhileSubscribed
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -27,35 +28,35 @@ private const val OUTPUT_DELAY_MS = 50L
 private const val MAX_LINES = 200
 
 class ShellViewModel(
-    private val settings: AppSettings
+    settings: AppSettings
 ) : ViewModel() {
-    private val _uiState = MutableStateFlow(ShellState())
-    val uiState: StateFlow<ShellState> = _uiState.asStateFlow()
+    private val session = MutableStateFlow(ShellState())
 
     private var commandIndex = 0
     private var prompt = promptFor(OSStyle.AmigaOS13)
     private var runJob: Job? = null
 
-    init {
-        settings.boingBallPrefs
-            .onEach { prefs -> onOsStyleChanged(prefs.osStyle) }
-            .launchIn(viewModelScope)
-    }
+    // A new OS style starts a fresh session (banner, prompt, script) before it is shown.
+    @OptIn(ExperimentalCoroutinesApi::class)
+    val uiState: StateFlow<ShellState> = settings.osStyle
+        .onEach(::onOsStyleChanged)
+        .flatMapLatest { session }
+        .stateInWhileSubscribed(viewModelScope, ShellState())
 
     /** Tap inside the shell window: run the next canned command. */
     fun onTap() {
-        if (_uiState.value.isBusy) return
+        if (session.value.isBusy) return
 
-        val script = scriptFor(_uiState.value.osStyle)
+        val script = scriptFor(session.value.osStyle)
         val command = script[commandIndex % script.size]
         commandIndex++
 
         runJob = viewModelScope.launch {
-            _uiState.update { it.copy(isBusy = true) }
+            session.update { it.copy(isBusy = true) }
 
             val typedAt = prompt
             command.command.forEachIndexed { index, _ ->
-                _uiState.update {
+                session.update {
                     it.copy(currentLine = typedAt + command.command.take(index + 1))
                 }
                 delay(TYPE_DELAY_MS)
@@ -70,17 +71,17 @@ class ShellViewModel(
             }
 
             command.promptAfter?.let { prompt = it }
-            _uiState.update { it.copy(currentLine = prompt, isBusy = false) }
+            session.update { it.copy(currentLine = prompt, isBusy = false) }
         }
     }
 
     private fun onOsStyleChanged(osStyle: OSStyle) {
-        if (_uiState.value.osStyle == osStyle && _uiState.value.lines.isNotEmpty()) return
+        if (session.value.osStyle == osStyle && session.value.lines.isNotEmpty()) return
 
         runJob?.cancel()
         commandIndex = 0
         prompt = promptFor(osStyle)
-        _uiState.value = ShellState(
+        session.value = ShellState(
             osStyle = osStyle,
             lines = bannerFor(osStyle),
             currentLine = prompt,
@@ -88,7 +89,7 @@ class ShellViewModel(
     }
 
     private fun appendLine(line: String) {
-        _uiState.update { it.copy(lines = (it.lines + line).takeLast(MAX_LINES)) }
+        session.update { it.copy(lines = (it.lines + line).takeLast(MAX_LINES)) }
     }
 
     private fun String.resolveTokens(): String {

@@ -3,18 +3,15 @@ package com.rff.boingballdemo.screens.musicplayer
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.rff.boingballdemo.data.local.AppSettings
+import com.rff.boingballdemo.utils.stateInWhileSubscribed
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOf
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.stateIn
 
 private const val PROGRESS_TICK_MS = 200L
 
@@ -94,7 +91,7 @@ class MusicPlayerViewModel(
     }
 
     val uiState: StateFlow<MusicPlayerState> = combine(
-        settings.boingBallPrefs.map { it.osStyle }.distinctUntilChanged(),
+        settings.osStyle,
         playback.status,
         positionMs,
     ) { osStyle, status, position ->
@@ -105,11 +102,7 @@ class MusicPlayerViewModel(
             isPlaying = status.isPlaying,
             positionMs = position,
         )
-    }.stateIn(
-        scope = viewModelScope,
-        started = SharingStarted.WhileSubscribed(5_000),
-        initialValue = MusicPlayerState(tracks = AMIGA_MUSIC_TRACKS),
-    )
+    }.stateInWhileSubscribed(viewModelScope, MusicPlayerState(tracks = AMIGA_MUSIC_TRACKS))
 
     init {
         playback.setPlaylist(AMIGA_MUSIC_TRACKS)

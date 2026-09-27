@@ -2,6 +2,7 @@ package com.rff.boingballdemo.data.local
 
 import androidx.datastore.core.DataStore
 import androidx.datastore.core.IOException
+import androidx.datastore.preferences.core.MutablePreferences
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
@@ -12,6 +13,7 @@ import com.rff.boingballdemo.component.OSStyle
 import com.rff.boingballdemo.component.VideoSystem
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
 import com.rff.boingballdemo.VersionConfig
 import kotlin.enums.enumEntries
@@ -27,36 +29,46 @@ class AppSettings(
                 throw exception
             }
         }
-        .map { preferences ->
-            BoingBallPrefs(
-                themeColorIndex =  preferences[KEY_THEME_COLOR_INDEX] ?: 0,
-                altColorIndex = preferences[KEY_ALT_COLOR_INDEX] ?: 3,
-                drawBorders = preferences[KEY_DRAW_BORDERS] ?: false,
-                osStyle = decodeEnum(
-                    name = preferences[KEY_OS_STYLE],
-                    legacyOrdinal = preferences[LEGACY_KEY_OS_STYLE],
-                    default = OSStyle.AmigaOS13,
-                ),
-                videoSystem = decodeEnum(
-                    name = preferences[KEY_VIDEO_SYSTEM],
-                    legacyOrdinal = preferences[LEGACY_KEY_VIDEO_SYSTEM],
-                    default = VideoSystem.PAL,
-                ),
-            )
-        }
+        .map { it.toBoingBallPrefs() }
+
+    val osStyle: Flow<OSStyle> = boingBallPrefs.map { it.osStyle }.distinctUntilChanged()
 
     fun getVersion() = VersionConfig.VERSION_NAME
 
-    suspend fun saveBoingBallPrefs(value: BoingBallPrefs) {
+    /**
+     * Applies [transform] to the stored prefs in one atomic DataStore transaction, so
+     * quick successive changes to different settings never overwrite each other.
+     */
+    suspend fun updateBoingBallPrefs(transform: (BoingBallPrefs) -> BoingBallPrefs) {
         preferences.edit { preferences ->
-            preferences[KEY_THEME_COLOR_INDEX] = value.themeColorIndex
-            preferences[KEY_ALT_COLOR_INDEX] = value.altColorIndex
-            preferences[KEY_DRAW_BORDERS] = value.drawBorders
-            preferences[KEY_OS_STYLE] = value.osStyle.name
-            preferences[KEY_VIDEO_SYSTEM] = value.videoSystem.name
-            preferences.remove(LEGACY_KEY_OS_STYLE)
-            preferences.remove(LEGACY_KEY_VIDEO_SYSTEM)
+            preferences.write(transform(preferences.toBoingBallPrefs()))
         }
+    }
+
+    private fun Preferences.toBoingBallPrefs() = BoingBallPrefs(
+        themeColorIndex = this[KEY_THEME_COLOR_INDEX] ?: 0,
+        altColorIndex = this[KEY_ALT_COLOR_INDEX] ?: 3,
+        drawBorders = this[KEY_DRAW_BORDERS] ?: false,
+        osStyle = decodeEnum(
+            name = this[KEY_OS_STYLE],
+            legacyOrdinal = this[LEGACY_KEY_OS_STYLE],
+            default = OSStyle.AmigaOS13,
+        ),
+        videoSystem = decodeEnum(
+            name = this[KEY_VIDEO_SYSTEM],
+            legacyOrdinal = this[LEGACY_KEY_VIDEO_SYSTEM],
+            default = VideoSystem.PAL,
+        ),
+    )
+
+    private fun MutablePreferences.write(value: BoingBallPrefs) {
+        this[KEY_THEME_COLOR_INDEX] = value.themeColorIndex
+        this[KEY_ALT_COLOR_INDEX] = value.altColorIndex
+        this[KEY_DRAW_BORDERS] = value.drawBorders
+        this[KEY_OS_STYLE] = value.osStyle.name
+        this[KEY_VIDEO_SYSTEM] = value.videoSystem.name
+        remove(LEGACY_KEY_OS_STYLE)
+        remove(LEGACY_KEY_VIDEO_SYSTEM)
     }
 
     companion object {
