@@ -81,6 +81,8 @@ class MusicPlayerViewModel(
         settings.boingBallPrefs
             .onEach { prefs -> _uiState.update { it.copy(osStyle = prefs.osStyle) } }
             .launchIn(viewModelScope)
+
+        playback.setOnExternalStateChange(::onExternalStateChange)
     }
 
     fun onAction(action: MusicPlayerAction) {
@@ -102,7 +104,8 @@ class MusicPlayerViewModel(
         when (command) {
             is PlaybackCommand.Play -> {
                 playback.play(command.resourcePath, command.positionMs)
-                startProgress()
+                // play() reports synchronously when audio focus is denied.
+                if (_uiState.value.isPlaying) startProgress()
             }
             PlaybackCommand.Pause -> {
                 playback.pause()
@@ -115,6 +118,13 @@ class MusicPlayerViewModel(
             is PlaybackCommand.Seek -> playback.seekTo(command.positionMs)
             null -> Unit
         }
+    }
+
+    /** The system paused or resumed playback (audio focus, headphones unplugged). */
+    private fun onExternalStateChange(isPlaying: Boolean) {
+        val position = playback.currentPositionMs()
+        _uiState.update { it.copy(isPlaying = isPlaying, positionMs = position) }
+        if (isPlaying) startProgress() else stopProgress()
     }
 
     private fun startProgress() {

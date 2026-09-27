@@ -1,7 +1,6 @@
 package com.rff.boingballdemo.screens.boingball.audio
 
 import android.content.Context
-import android.content.res.AssetFileDescriptor
 import android.media.SoundPool
 import android.util.Log
 import boingball.shared.generated.resources.Res
@@ -12,6 +11,8 @@ actual class BoingBallAudioPlayer(
     private val soundPool: SoundPool = SoundPool.Builder()
         .setMaxStreams(2).build()
     private var soundId: Int = 0
+    // Written by the SoundPool load callback thread, read from the UI thread.
+    @Volatile
     private var isSoundLoaded: Boolean = false
     private val bounce = Res.getUri(BOUNCE_AUDIO_FILE_PATH)
 
@@ -35,8 +36,8 @@ actual class BoingBallAudioPlayer(
         val assetPath = bounce.removePrefix("file:///android_asset/")
         Log.d(TAG, "Loading sound from asset path: $assetPath")
         try {
-            val afd: AssetFileDescriptor = context.assets.openFd(assetPath)
-            soundId = soundPool.load(afd, 1)
+            // SoundPool duplicates the descriptor, so it is safe to close it right away.
+            soundId = context.assets.openFd(assetPath).use { afd -> soundPool.load(afd, 1) }
         } catch (e: Exception) {
             Log.e(TAG, "Failed to open asset for sound: $assetPath", e)
         }
