@@ -21,14 +21,15 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.backhandler.BackHandler
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.navigationevent.NavigationEventInfo
+import androidx.navigationevent.compose.NavigationBackHandler
+import androidx.navigationevent.compose.rememberNavigationEventState
 import boingball.shared.generated.resources.Res
 import boingball.shared.generated.resources.preferences
 import boingball.shared.generated.resources.preferences_draw_bb_square_borders
@@ -350,15 +351,17 @@ private fun VideoSystemSelector(
 }
 
 @Composable
-@Suppress("DEPRECATION")
-@OptIn(ExperimentalComposeUiApi::class)
 private fun VideoSystemHelpWindow(
     osStyle: OSStyle,
     isLandscape: Boolean,
     maxWidth: Dp,
     onDismiss: () -> Unit,
 ) {
-    BackHandler(onBack = onDismiss)
+    // Back closes this help window first (predictive back aware), not the whole screen.
+    NavigationBackHandler(
+        state = rememberNavigationEventState(NavigationEventInfo.None),
+        onBackCompleted = onDismiss,
+    )
 
     val windowWidth = if (isLandscape) {
         (maxWidth * 0.5f).coerceAtLeast(0.dp)
