@@ -4,8 +4,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.navigation3.runtime.NavEntry
 import androidx.navigation3.runtime.NavKey
+import androidx.navigation3.runtime.entryProvider
 import androidx.lifecycle.viewmodel.navigation3.rememberViewModelStoreNavEntryDecorator
 import androidx.navigation3.runtime.rememberNavBackStack
 import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
@@ -104,134 +104,52 @@ private fun AppNavDisplay(onExitApp: () -> Unit) {
     // The Workbench remains below the initially displayed demo. Dismissing the
     // demo therefore reveals a desktop with no window open.
     val backStack = rememberNavBackStack(navConfig, WorkbenchRoute, BoingBallRoute)
-    val popBackStack: () -> Unit = {
-        // Guard against popping the last remaining entry, which would leave
-        // NavDisplay with an empty backstack and crash. This can happen if
-        // onCloseClick fires more than once before recomposition settles
-        // (e.g. a duplicate click or a click racing the back gesture).
-        if (backStack.size > 1) {
-            backStack.removeLastOrNull()
-        }
+
+    fun open(route: AppRoute) {
+        backStack.pushSingleInstance(route)
     }
+
+    // Never pops the Workbench: an empty back stack crashes NavDisplay. This also
+    // absorbs a close that fires twice before recomposition settles (a duplicate
+    // click, or a click racing the back gesture). Returns false if nothing was popped.
+    fun close(): Boolean {
+        if (backStack.size <= 1) return false
+        backStack.removeLastOrNull()
+        return true
+    }
+
+    val onCloseClick: () -> Unit = { close() }
+
     NavDisplay(
         backStack = backStack,
-        onBack = {
-            if (backStack.size > 1) {
-                popBackStack()
-            } else {
-                onExitApp()
-            }
-        },
+        onBack = { if (!close()) onExitApp() },
         // Scope each entry's ViewModels to the entry itself so they are cleared
         // when the entry is popped (e.g. the music player stops on close).
         entryDecorators = listOf(
             rememberSaveableStateHolderNavEntryDecorator(),
             rememberViewModelStoreNavEntryDecorator(),
         ),
-        entryProvider = { key ->
-            when(key) {
-                WorkbenchRoute -> {
-                    NavEntry(key = key) {
-                        WorkbenchScreenRoot(
-                            onBoingBallClick = {
-                                backStack.pushSingleInstance(BoingBallRoute)
-                            },
-                            onPreferencesClick = {
-                                backStack.pushSingleInstance(PreferencesRoute)
-                            },
-                            onClockClick = {
-                                backStack.pushSingleInstance(ClockRoute)
-                            },
-                            onAboutClick = {
-                                backStack.pushSingleInstance(AboutRoute)
-                            },
-                            onCopperBarsClick = {
-                                backStack.pushSingleInstance(CopperBarsRoute)
-                            },
-                            onCalculatorClick = {
-                                backStack.pushSingleInstance(CalculatorRoute)
-                            },
-                            onShellClick = {
-                                backStack.pushSingleInstance(ShellRoute)
-                            },
-                            onMusicPlayerClick = {
-                                backStack.pushSingleInstance(MusicPlayerRoute)
-                            },
-                        )
-                    }
-                }
-                BoingBallRoute -> {
-                    NavEntry(key = key) {
-                        BoingBallScreenRoot(
-                            onDismiss = { popBackStack() }
-                        )
-                    }
-                }
-                PreferencesRoute -> {
-                    NavEntry(key = key) {
-                        PreferencesScreenRoot(
-                            onCloseClick = {
-                                popBackStack()
-                            }
-                        )
-                    }
-                }
-                ClockRoute -> {
-                    NavEntry(key = key) {
-                        ClockScreenRoot(
-                            onCloseClick = {
-                                popBackStack()
-                            }
-                        )
-                    }
-                }
-                AboutRoute -> {
-                    NavEntry(key = key) {
-                        AboutScreenRoot(
-                            onCloseClick = {
-                                popBackStack()
-                            }
-                        )
-                    }
-                }
-                CopperBarsRoute -> {
-                    NavEntry(key = key) {
-                        CopperBarsScreenRoot(
-                            onCloseClick = {
-                                popBackStack()
-                            }
-                        )
-                    }
-                }
-                CalculatorRoute -> {
-                    NavEntry(key = key) {
-                        CalculatorScreenRoot(
-                            onCloseClick = {
-                                popBackStack()
-                            }
-                        )
-                    }
-                }
-                ShellRoute -> {
-                    NavEntry(key = key) {
-                        ShellScreenRoot(
-                            onCloseClick = {
-                                popBackStack()
-                            }
-                        )
-                    }
-                }
-                MusicPlayerRoute -> {
-                    NavEntry(key = key) {
-                        MusicPlayerScreenRoot(
-                            onCloseClick = {
-                                popBackStack()
-                            }
-                        )
-                    }
-                }
-                else -> throw IllegalArgumentException("Unknown key: $key")
+        entryProvider = entryProvider {
+            entry<WorkbenchRoute> {
+                WorkbenchScreenRoot(
+                    onBoingBallClick = { open(BoingBallRoute) },
+                    onPreferencesClick = { open(PreferencesRoute) },
+                    onClockClick = { open(ClockRoute) },
+                    onAboutClick = { open(AboutRoute) },
+                    onCopperBarsClick = { open(CopperBarsRoute) },
+                    onCalculatorClick = { open(CalculatorRoute) },
+                    onShellClick = { open(ShellRoute) },
+                    onMusicPlayerClick = { open(MusicPlayerRoute) },
+                )
             }
-        }
+            entry<BoingBallRoute> { BoingBallScreenRoot(onDismiss = onCloseClick) }
+            entry<PreferencesRoute> { PreferencesScreenRoot(onCloseClick = onCloseClick) }
+            entry<ClockRoute> { ClockScreenRoot(onCloseClick = onCloseClick) }
+            entry<AboutRoute> { AboutScreenRoot(onCloseClick = onCloseClick) }
+            entry<CopperBarsRoute> { CopperBarsScreenRoot(onCloseClick = onCloseClick) }
+            entry<CalculatorRoute> { CalculatorScreenRoot(onCloseClick = onCloseClick) }
+            entry<ShellRoute> { ShellScreenRoot(onCloseClick = onCloseClick) }
+            entry<MusicPlayerRoute> { MusicPlayerScreenRoot(onCloseClick = onCloseClick) }
+        },
     )
 }
