@@ -7,6 +7,7 @@
     <string name="clock">Clock</string>
     <string name="about">About</string>
     <string name="copper" translatable="false">Copper</string>
+    <string name="starfield" translatable="false">Starfield</string>
     <string name="calculator">Calculator</string>
     <string name="music_player" translatable="false">Player</string>
     <string name="chaotic_player" translatable="false">Chaotic Player</string>

@@ -9,4 +9,5 @@ sealed interface WorkbenchAction {
     data object Calculator : WorkbenchAction
     data object Shell : WorkbenchAction
     data object MusicPlayer : WorkbenchAction
+    data object Starfield : WorkbenchAction
 }

@@ -32,6 +32,8 @@ import boingball.shared.generated.resources.prefs30
 import boingball.shared.generated.resources.shell
 import boingball.shared.generated.resources.shell13
 import boingball.shared.generated.resources.shell30
+import boingball.shared.generated.resources.starfield
+import boingball.shared.generated.resources.starfield30
 import com.rff.boingballdemo.component.LocalOsStyle
 import com.rff.boingballdemo.component.AmigaTextBox
 import com.rff.boingballdemo.component.OSStyle
@@ -58,6 +60,7 @@ internal fun workbenchShortcuts() = listOf(
     WorkbenchShortcut(WorkbenchAction.Calculator, Res.drawable.calculator, Res.drawable.calculator30, Res.string.calculator),
     WorkbenchShortcut(WorkbenchAction.CopperBars, Res.drawable.copper, Res.drawable.copper30, Res.string.copper),
     WorkbenchShortcut(WorkbenchAction.MusicPlayer, Res.drawable.mplayer, Res.drawable.mplayer30, Res.string.music_player),
+    WorkbenchShortcut(WorkbenchAction.Starfield, Res.drawable.starfield, Res.drawable.starfield30, Res.string.starfield),
 )
 
 @Composable

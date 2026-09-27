@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.width
@@ -60,7 +59,7 @@ import org.jetbrains.compose.resources.stringResource
  * - Allow user to change rotation speed
  * - [*DONE*] Music Player interactive playlist window
  * - Sine scroll demo
- * - Starfield demo
+ * - [*DONE*] Starfield demo
  * - Plasma screen demo
  * - Raster bars demo
  * - Twister demo
@@ -86,6 +85,7 @@ fun WorkbenchScreenRoot(
     onClockClick: () -> Unit = {},
     onAboutClick: () -> Unit = {},
     onCopperBarsClick: () -> Unit = {},
+    onStarfieldClick: () -> Unit = {},
     onCalculatorClick: () -> Unit = {},
     onShellClick: () -> Unit = {},
     onMusicPlayerClick: () -> Unit = {},
@@ -98,6 +98,7 @@ fun WorkbenchScreenRoot(
                 WorkbenchAction.Clock -> onClockClick()
                 WorkbenchAction.About -> onAboutClick()
                 WorkbenchAction.CopperBars -> onCopperBarsClick()
+                WorkbenchAction.Starfield -> onStarfieldClick()
                 WorkbenchAction.Calculator -> onCalculatorClick()
                 WorkbenchAction.Shell -> onShellClick()
                 WorkbenchAction.MusicPlayer -> onMusicPlayerClick()
@@ -146,11 +147,9 @@ fun WorkbenchScreen(
                             columns = GridCells.Fixed(4),
                             modifier = Modifier
                                 .width(landscapeGridWidth)
-                                .height(176.dp)
                                 .align(Alignment.TopEnd),
                             horizontalArrangement = Arrangement.spacedBy(8.dp),
                             verticalArrangement = Arrangement.spacedBy(16.dp),
-                            userScrollEnabled = false,
                         ) {
                             items(shortcuts) { shortcut ->
                                 Box(contentAlignment = Alignment.TopCenter) {
