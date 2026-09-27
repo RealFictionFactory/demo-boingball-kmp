@@ -55,6 +55,7 @@ import com.rff.boingballdemo.component.OSStyle
 import com.rff.boingballdemo.component.VideoSystem
 import com.rff.boingballdemo.ui.theme.AltAmigaOs13PickerColors
 import com.rff.boingballdemo.ui.theme.BoingBallDemoTheme
+import com.rff.boingballdemo.ui.theme.ProvideOsStyle
 import com.rff.boingballdemo.ui.theme.amigaOs13Blue
 import com.rff.boingballdemo.ui.theme.backgroundColor
 import org.jetbrains.compose.resources.painterResource
@@ -92,6 +93,19 @@ fun PreferencesScreenRoot(
 fun PreferencesScreen(
     state: PreferencesState,
     onCloseClick: () -> Unit = {},
+    onAction: (PreferencesAction) -> Unit,
+) {
+    // This screen edits the style, so it renders from its own state rather than from
+    // the app-wide LocalOsStyle; that also keeps previews for either style correct.
+    ProvideOsStyle(state.osStyle) {
+        PreferencesContent(state, onCloseClick, onAction)
+    }
+}
+
+@Composable
+private fun PreferencesContent(
+    state: PreferencesState,
+    onCloseClick: () -> Unit,
     onAction: (PreferencesAction) -> Unit,
 ) {
     var showVideoSystemHelp by remember { mutableStateOf(false) }
@@ -143,10 +157,10 @@ fun PreferencesScreen(
 }
 
 @Composable
-fun PortraitPreferencesLayout(
+private fun PortraitPreferencesLayout(
     state: PreferencesState,
     onAction: (PreferencesAction) -> Unit,
-    onVideoSystemHelpClick: () -> Unit = {},
+    onVideoSystemHelpClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -154,168 +168,94 @@ fun PortraitPreferencesLayout(
             .fillMaxSize()
             .padding(8.dp)
     ) {
-        AmigaTextBox(
-            text = stringResource(Res.string.preferences_pick_main_bb_color),
-            osStyle = state.osStyle
-        )
-        AmigaColorPicker(
-            selectedIndex = state.themeColorIndex,
-            osStyle = state.osStyle,
-            onColorSelected = { index ->
-                onAction(PreferencesAction.ChangeThemeColor(index))
-            }
-        )
-        Spacer(modifier = Modifier.height(8.dp))
-        AmigaTextBox(
-            text = stringResource(Res.string.preferences_pick_alternate_bb_color),
-            osStyle = state.osStyle
-        )
-        AmigaColorPicker(
-            selectedIndex = state.altColorIndex,
-            osStyle = state.osStyle,
-            colors = AltAmigaOs13PickerColors,
-            onColorSelected = { index ->
-                onAction(PreferencesAction.ChangeAltColor(index))
-            }
-        )
-        Spacer(modifier = Modifier.height(8.dp))
-        Row(
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            AmigaTextBox(
-                text = stringResource(Res.string.preferences_draw_bb_square_borders),
-                osStyle = state.osStyle
-            )
-            Spacer(modifier = Modifier.width(8.dp))
-            AmigaCheckBox(
-                isChecked = state.drawBorders,
-                osStyle = state.osStyle,
-                onCheckChanged = { newState ->
-                    onAction(PreferencesAction.ChangeFrameDraw(newState))
-                }
-            )
-        }
+        BallAppearanceSection(state, onAction)
         Spacer(modifier = Modifier.height(8.dp))
         VideoSystemSelector(state = state, onAction = onAction, onHelpClick = onVideoSystemHelpClick)
         Spacer(modifier = Modifier.height(16.dp))
-        AmigaButton(
-            text = stringResource(
-                if (state.osStyle == OSStyle.AmigaOS13) Res.string.preferences_set_amigaos_2_style
-                else Res.string.preferences_set_amigaos_1_3_style
-            ),
-            osStyle = state.osStyle,
-            onClick = {
-                onAction(
-                    if (state.osStyle == OSStyle.AmigaOS13) PreferencesAction.SetAmigaOS20
-                    else PreferencesAction.SetAmigaOS13
-                )
-            }
-        )
-        Spacer(modifier = Modifier.height(8.dp))
-        AmigaButton(
-            text = stringResource(Res.string.preferences_set_demo_defaults),
-            osStyle = state.osStyle,
-            onClick = { onAction(PreferencesAction.BringDefaults) }
-        )
-        Spacer(modifier = Modifier.height(8.dp))
-        AmigaButton(
-            text = stringResource(Res.string.preferences_set_app_defaults),
-            osStyle = state.osStyle,
-            onClick = { onAction(PreferencesAction.BringAppDefaults) }
+        StyleAndDefaultsButtons(state, onAction)
+    }
+}
+
+/** The same sections as portrait, split into two columns. */
+@Composable
+private fun LandscapePreferencesLayout(
+    state: PreferencesState,
+    onAction: (PreferencesAction) -> Unit,
+    onVideoSystemHelpClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Row(
+        modifier = modifier
+            .fillMaxSize()
+            .padding(8.dp)
+    ) {
+        Column(modifier = Modifier.weight(1f)) {
+            BallAppearanceSection(state, onAction)
+        }
+        Spacer(modifier = Modifier.width(16.dp))
+        Column(modifier = Modifier.weight(1f)) {
+            VideoSystemSelector(state = state, onAction = onAction, onHelpClick = onVideoSystemHelpClick)
+            Spacer(modifier = Modifier.height(16.dp))
+            StyleAndDefaultsButtons(state, onAction)
+        }
+    }
+}
+
+/** Ball colors and the tile-border checkbox. Emits into the caller's Column. */
+@Composable
+private fun BallAppearanceSection(
+    state: PreferencesState,
+    onAction: (PreferencesAction) -> Unit,
+) {
+    AmigaTextBox(text = stringResource(Res.string.preferences_pick_main_bb_color))
+    AmigaColorPicker(
+        selectedIndex = state.themeColorIndex,
+        onColorSelected = { index -> onAction(PreferencesAction.ChangeThemeColor(index)) }
+    )
+    Spacer(modifier = Modifier.height(8.dp))
+    AmigaTextBox(text = stringResource(Res.string.preferences_pick_alternate_bb_color))
+    AmigaColorPicker(
+        selectedIndex = state.altColorIndex,
+        colors = AltAmigaOs13PickerColors,
+        onColorSelected = { index -> onAction(PreferencesAction.ChangeAltColor(index)) }
+    )
+    Spacer(modifier = Modifier.height(8.dp))
+    Row(verticalAlignment = Alignment.CenterVertically) {
+        AmigaTextBox(text = stringResource(Res.string.preferences_draw_bb_square_borders))
+        Spacer(modifier = Modifier.width(8.dp))
+        AmigaCheckBox(
+            isChecked = state.drawBorders,
+            onCheckChanged = { checked -> onAction(PreferencesAction.ChangeFrameDraw(checked)) }
         )
     }
 }
 
+/** OS style toggle and the two reset buttons. Emits into the caller's Column. */
 @Composable
-fun LandscapePreferencesLayout(
+private fun StyleAndDefaultsButtons(
     state: PreferencesState,
     onAction: (PreferencesAction) -> Unit,
-    onVideoSystemHelpClick: () -> Unit = {},
-    modifier: Modifier = Modifier
 ) {
-    Column(
-        modifier = modifier
-            .fillMaxSize()
-            .padding(8.dp)
-    ) {
-        Row(
-            modifier = modifier.fillMaxWidth()
-        ) {
-            Column(modifier = Modifier.weight(1f)) {
-                AmigaTextBox(
-                    text = stringResource(Res.string.preferences_pick_main_bb_color),
-                    osStyle = state.osStyle
-                )
-                AmigaColorPicker(
-                    selectedIndex = state.themeColorIndex,
-                    osStyle = state.osStyle,
-                    onColorSelected = { index ->
-                        onAction(PreferencesAction.ChangeThemeColor(index))
-                    }
-                )
-                Spacer(modifier = Modifier.height(8.dp))
-                AmigaTextBox(
-                    text = stringResource(Res.string.preferences_pick_alternate_bb_color),
-                    osStyle = state.osStyle
-                )
-                AmigaColorPicker(
-                    selectedIndex = state.altColorIndex,
-                    osStyle = state.osStyle,
-                    colors = AltAmigaOs13PickerColors,
-                    onColorSelected = { index ->
-                        onAction(PreferencesAction.ChangeAltColor(index))
-                    }
-                )
-                Spacer(modifier = Modifier.height(8.dp))
-                Row(
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    AmigaTextBox(
-                        text = stringResource(Res.string.preferences_draw_bb_square_borders),
-                        osStyle = state.osStyle
-                    )
-                    Spacer(modifier = Modifier.width(8.dp))
-                    AmigaCheckBox(
-                        isChecked = state.drawBorders,
-                        osStyle = state.osStyle,
-                        onCheckChanged = { newState ->
-                            onAction(PreferencesAction.ChangeFrameDraw(newState))
-                        }
-                    )
-                }
-            }
-            Spacer(modifier = Modifier.width(16.dp))
-            Column(modifier = Modifier.weight(1f)) {
-                VideoSystemSelector(state = state, onAction = onAction, onHelpClick = onVideoSystemHelpClick)
-                Spacer(modifier = Modifier.height(16.dp))
-                AmigaButton(
-                    text = stringResource(
-                        if (state.osStyle == OSStyle.AmigaOS13) Res.string.preferences_set_amigaos_2_style
-                        else Res.string.preferences_set_amigaos_1_3_style
-                    ),
-                    osStyle = state.osStyle,
-                    onClick = {
-                        onAction(
-                            if (state.osStyle == OSStyle.AmigaOS13) PreferencesAction.SetAmigaOS20
-                            else PreferencesAction.SetAmigaOS13
-                        )
-                    }
-                )
-                Spacer(modifier = Modifier.height(8.dp))
-                AmigaButton(
-                    text = stringResource(Res.string.preferences_set_demo_defaults),
-                    osStyle = state.osStyle,
-                    onClick = { onAction(PreferencesAction.BringDefaults) }
-                )
-                Spacer(modifier = Modifier.height(8.dp))
-                AmigaButton(
-                    text = stringResource(Res.string.preferences_set_app_defaults),
-                    osStyle = state.osStyle,
-                    onClick = { onAction(PreferencesAction.BringAppDefaults) }
-                )
-            }
+    val isOs13 = state.osStyle == OSStyle.AmigaOS13
+    AmigaButton(
+        text = stringResource(
+            if (isOs13) Res.string.preferences_set_amigaos_2_style
+            else Res.string.preferences_set_amigaos_1_3_style
+        ),
+        onClick = {
+            onAction(if (isOs13) PreferencesAction.SetAmigaOS20 else PreferencesAction.SetAmigaOS13)
         }
-    }
+    )
+    Spacer(modifier = Modifier.height(8.dp))
+    AmigaButton(
+        text = stringResource(Res.string.preferences_set_demo_defaults),
+        onClick = { onAction(PreferencesAction.BringDefaults) }
+    )
+    Spacer(modifier = Modifier.height(8.dp))
+    AmigaButton(
+        text = stringResource(Res.string.preferences_set_app_defaults),
+        onClick = { onAction(PreferencesAction.BringAppDefaults) }
+    )
 }
 
 @Composable
