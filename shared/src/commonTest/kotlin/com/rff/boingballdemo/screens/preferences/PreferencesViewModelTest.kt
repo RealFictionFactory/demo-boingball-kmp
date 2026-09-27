@@ -2,9 +2,12 @@ package com.rff.boingballdemo.screens.preferences
 
 import com.rff.boingballdemo.component.OSStyle
 import com.rff.boingballdemo.component.VideoSystem
-import com.rff.boingballdemo.data.local.AppSettings
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.ViewModelStore
+import androidx.lifecycle.viewmodel.initializer
+import androidx.lifecycle.viewmodel.viewModelFactory
 import com.rff.boingballdemo.data.local.BoingBallPrefs
-import com.rff.boingballdemo.testing.InMemoryDataStore
+import com.rff.boingballdemo.testing.testAppSettings
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.first
@@ -22,7 +25,7 @@ import kotlin.test.assertEquals
 @OptIn(ExperimentalCoroutinesApi::class)
 class PreferencesViewModelTest {
     private val dispatcher = StandardTestDispatcher()
-    private val settings = AppSettings(InMemoryDataStore())
+    private val settings = testAppSettings(dispatcher)
 
     @BeforeTest
     fun setUp() {
@@ -64,6 +67,21 @@ class PreferencesViewModelTest {
         assertEquals(1, viewModel.uiState.value.altColorIndex)
         assertEquals(OSStyle.AmigaOS20, viewModel.uiState.value.osStyle)
         collector.cancel()
+    }
+
+    @Test
+    fun writeFinishesWhenScreenClosesRightAfterTap() = runTest(dispatcher) {
+        val store = ViewModelStore()
+        val viewModel = ViewModelProvider.create(
+            store,
+            viewModelFactory { initializer { PreferencesViewModel(settings) } },
+        )[PreferencesViewModel::class]
+
+        viewModel.onAction(PreferencesAction.SetAmigaOS20)
+        store.clear()
+        advanceUntilIdle()
+
+        assertEquals(OSStyle.AmigaOS20, settings.boingBallPrefs.first().osStyle)
     }
 
     @Test

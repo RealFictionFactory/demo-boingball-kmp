@@ -11,6 +11,8 @@ import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import com.rff.boingballdemo.component.OSStyle
 import com.rff.boingballdemo.component.VideoSystem
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -18,8 +20,13 @@ import kotlinx.coroutines.flow.map
 import com.rff.boingballdemo.VersionConfig
 import kotlin.enums.enumEntries
 
+/**
+ * @param externalScope application-wide scope that runs writes, so a write finishes even
+ * if the caller (e.g. a ViewModel) is cancelled while it is in progress.
+ */
 class AppSettings(
-    private val preferences: DataStore<Preferences>
+    private val preferences: DataStore<Preferences>,
+    private val externalScope: CoroutineScope,
 ) {
     val boingBallPrefs: Flow<BoingBallPrefs> = preferences.data
         .catch { exception ->
@@ -38,11 +45,16 @@ class AppSettings(
     /**
      * Applies [transform] to the stored prefs in one atomic DataStore transaction, so
      * quick successive changes to different settings never overwrite each other.
+     *
+     * The write runs in [externalScope]: cancelling the caller only stops the wait,
+     * not the write. Write errors reach the caller if it is still waiting.
      */
     suspend fun updateBoingBallPrefs(transform: (BoingBallPrefs) -> BoingBallPrefs) {
-        preferences.edit { preferences ->
-            preferences.write(transform(preferences.toBoingBallPrefs()))
-        }
+        externalScope.async {
+            preferences.edit { preferences ->
+                preferences.write(transform(preferences.toBoingBallPrefs()))
+            }
+        }.await()
     }
 
     private fun Preferences.toBoingBallPrefs() = BoingBallPrefs(

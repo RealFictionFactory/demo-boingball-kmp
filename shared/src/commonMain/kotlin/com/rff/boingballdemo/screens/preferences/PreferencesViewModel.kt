@@ -6,11 +6,10 @@ import com.rff.boingballdemo.component.OSStyle
 import com.rff.boingballdemo.data.local.AppSettings
 import com.rff.boingballdemo.data.local.BoingBallPrefs
 import com.rff.boingballdemo.utils.stateInWhileSubscribed
-import kotlinx.coroutines.NonCancellable
+import kotlinx.coroutines.CoroutineStart
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 
 /** Reads and writes DataStore directly; the stored prefs are the only source of truth. */
 class PreferencesViewModel(
@@ -34,11 +33,10 @@ class PreferencesViewModel(
     }
 
     private fun update(transform: (BoingBallPrefs) -> BoingBallPrefs) {
-        viewModelScope.launch {
-            // Use NonCancellable to ensure preferences are saved even if ViewModel is cleared
-            withContext(NonCancellable) {
-                settings.updateBoingBallPrefs(transform)
-            }
+        // UNDISPATCHED hands the write to the app scope before this call returns, so
+        // closing the window right after a tap can no longer drop the change.
+        viewModelScope.launch(start = CoroutineStart.UNDISPATCHED) {
+            settings.updateBoingBallPrefs(transform)
         }
     }
 }

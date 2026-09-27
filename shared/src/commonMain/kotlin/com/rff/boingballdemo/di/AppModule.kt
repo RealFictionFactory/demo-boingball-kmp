@@ -8,8 +8,10 @@ import com.rff.boingballdemo.screens.clock.ClockViewModel
 import com.rff.boingballdemo.screens.musicplayer.MusicPlayerViewModel
 import com.rff.boingballdemo.screens.preferences.PreferencesViewModel
 import com.rff.boingballdemo.screens.shell.ShellViewModel
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
 import org.koin.core.module.Module
-import org.koin.core.module.dsl.singleOf
 import org.koin.core.module.dsl.viewModelOf
 import org.koin.dsl.module
 
@@ -17,7 +19,8 @@ import org.koin.dsl.module
 expect val platformModule: Module
 
 val sharedModule = module {
-    singleOf(::AppSettings)
+    single<CoroutineScope>(AppScope) { CoroutineScope(SupervisorJob() + Dispatchers.Default) }
+    single { AppSettings(preferences = get(), externalScope = get(AppScope)) }
 
     viewModelOf(::BoingBallViewModel)
     viewModelOf(::PreferencesViewModel)

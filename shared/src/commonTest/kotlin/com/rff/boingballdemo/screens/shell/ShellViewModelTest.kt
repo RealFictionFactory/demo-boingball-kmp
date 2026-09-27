@@ -1,8 +1,7 @@
 package com.rff.boingballdemo.screens.shell
 
 import com.rff.boingballdemo.component.OSStyle
-import com.rff.boingballdemo.data.local.AppSettings
-import com.rff.boingballdemo.testing.InMemoryDataStore
+import com.rff.boingballdemo.testing.testAppSettings
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.launch
@@ -20,7 +19,7 @@ import kotlin.test.assertFalse
 @OptIn(ExperimentalCoroutinesApi::class)
 class ShellViewModelTest {
     private val dispatcher = StandardTestDispatcher()
-    private val settings = AppSettings(InMemoryDataStore())
+    private val settings = testAppSettings(dispatcher)
 
     @BeforeTest
     fun setUp() {
