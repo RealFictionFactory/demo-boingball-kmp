@@ -5,8 +5,8 @@ import androidx.compose.animation.core.FastOutLinearInEasing
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.LinearOutSlowInEasing
 import androidx.compose.animation.core.tween
-import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -19,10 +19,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.withFrameNanos
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.drawWithCache
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
-import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -32,13 +32,8 @@ import androidx.lifecycle.repeatOnLifecycle
 import com.rff.boingballdemo.component.VideoSystem
 import com.rff.boingballdemo.ui.theme.BoingBallDemoTheme
 import com.rff.boingballdemo.ui.theme.amigaOs13Blue
-import com.rff.boingballdemo.utils.Point3D
-import com.rff.boingballdemo.utils.TAU
 import com.rff.boingballdemo.utils.toRadians
-import kotlin.math.PI
 import kotlin.math.abs
-import kotlin.math.cos
-import kotlin.math.sin
 import kotlinx.coroutines.launch
 
 internal const val BOING_BALL_ROWS = 8
@@ -50,6 +45,9 @@ internal const val VERTICAL_FALL_MS = 600
 internal const val VERTICAL_RISE_MS = 1100
 internal const val HORIZONTAL_START_FRACTION = 0.5f
 internal const val INITIAL_MOVING_LEFT = true
+/** Shadow offset as a fraction of the ball radius (was 50 px / 10 px at a ~160 px radius). */
+internal const val SHADOW_OFFSET_X = 0.3f
+internal const val SHADOW_OFFSET_Y = 0.06f
 
 internal fun rotationSpeedRadiansPerSecond(vblankHz: Int): Float =
     ROTATION_SPEED_RADIANS_PER_SECOND * vblankHz / VideoSystem.PAL.vblankHz
@@ -143,124 +141,47 @@ fun BoingBall(
         }
     }
 
-    Canvas(modifier = modifier) {
-        /* ----- geometry constants ----- */
-        val radius = size.minDimension * 0.2f
-        val bounceMax = size.height - (size.height - size.height * .9f) / 2 - radius
-        val bounceMin = size.height - size.height * .9f + radius
-        val offsetY = lerp(bounceMin, bounceMax, vBounce.value)
+    Spacer(
+        modifier = modifier.drawWithCache {
+            // Allocated once per size; every frame only rewrites them.
+            val mesh = BoingBallMesh()
+            val themePath = Path()
+            val altPath = Path()
+            val borderStroke = Stroke(width = 0.8f)
+            val tiltRadians = tilt.toRadians()
 
-        val maxX = size.width - radius
-        val cx = radius + (maxX - radius) * hBounce.value
-        val tz = tilt.toRadians()
+            onDrawBehind {
+                val radius = size.minDimension * 0.2f
+                val bounceMax = size.height - (size.height - size.height * .9f) / 2 - radius
+                val bounceMin = size.height - size.height * .9f + radius
+                val cy = lerp(bounceMin, bounceMax, vBounce.value)
+                val maxX = size.width - radius
+                val cx = radius + (maxX - radius) * hBounce.value
 
-        if (drawShadow) {
-            drawCircle(
-                color = Color.DarkGray,
-                radius = radius,
-                center = Offset(cx + 50f, offsetY - 10f),
-                alpha = .3f
-            )
+                if (drawShadow) {
+                    drawCircle(
+                        color = Color.DarkGray,
+                        radius = radius,
+                        // Relative to the ball, so the shadow looks the same at any size.
+                        center = Offset(cx + radius * SHADOW_OFFSET_X, cy - radius * SHADOW_OFFSET_Y),
+                        alpha = .3f
+                    )
+                }
+
+                mesh.update(angle, tiltRadians, cx, cy, radius)
+                mesh.buildPaths(themePath, altPath)
+                drawPath(themePath, color = themeColor)
+                drawPath(altPath, color = altColor)
+                if (drawBorders) {
+                    drawPath(themePath, color = Color.Black, style = borderStroke)
+                    drawPath(altPath, color = Color.Black, style = borderStroke)
+                }
+            }
         }
-        boingBall(
-            cx = cx,
-            cy = offsetY,
-            radius = radius,
-            rotationAngle = angle,
-            earthTiltAngle = tz,
-            ballThemeColor = themeColor,
-            ballAltColor = altColor,
-            drawBorders = drawBorders,
-        )
-    }
+    )
 }
 
 private fun lerp(start: Float, end: Float, fraction: Float) = start + (end - start) * fraction
-
-private fun DrawScope.boingBall(
-    cx: Float,
-    cy: Float,
-    radius: Float,
-    rotationAngle: Float,
-    earthTiltAngle: Float,
-    ballThemeColor: Color,
-    ballAltColor: Color,
-    drawBorders: Boolean,
-) {
-    val columns = BOING_BALL_COLUMNS
-    val rows = BOING_BALL_ROWS
-    // Camera is on +Z. Quad winding is clockwise from outside, so normals point inward;
-    // inward · (0, 0, -1) > 0 keeps the front (+Z) hemisphere.
-    val view = Point3D(0f, 0f, -1f)
-
-    // Unit-sphere vertices, cached so each is computed once then shared by neighbouring faces.
-    // rotateY is the spin; rotateZ is the on-screen axial tilt (poles stay on the silhouette).
-    val vertexCache = Array(rows + 1) { rowIndex ->
-        Array(columns) { colIndex ->
-            val lat = ((PI / rows) * (rowIndex - rows / 2f)).toFloat()   // -π/2 → +π/2
-            val lon = ((TAU / columns) * colIndex)
-            Point3D(
-                x = cos(lat) * cos(lon),
-                y = sin(lat),
-                z = cos(lat) * sin(lon)
-            )
-                .rotateY(rotationAngle)
-                .rotateZ(earthTiltAngle)
-        }
-    }
-
-    // Longitude wraps: the last column shares its east edge with column 0.
-    fun getVertex(rowIndex: Int, colIndex: Int): Point3D {
-        return vertexCache[rowIndex][colIndex % columns]
-    }
-
-    // Each band is a ring of quads v1→v2→v3→v4 (SW, SE, NE, NW).
-    // At the poles every longitude collapses to one point, so those bands are triangles:
-    //   south (row 0):    v1 == v2  →  v1→v3→v4
-    //   north (last row): v3 == v4  →  v1→v2→v3
-    for (row in 0 until rows) {
-        for (column in 0 until columns) {
-            val v1 = getVertex(row, column)
-            val v2 = getVertex(row, column + 1)
-            val v3 = getVertex(row + 1, column + 1)
-            val v4 = getVertex(row + 1, column)
-
-            val south = row == 0
-            val north = row == rows - 1
-
-            // South cannot use (v2−v1)×(v3−v1): that edge is zero. North matches the regular quad.
-            val normal = if (south) (v3 - v1).cross(v4 - v1) else (v2 - v1).cross(v3 - v1)
-
-            if ((normal dot view) <= 0f) continue
-
-            val p1 = v1.project(cx, cy, radius)
-            val p2 = v2.project(cx, cy, radius)
-            val p3 = v3.project(cx, cy, radius)
-            val p4 = v4.project(cx, cy, radius)
-
-            // Drop the collapsed pole vertex so the path is a triangle, not a sliver quad.
-            val path = Path().apply {
-                moveTo(p1.x, p1.y)
-
-                if (!south) lineTo(p2.x, p2.y)
-
-                lineTo(p3.x, p3.y)
-
-                if (!north) lineTo(p4.x, p4.y)
-
-                close()
-            }
-
-            // Checkerboard. Convex mesh + back-face cull ⇒ no overlapping fills, no depth sort.
-            val color = if (((row + column) and 1) == 0) ballThemeColor else ballAltColor
-            drawPath(path, color = color)
-
-            if (drawBorders) {
-                drawPath(path, color = Color.Black, style = Stroke(width = 0.8f))
-            }
-        }
-    }
-}
 
 @Preview
 @Composable
