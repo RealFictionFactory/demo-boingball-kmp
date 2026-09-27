@@ -11,7 +11,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
@@ -28,8 +27,8 @@ import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
+import androidx.lifecycle.repeatOnLifecycle
 import com.rff.boingballdemo.component.VideoSystem
 import com.rff.boingballdemo.ui.theme.BoingBallDemoTheme
 import com.rff.boingballdemo.ui.theme.amigaOs13Blue
@@ -40,6 +39,7 @@ import kotlin.math.PI
 import kotlin.math.abs
 import kotlin.math.cos
 import kotlin.math.sin
+import kotlinx.coroutines.launch
 
 internal const val BOING_BALL_ROWS = 8
 internal const val BOING_BALL_COLUMNS = 16
@@ -90,78 +90,55 @@ fun BoingBall(
     var direction by remember { mutableStateOf(INITIAL_MOVING_LEFT) }
     val boing = rememberBoingBallAudio()
 
-    // Get the current lifecycle owner
     val lifecycleOwner = LocalLifecycleOwner.current
 
-    // State to track if the app is currently resumed
-    var isResumed by remember {
-        mutableStateOf(
-            lifecycleOwner.lifecycle.currentState.isAtLeast(Lifecycle.State.RESUMED)
-        )
-    }
-
-    // Use DisposableEffect for lifecycle observation
-    // This ensures the observer is removed when the composable leaves the composition
-    DisposableEffect(lifecycleOwner) {
-        val observer = LifecycleEventObserver { _, event ->
-            if (event == Lifecycle.Event.ON_RESUME) {
-                isResumed = true
-            } else if (event == Lifecycle.Event.ON_PAUSE) {
-                isResumed = false
+    // Animate only while the screen is resumed. repeatOnLifecycle cancels the loops on
+    // pause and restarts them on resume, continuing from the current ball position.
+    LaunchedEffect(lifecycleOwner, videoSystem) {
+        lifecycleOwner.repeatOnLifecycle(Lifecycle.State.RESUMED) {
+            // Vertical bounce, with the boing sound on each floor hit.
+            launch {
+                while (true) {
+                    vBounce.animateTo(
+                        targetValue = 1f,
+                        animationSpec = tween(fallMs, easing = FastOutLinearInEasing)
+                    )
+                    boing?.play()
+                    vBounce.animateTo(
+                        targetValue = 0f,
+                        animationSpec = tween(riseMs, easing = LinearOutSlowInEasing)
+                    )
+                }
             }
-        }
-        lifecycleOwner.lifecycle.addObserver(observer)
 
-        onDispose {
-            lifecycleOwner.lifecycle.removeObserver(observer)
-        }
-    }
+            // Spin, advanced by real frame time so speed does not depend on refresh rate.
+            launch {
+                var lastFrameNanos = withFrameNanos { it }
+                while (true) {
+                    val frameNanos = withFrameNanos { it }
+                    val deltaSeconds = (frameNanos - lastFrameNanos) / 1_000_000_000f
+                    lastFrameNanos = frameNanos
 
-    LaunchedEffect(isResumed, videoSystem) {
-        if (!isResumed) return@LaunchedEffect
+                    angle += rotationSign(direction) * rotationSpeed * deltaSeconds
+                }
+            }
 
-        while (isResumed) {
-            vBounce.animateTo(
-                targetValue = 1f,
-                animationSpec = tween(fallMs, easing = FastOutLinearInEasing)
-            )
-            boing?.play()
-            vBounce.animateTo(
-                targetValue = 0f,
-                animationSpec = tween(riseMs, easing = LinearOutSlowInEasing)
-            )
-        }
-    }
-
-    LaunchedEffect(isResumed, videoSystem) {
-        if (!isResumed) return@LaunchedEffect
-
-        var lastFrameNanos = withFrameNanos { it }
-
-        while (isResumed) {
-            val frameNanos = withFrameNanos { it }
-            val deltaSeconds = (frameNanos - lastFrameNanos) / 1_000_000_000f
-            lastFrameNanos = frameNanos
-
-            angle += rotationSign(direction) * rotationSpeed * deltaSeconds
-        }
-    }
-
-    LaunchedEffect(isResumed, videoSystem) {
-        if (!isResumed) return@LaunchedEffect
-
-        while (isResumed) {
-            val target = nextHorizontalFraction(direction)
-            val duration = horizontalTravelDurationMs(hBounce.value, target, fullTravelMs)
-            hBounce.animateTo(
-                targetValue = target,
-                animationSpec = tween(duration, easing = LinearEasing)
-            )
-            direction = !direction
-            if (direction) {
-                boing?.playRight()
-            } else {
-                boing?.playLeft()
+            // Horizontal travel between the walls, with a panned boing on each wall hit.
+            launch {
+                while (true) {
+                    val target = nextHorizontalFraction(direction)
+                    val duration = horizontalTravelDurationMs(hBounce.value, target, fullTravelMs)
+                    hBounce.animateTo(
+                        targetValue = target,
+                        animationSpec = tween(duration, easing = LinearEasing)
+                    )
+                    direction = !direction
+                    if (direction) {
+                        boing?.playRight()
+                    } else {
+                        boing?.playLeft()
+                    }
+                }
             }
         }
     }
