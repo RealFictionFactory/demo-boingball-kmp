@@ -1,5 +1,4 @@
 import java.util.Properties
-import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
     alias(libs.plugins.androidApplication)
@@ -16,9 +15,8 @@ val keystoreProps = if (keystorePropsFile.exists()) {
 } else null
 
 kotlin {
-    compilerOptions {
-        jvmTarget = JvmTarget.JVM_11
-    }
+    // Compiles Kotlin and Java with JDK 17 and targets Java 17 bytecode.
+    jvmToolchain(17)
 }
 dependencies {
     implementation(projects.shared)
@@ -68,10 +66,6 @@ android {
                 "proguard-rules.pro"
             )
         }
-    }
-    compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_11
-        targetCompatibility = JavaVersion.VERSION_11
     }
 }
 

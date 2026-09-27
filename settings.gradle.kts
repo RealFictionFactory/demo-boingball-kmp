@@ -15,6 +15,11 @@ pluginManagement {
     }
 }
 
+plugins {
+    // Downloads the JDK toolchain (jvmToolchain(17)) on machines that do not have it.
+    id("org.gradle.toolchains.foojay-resolver-convention") version "1.0.0"
+}
+
 dependencyResolutionManagement {
     repositories {
         google {
