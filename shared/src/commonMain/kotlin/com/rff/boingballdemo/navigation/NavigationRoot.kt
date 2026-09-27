@@ -70,6 +70,17 @@ private val navConfig = SavedStateConfiguration {
     }
 }
 
+/**
+ * Pushes [route] unless it is already on the back stack. Every app window is
+ * single-instance, so a double tap (or two taps landing before recomposition)
+ * must not open the same window twice.
+ */
+internal fun MutableList<NavKey>.pushSingleInstance(route: NavKey): Boolean {
+    if (route in this) return false
+    add(route)
+    return true
+}
+
 @Composable
 fun NavigationRoot(
     onExitApp: () -> Unit = {},
@@ -107,28 +118,28 @@ fun NavigationRoot(
                     NavEntry(key = key) {
                         WorkbenchScreenRoot(
                             onBoingBallClick = {
-                                backStack.add(BoingBallRoute)
+                                backStack.pushSingleInstance(BoingBallRoute)
                             },
                             onPreferencesClick = {
-                                backStack.add(PreferencesRoute)
+                                backStack.pushSingleInstance(PreferencesRoute)
                             },
                             onClockClick = {
-                                backStack.add(ClockRoute)
+                                backStack.pushSingleInstance(ClockRoute)
                             },
                             onAboutClick = {
-                                backStack.add(AboutRoute)
+                                backStack.pushSingleInstance(AboutRoute)
                             },
                             onCopperBarsClick = {
-                                backStack.add(CopperBarsRoute)
+                                backStack.pushSingleInstance(CopperBarsRoute)
                             },
                             onCalculatorClick = {
-                                backStack.add(CalculatorRoute)
+                                backStack.pushSingleInstance(CalculatorRoute)
                             },
                             onShellClick = {
-                                backStack.add(ShellRoute)
+                                backStack.pushSingleInstance(ShellRoute)
                             },
                             onMusicPlayerClick = {
-                                backStack.add(MusicPlayerRoute)
+                                backStack.pushSingleInstance(MusicPlayerRoute)
                             },
                         )
                     }
