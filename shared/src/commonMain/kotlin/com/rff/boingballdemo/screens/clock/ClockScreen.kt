@@ -24,6 +24,7 @@ import boingball.shared.generated.resources.Res
 import boingball.shared.generated.resources.clock
 import androidx.compose.foundation.layout.Box
 import boingball.shared.generated.resources.workbench
+import com.rff.boingballdemo.component.LocalOsStyle
 import com.rff.boingballdemo.component.AmigaScreenTitleBar
 import com.rff.boingballdemo.component.AmigaTextBox
 import com.rff.boingballdemo.component.AmigaWindow
@@ -48,7 +49,7 @@ fun ClockScreen(
     state: ClockState,
     onCloseClick: () -> Unit = {},
 ) {
-    val bg = if (state.osStyle == OSStyle.AmigaOS20) backgroundColor else amigaOs13Blue
+    val bg = if (LocalOsStyle.current == OSStyle.AmigaOS20) backgroundColor else amigaOs13Blue
 
     BoxWithConstraints(
         modifier = Modifier
@@ -80,7 +81,6 @@ private fun ClockLayout(state: ClockState, onCloseClick: () -> Unit, windowWidth
         Column(modifier = Modifier.fillMaxSize()) {
             AmigaScreenTitleBar(
                 text = stringResource(Res.string.workbench),
-                osStyle = state.osStyle
             )
             Box(
                 modifier = Modifier.weight(1f).fillMaxWidth(),
@@ -89,7 +89,6 @@ private fun ClockLayout(state: ClockState, onCloseClick: () -> Unit, windowWidth
                 AmigaWindow(
                     modifier = Modifier.width(windowWidth),
                     title = stringResource(Res.string.clock),
-                    osStyle = state.osStyle,
                     onCloseClick = onCloseClick,
                 ) {
                     contentModifier -> ClockContent(state = state, modifier = contentModifier)
@@ -103,7 +102,7 @@ private fun ClockContent(
     state: ClockState,
     modifier: Modifier = Modifier,
 ) {
-    val bg = if (state.osStyle == OSStyle.AmigaOS20)
+    val bg = if (LocalOsStyle.current == OSStyle.AmigaOS20)
         backgroundColor
     else
         amigaOs13Blue
@@ -118,20 +117,17 @@ private fun ClockContent(
             hour = state.hour,
             minute = state.minute,
             second = state.second,
-            osStyle = state.osStyle,
             modifier = Modifier.fillMaxWidth(),
         )
         Spacer(modifier = Modifier.height(8.dp))
         AmigaTextBox(
             text = state.dateText,
-            osStyle = state.osStyle,
         )
         Spacer(modifier = Modifier.height(4.dp))
     }
 }
 
 private val previewState = ClockState(
-    osStyle = OSStyle.AmigaOS13,
     hour = 10,
     minute = 10,
     second = 30,
@@ -157,15 +153,15 @@ private fun ClockScreenLandscapeOs13Preview() {
 @Preview(device = "id:pixel_10")
 @Composable
 private fun ClockScreenOs30Preview() {
-    BoingBallDemoTheme {
-        ClockScreen(state = previewState.copy(osStyle = OSStyle.AmigaOS20))
+    BoingBallDemoTheme(osStyle = OSStyle.AmigaOS20) {
+        ClockScreen(state = previewState)
     }
 }
 
 @Preview(device = "spec:parent=pixel_10,orientation=landscape")
 @Composable
 private fun ClockScreenLandscapeOs30Preview() {
-    BoingBallDemoTheme {
-        ClockScreen(state = previewState.copy(osStyle = OSStyle.AmigaOS20))
+    BoingBallDemoTheme(osStyle = OSStyle.AmigaOS20) {
+        ClockScreen(state = previewState)
     }
 }

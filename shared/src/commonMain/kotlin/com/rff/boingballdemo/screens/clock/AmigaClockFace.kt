@@ -12,6 +12,7 @@ import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.drawscope.rotate
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.rff.boingballdemo.component.LocalOsStyle
 import com.rff.boingballdemo.component.OSStyle
 import com.rff.boingballdemo.ui.theme.amigaOs13Orange
 import com.rff.boingballdemo.ui.theme.blackColor
@@ -24,7 +25,7 @@ fun AmigaClockFace(
     hour: Int,
     minute: Int,
     second: Int,
-    osStyle: OSStyle,
+    osStyle: OSStyle = LocalOsStyle.current,
     modifier: Modifier = Modifier,
 ) {
     val secondColor = if (osStyle == OSStyle.AmigaOS13) amigaOs13Orange else secondHandColorOs30

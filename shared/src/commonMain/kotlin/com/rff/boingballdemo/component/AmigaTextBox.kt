@@ -16,7 +16,7 @@ import com.rff.boingballdemo.ui.theme.topazFont20
 @Composable
 fun AmigaTextBox(
     text: String,
-    osStyle: OSStyle,
+    osStyle: OSStyle = LocalOsStyle.current,
     modifier: Modifier = Modifier,
     maxLines: Int = Int.MAX_VALUE,
     overflow: TextOverflow = TextOverflow.Clip,
@@ -45,7 +45,7 @@ fun AmigaTextBox(
 @Composable
 fun AmigaMenuText(
     text: String,
-    osStyle: OSStyle,
+    osStyle: OSStyle = LocalOsStyle.current,
     modifier: Modifier = Modifier
 ) {
     val textStyle = if (osStyle == OSStyle.AmigaOS13)
@@ -69,7 +69,7 @@ fun AmigaMenuText(
 @Composable
 fun AmigaGuruText(
     text: String,
-    osStyle: OSStyle,
+    osStyle: OSStyle = LocalOsStyle.current,
     modifier: Modifier = Modifier
 ) {
     val textStyle = if (osStyle == OSStyle.AmigaOS13)

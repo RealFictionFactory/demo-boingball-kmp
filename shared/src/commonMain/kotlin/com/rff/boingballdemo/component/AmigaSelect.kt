@@ -71,7 +71,7 @@ fun AmigaSelect(
     text: String,
     options: List<String>,
     selectedOption: String,
-    osStyle: OSStyle,
+    osStyle: OSStyle = LocalOsStyle.current,
     modifier: Modifier = Modifier,
     onOptionSelected: (String) -> Unit
 ) {
@@ -156,7 +156,7 @@ private fun AmigaSelectField(
     expanded: Boolean,
     onExpandedChange: (Boolean) -> Unit,
     onOptionSelected: (String) -> Unit,
-    osStyle: OSStyle,
+    osStyle: OSStyle = LocalOsStyle.current,
     style: AmigaSelectStyle,
 ) {
     val density = LocalDensity.current
@@ -213,7 +213,7 @@ private fun AmigaSelectField(
 @Composable
 private fun SelectorRow(
     selectedOption: String,
-    osStyle: OSStyle,
+    osStyle: OSStyle = LocalOsStyle.current,
     style: AmigaSelectStyle,
     onClick: () -> Unit,
 ) {
@@ -271,7 +271,7 @@ private fun SelectorRow(
 private fun SelectOptionRow(
     option: String,
     isSelected: Boolean,
-    osStyle: OSStyle,
+    osStyle: OSStyle = LocalOsStyle.current,
     style: AmigaSelectStyle,
     onClick: () -> Unit,
 ) {

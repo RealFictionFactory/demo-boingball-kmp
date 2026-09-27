@@ -38,7 +38,7 @@ import com.rff.boingballdemo.ui.theme.whiteColor
 @Composable
 fun AmigaKey(
     text: String,
-    osStyle: OSStyle,
+    osStyle: OSStyle = LocalOsStyle.current,
     modifier: Modifier = Modifier,
     onClick: () -> Unit = {},
 ) {

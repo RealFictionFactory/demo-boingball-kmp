@@ -6,6 +6,9 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
+import com.rff.boingballdemo.component.LocalOsStyle
+import com.rff.boingballdemo.component.OSStyle
 
 val DarkColorScheme = darkColorScheme(
     primary = Purple80,
@@ -37,11 +40,15 @@ fun BoingBallDemoTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
     // Dynamic color is available on Android 12+
     dynamicColor: Boolean = true,
+    // Screens and previews inherit the Workbench look from here.
+    osStyle: OSStyle = LocalOsStyle.current,
     content: @Composable () -> Unit
 ) {
-    MaterialTheme(
-        colorScheme = getColorScheme(darkTheme, dynamicColor),
-        typography = appTypography(),
-        content = content
-    )
+    CompositionLocalProvider(LocalOsStyle provides osStyle) {
+        MaterialTheme(
+            colorScheme = getColorScheme(darkTheme, dynamicColor),
+            typography = appTypography(),
+            content = content
+        )
+    }
 }

@@ -2,7 +2,6 @@ package com.rff.boingballdemo.screens.musicplayer
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.rff.boingballdemo.data.local.AppSettings
 import com.rff.boingballdemo.utils.stateInWhileSubscribed
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.delay
@@ -71,7 +70,6 @@ internal val AMIGA_MUSIC_TRACKS = listOf(
  * controls and this screen always agree. The ViewModel only translates UI actions.
  */
 class MusicPlayerViewModel(
-    settings: AppSettings,
     private val playback: MusicPlayback,
 ) : ViewModel() {
 
@@ -91,12 +89,10 @@ class MusicPlayerViewModel(
     }
 
     val uiState: StateFlow<MusicPlayerState> = combine(
-        settings.osStyle,
         playback.status,
         positionMs,
-    ) { osStyle, status, position ->
+    ) { status, position ->
         MusicPlayerState(
-            osStyle = osStyle,
             tracks = status.tracks,
             currentTrackIndex = status.currentIndex,
             isPlaying = status.isPlaying,

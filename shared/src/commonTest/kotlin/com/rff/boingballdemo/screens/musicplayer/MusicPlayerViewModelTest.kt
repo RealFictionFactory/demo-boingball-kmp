@@ -4,8 +4,6 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelStore
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
-import com.rff.boingballdemo.data.local.AppSettings
-import com.rff.boingballdemo.testing.InMemoryDataStore
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -28,7 +26,6 @@ import kotlin.test.assertTrue
 class MusicPlayerViewModelTest {
     private val dispatcher = StandardTestDispatcher()
     private val playback = FakeMusicPlayback()
-    private val settings = AppSettings(InMemoryDataStore())
 
     @BeforeTest
     fun setUp() {
@@ -42,13 +39,13 @@ class MusicPlayerViewModelTest {
 
     @Test
     fun loadsPlaylistOnCreation() {
-        MusicPlayerViewModel(settings, playback)
+        MusicPlayerViewModel(playback)
         assertEquals(AMIGA_MUSIC_TRACKS, playback.status.value.tracks)
     }
 
     @Test
     fun transportActionsReachPlayback() {
-        val viewModel = MusicPlayerViewModel(settings, playback)
+        val viewModel = MusicPlayerViewModel(playback)
         viewModel.onAction(MusicPlayerAction.Play)
         viewModel.onAction(MusicPlayerAction.Next)
         viewModel.onAction(MusicPlayerAction.Previous)
@@ -59,7 +56,7 @@ class MusicPlayerViewModelTest {
 
     @Test
     fun seekIsClampedToTrackDuration() {
-        val viewModel = MusicPlayerViewModel(settings, playback)
+        val viewModel = MusicPlayerViewModel(playback)
         val duration = AMIGA_MUSIC_TRACKS[0].durationMs
         playback.positionMs = duration - 1_000L
         viewModel.onAction(MusicPlayerAction.Seek(10_000L))
@@ -68,7 +65,7 @@ class MusicPlayerViewModelTest {
 
     @Test
     fun invalidSelectionAndMovesAreIgnored() {
-        val viewModel = MusicPlayerViewModel(settings, playback)
+        val viewModel = MusicPlayerViewModel(playback)
         viewModel.onAction(MusicPlayerAction.SelectTrack(99))
         viewModel.onAction(MusicPlayerAction.MoveTrack(0, -1))
         viewModel.onAction(MusicPlayerAction.MoveTrack(0, 2))
@@ -77,7 +74,7 @@ class MusicPlayerViewModelTest {
 
     @Test
     fun moveTrackReordersPlaylist() {
-        val viewModel = MusicPlayerViewModel(settings, playback)
+        val viewModel = MusicPlayerViewModel(playback)
         viewModel.onAction(MusicPlayerAction.MoveTrack(0, 1))
         assertEquals("move:0->1", playback.calls.last())
         assertEquals(AMIGA_MUSIC_TRACKS[0], playback.status.value.tracks[1])
@@ -86,7 +83,7 @@ class MusicPlayerViewModelTest {
 
     @Test
     fun uiStateMirrorsPlaybackAndTracksLivePosition() = runTest(dispatcher) {
-        val viewModel = MusicPlayerViewModel(settings, playback)
+        val viewModel = MusicPlayerViewModel(playback)
         val collector = launch { viewModel.uiState.collect {} }
         runCurrent()
 
@@ -108,7 +105,7 @@ class MusicPlayerViewModelTest {
         val store = ViewModelStore()
         ViewModelProvider.create(
             store,
-            viewModelFactory { initializer { MusicPlayerViewModel(settings, playback) } },
+            viewModelFactory { initializer { MusicPlayerViewModel(playback) } },
         )[MusicPlayerViewModel::class]
 
         store.clear()

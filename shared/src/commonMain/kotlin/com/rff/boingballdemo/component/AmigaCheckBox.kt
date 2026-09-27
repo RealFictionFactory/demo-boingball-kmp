@@ -28,7 +28,7 @@ import org.jetbrains.compose.resources.painterResource
 @Composable
 fun AmigaCheckBox(
     isChecked: Boolean = false,
-    osStyle: OSStyle,
+    osStyle: OSStyle = LocalOsStyle.current,
     onCheckChanged: (Boolean) -> Unit = {},
 ) {
     when (osStyle) {

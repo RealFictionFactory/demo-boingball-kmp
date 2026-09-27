@@ -37,7 +37,7 @@ import kotlin.random.Random
 
 @Composable
 fun GuruMeditationOverlay(
-    osStyle: OSStyle,
+    osStyle: OSStyle = LocalOsStyle.current,
     onDismiss: () -> Unit,
     modifier: Modifier = Modifier,
 ) {

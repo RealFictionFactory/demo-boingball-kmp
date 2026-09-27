@@ -12,14 +12,14 @@ fun CalculatorState.reduce(action: CalculatorAction): CalculatorState = when (ac
     CalculatorAction.Decimal -> appendDecimal()
     is CalculatorAction.Operator -> applyOperator(action.operator)
     CalculatorAction.Equals -> applyEquals()
-    CalculatorAction.Clear -> CalculatorState(osStyle = osStyle)
+    CalculatorAction.Clear -> CalculatorState()
     CalculatorAction.ClearEntry -> clearEntry()
     CalculatorAction.ToggleSign -> toggleSign()
     CalculatorAction.Percent -> applyPercent()
 }
 
 private fun CalculatorState.appendDigit(digit: Int): CalculatorState {
-    val base = if (isError) CalculatorState(osStyle = osStyle) else this
+    val base = if (isError) CalculatorState() else this
     val current = if (base.startNewEntry || base.display == "0") "" else base.display
     if (current.count { it.isDigit() } >= CALCULATOR_MAX_DIGITS) return base
 
@@ -31,7 +31,7 @@ private fun CalculatorState.appendDigit(digit: Int): CalculatorState {
 }
 
 private fun CalculatorState.appendDecimal(): CalculatorState {
-    val base = if (isError) CalculatorState(osStyle = osStyle) else this
+    val base = if (isError) CalculatorState() else this
     return when {
         base.startNewEntry -> base.copy(display = "0.", startNewEntry = false, isError = false)
         base.display.contains('.') -> base

@@ -18,7 +18,7 @@ import com.rff.boingballdemo.ui.theme.whiteColor
 @Composable
 fun AmigaWindow(
     title: String,
-    osStyle: OSStyle,
+    osStyle: OSStyle = LocalOsStyle.current,
     onCloseClick: () -> Unit,
     modifier: Modifier = Modifier,
     content: @Composable (contentModifier: Modifier) -> Unit,

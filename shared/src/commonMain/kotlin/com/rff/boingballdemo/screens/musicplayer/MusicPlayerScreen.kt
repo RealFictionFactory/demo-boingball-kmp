@@ -64,6 +64,7 @@ import boingball.shared.generated.resources.playlist
 import boingball.shared.generated.resources.playlist_move_down
 import boingball.shared.generated.resources.playlist_move_up
 import boingball.shared.generated.resources.workbench
+import com.rff.boingballdemo.component.LocalOsStyle
 import com.rff.boingballdemo.component.AmigaScreenTitleBar
 import com.rff.boingballdemo.component.OSStyle
 import com.rff.boingballdemo.component.AmigaWindow
@@ -106,7 +107,7 @@ fun MusicPlayerScreen(
     onCloseClick: () -> Unit = {},
     initiallyShowPlaylist: Boolean = false,
 ) {
-    val bg = if (state.osStyle == OSStyle.AmigaOS20) backgroundColor else amigaOs13Blue
+    val bg = if (LocalOsStyle.current == OSStyle.AmigaOS20) backgroundColor else amigaOs13Blue
     var showPlaylist by rememberSaveable { mutableStateOf(initiallyShowPlaylist) }
     var selectedTrackIndex by rememberSaveable { mutableIntStateOf(state.currentTrackIndex) }
     val moveTrack: (Int) -> Unit = { direction ->
@@ -128,7 +129,6 @@ fun MusicPlayerScreen(
         Column(modifier = Modifier.fillMaxSize()) {
             AmigaScreenTitleBar(
                 text = stringResource(Res.string.workbench),
-                osStyle = state.osStyle,
             )
             if (isLandscape) {
                 Row(modifier = Modifier.weight(1f).fillMaxWidth().padding(4.dp)) {
@@ -205,7 +205,6 @@ private fun PlayerWindow(
     AmigaWindow(
         modifier = modifier,
         title = stringResource(Res.string.chaotic_player) + " " + stringResource(Res.string.music_player_version),
-        osStyle = state.osStyle,
         onCloseClick = onCloseClick,
     ) { contentModifier ->
         MusicPlayerContent(state, onAction, onPlaylistClick, contentModifier)
@@ -221,14 +220,14 @@ private fun PlaylistWindow(
     onCloseClick: () -> Unit,
     maxListHeight: Dp,
 ) {
+    val isOs13 = LocalOsStyle.current == OSStyle.AmigaOS13
     AmigaWindow(
         title = stringResource(Res.string.playlist),
-        osStyle = state.osStyle,
         onCloseClick = onCloseClick,
     ) { contentModifier ->
         Row(
             modifier = contentModifier
-                .background(if (state.osStyle == OSStyle.AmigaOS13) amigaOs13Blue else backgroundColor)
+                .background(if (isOs13) amigaOs13Blue else backgroundColor)
                 .padding(8.dp),
             horizontalArrangement = Arrangement.spacedBy(4.dp),
         ) {
@@ -238,7 +237,7 @@ private fun PlaylistWindow(
                     .heightIn(max = maxListHeight)
                     .drawBehind {
                         val stroke = 1.dp.toPx()
-                        val topLeft = if (state.osStyle == OSStyle.AmigaOS13) whiteColor else blackColor
+                        val topLeft = if (isOs13) whiteColor else blackColor
                         drawRect(topLeft, size = Size(size.width, stroke))
                         drawRect(topLeft, size = Size(stroke, size.height))
                         drawRect(whiteColor, topLeft = Offset(0f, size.height - stroke), size = Size(size.width, stroke))
@@ -248,7 +247,6 @@ private fun PlaylistWindow(
             ) {
                 itemsIndexed(state.tracks) { index, track ->
                     val isSelected = index == selectedIndex
-                    val isOs13 = state.osStyle == OSStyle.AmigaOS13
                     Text(
                         text = track.title,
                         fontFamily = if (isOs13) topazFont() else topazFont20(),
@@ -273,14 +271,12 @@ private fun PlaylistWindow(
             Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
                 TransportButton(
                     icon = Res.drawable.ic_move_up,
-                    osStyle = state.osStyle,
                     contentDescription = stringResource(Res.string.playlist_move_up),
                     onClick = { onMove(-1) },
                     modifier = Modifier.size(40.dp),
                 )
                 TransportButton(
                     icon = Res.drawable.ic_move_down,
-                    osStyle = state.osStyle,
                     contentDescription = stringResource(Res.string.playlist_move_down),
                     onClick = { onMove(1) },
                     modifier = Modifier.size(40.dp),
@@ -300,7 +296,7 @@ private fun MusicPlayerContent(
     Column(
         modifier = modifier
             .fillMaxWidth()
-            .background(color = if (state.osStyle == OSStyle.AmigaOS13) amigaOs13Blue else backgroundColor)
+            .background(color = if (LocalOsStyle.current == OSStyle.AmigaOS13) amigaOs13Blue else backgroundColor)
             .padding(8.dp),
         verticalArrangement = Arrangement.spacedBy(8.dp),
     ) {
@@ -315,7 +311,7 @@ private fun NowPlayingPanel(
     onPlaylistClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val isOs13 = state.osStyle == OSStyle.AmigaOS13
+    val isOs13 = LocalOsStyle.current == OSStyle.AmigaOS13
     val title = state.currentTrack?.title.orEmpty()
     val timeText = buildString {
         append(formatPlaybackTime(state.positionMs))
@@ -368,7 +364,6 @@ private fun NowPlayingPanel(
                 .fillMaxHeight()
                 .aspectRatio(1f, matchHeightConstraintsFirst = true),
             icon = Res.drawable.ic_playlist,
-            osStyle = state.osStyle,
             contentDescription = stringResource(Res.string.playlist),
             onClick = onPlaylistClick,
         )
@@ -399,7 +394,6 @@ private fun TransportBar(
         buttons.forEach { (icon, action, description) ->
             TransportButton(
                 icon = icon,
-                osStyle = state.osStyle,
                 contentDescription = description,
                 onClick = { onAction(action) },
                 modifier = Modifier
@@ -413,7 +407,7 @@ private fun TransportBar(
 @Composable
 private fun TransportButton(
     icon: DrawableResource,
-    osStyle: OSStyle,
+    osStyle: OSStyle = LocalOsStyle.current,
     contentDescription: String,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
@@ -462,7 +456,6 @@ private fun TransportButton(
 }
 
 private val previewState = MusicPlayerState(
-    osStyle = OSStyle.AmigaOS13,
     tracks = AMIGA_MUSIC_TRACKS,
     currentTrackIndex = 0,
     isPlaying = true,
@@ -488,16 +481,16 @@ private fun MusicPlayerScreenLandscapeOs13Preview() {
 @Preview(device = "id:pixel_10")
 @Composable
 private fun MusicPlayerScreenOs30Preview() {
-    BoingBallDemoTheme {
-        MusicPlayerScreen(state = previewState.copy(osStyle = OSStyle.AmigaOS20))
+    BoingBallDemoTheme(osStyle = OSStyle.AmigaOS20) {
+        MusicPlayerScreen(state = previewState)
     }
 }
 
 @Preview(device = "spec:parent=pixel_10,orientation=landscape")
 @Composable
 private fun MusicPlayerScreenLandscapeOs30Preview() {
-    BoingBallDemoTheme {
-        MusicPlayerScreen(state = previewState.copy(osStyle = OSStyle.AmigaOS20))
+    BoingBallDemoTheme(osStyle = OSStyle.AmigaOS20) {
+        MusicPlayerScreen(state = previewState)
     }
 }
 
@@ -512,9 +505,9 @@ private fun MusicPlayerScreenWithPlaylistOs13Preview() {
 @Preview(device = "spec:parent=pixel_4,orientation=landscape")
 @Composable
 private fun MusicPlayerScreenWithPlaylistOs30Preview() {
-    BoingBallDemoTheme {
+    BoingBallDemoTheme(osStyle = OSStyle.AmigaOS20) {
         MusicPlayerScreen(
-            state = previewState.copy(osStyle = OSStyle.AmigaOS20),
+            state = previewState,
             initiallyShowPlaylist = true,
         )
     }

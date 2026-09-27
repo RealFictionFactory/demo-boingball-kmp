@@ -27,7 +27,7 @@ import com.rff.boingballdemo.ui.theme.topazFont
 @Composable
 fun AmigaToolbar(
     title: String,
-    osStyle: OSStyle,
+    osStyle: OSStyle = LocalOsStyle.current,
     modifier: Modifier = Modifier,
     toolbarHeight: Dp = 28.dp,
 ) {

@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.rff.boingballdemo.component.OSStyle
 import com.rff.boingballdemo.data.local.AppSettings
+import com.rff.boingballdemo.data.local.BoingBallPrefs
 import com.rff.boingballdemo.utils.toAmigaDateText
 import com.rff.boingballdemo.utils.toAmigaTimeText
 import com.rff.boingballdemo.utils.stateInWhileSubscribed
@@ -32,8 +33,9 @@ class ShellViewModel(
 ) : ViewModel() {
     private val session = MutableStateFlow(ShellState())
 
+    private var osStyle: OSStyle? = null
     private var commandIndex = 0
-    private var prompt = promptFor(OSStyle.AmigaOS13)
+    private var prompt = promptFor(BoingBallPrefs.Default.osStyle)
     private var runJob: Job? = null
 
     // A new OS style starts a fresh session (banner, prompt, script) before it is shown.
@@ -47,7 +49,7 @@ class ShellViewModel(
     fun onTap() {
         if (session.value.isBusy) return
 
-        val script = scriptFor(session.value.osStyle)
+        val script = scriptFor(osStyle ?: BoingBallPrefs.Default.osStyle)
         val command = script[commandIndex % script.size]
         commandIndex++
 
@@ -76,13 +78,13 @@ class ShellViewModel(
     }
 
     private fun onOsStyleChanged(osStyle: OSStyle) {
-        if (session.value.osStyle == osStyle && session.value.lines.isNotEmpty()) return
+        if (this.osStyle == osStyle) return
 
+        this.osStyle = osStyle
         runJob?.cancel()
         commandIndex = 0
         prompt = promptFor(osStyle)
         session.value = ShellState(
-            osStyle = osStyle,
             lines = bannerFor(osStyle),
             currentLine = prompt,
         )

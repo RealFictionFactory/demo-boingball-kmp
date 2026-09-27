@@ -1,7 +1,5 @@
 package com.rff.boingballdemo.screens.musicplayer
 
-import com.rff.boingballdemo.component.OSStyle
-
 data class MusicTrack(
     val title: String,
     val composer: String,
@@ -10,7 +8,6 @@ data class MusicTrack(
 )
 
 data class MusicPlayerState(
-    val osStyle: OSStyle = OSStyle.AmigaOS13,
     val tracks: List<MusicTrack> = emptyList(),
     val currentTrackIndex: Int = 0,
     val isPlaying: Boolean = false,

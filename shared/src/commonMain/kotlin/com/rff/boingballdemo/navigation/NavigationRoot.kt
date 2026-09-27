@@ -1,6 +1,9 @@
 package com.rff.boingballdemo.navigation
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.getValue
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation3.runtime.NavEntry
 import androidx.navigation3.runtime.NavKey
 import androidx.lifecycle.viewmodel.navigation3.rememberViewModelStoreNavEntryDecorator
@@ -8,6 +11,9 @@ import androidx.navigation3.runtime.rememberNavBackStack
 import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
 import androidx.navigation3.ui.NavDisplay
 import androidx.savedstate.serialization.SavedStateConfiguration
+import com.rff.boingballdemo.component.LocalOsStyle
+import com.rff.boingballdemo.data.local.AppSettings
+import com.rff.boingballdemo.data.local.BoingBallPrefs
 import com.rff.boingballdemo.screens.about.AboutScreenRoot
 import com.rff.boingballdemo.screens.calculator.CalculatorScreenRoot
 import com.rff.boingballdemo.screens.clock.ClockScreenRoot
@@ -22,6 +28,7 @@ import kotlinx.serialization.Serializable
 import kotlinx.serialization.modules.SerializersModule
 import kotlinx.serialization.modules.polymorphic
 import kotlinx.serialization.modules.subclass
+import org.koin.compose.koinInject
 
 @Serializable
 sealed interface AppRoute : NavKey
@@ -85,6 +92,15 @@ internal fun MutableList<NavKey>.pushSingleInstance(route: NavKey): Boolean {
 fun NavigationRoot(
     onExitApp: () -> Unit = {},
 ) {
+    val settings = koinInject<AppSettings>()
+    val osStyle by settings.osStyle.collectAsStateWithLifecycle(BoingBallPrefs.Default.osStyle)
+    CompositionLocalProvider(LocalOsStyle provides osStyle) {
+        AppNavDisplay(onExitApp)
+    }
+}
+
+@Composable
+private fun AppNavDisplay(onExitApp: () -> Unit) {
     // The Workbench remains below the initially displayed demo. Dismissing the
     // demo therefore reveals a desktop with no window open.
     val backStack = rememberNavBackStack(navConfig, WorkbenchRoute, BoingBallRoute)

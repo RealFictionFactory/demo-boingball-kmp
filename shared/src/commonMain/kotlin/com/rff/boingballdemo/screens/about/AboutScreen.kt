@@ -29,6 +29,7 @@ import boingball.shared.generated.resources.about_app_name
 import boingball.shared.generated.resources.about_application_version
 import boingball.shared.generated.resources.amiga_check_w
 import boingball.shared.generated.resources.workbench
+import com.rff.boingballdemo.component.LocalOsStyle
 import com.rff.boingballdemo.component.AmigaScreenTitleBar
 import com.rff.boingballdemo.component.AmigaTextBox
 import com.rff.boingballdemo.component.AmigaWindow
@@ -54,7 +55,7 @@ fun AboutScreen(
     state: AboutState,
     onCloseClick: () -> Unit = {},
 ) {
-    val bg = if (state.osStyle == OSStyle.AmigaOS20) backgroundColor else amigaOs13Blue
+    val bg = if (LocalOsStyle.current == OSStyle.AmigaOS20) backgroundColor else amigaOs13Blue
 
     BoxWithConstraints(
         modifier = Modifier
@@ -84,7 +85,6 @@ private fun AboutLayout(state: AboutState, onCloseClick: () -> Unit, windowWidth
         Column(modifier = Modifier.fillMaxSize()) {
             AmigaScreenTitleBar(
                 text = stringResource(Res.string.workbench),
-                osStyle = state.osStyle,
             )
             Box(
                 modifier = Modifier.weight(1f).fillMaxWidth(),
@@ -93,7 +93,6 @@ private fun AboutLayout(state: AboutState, onCloseClick: () -> Unit, windowWidth
                 AmigaWindow(
                     modifier = Modifier.width(windowWidth),
                     title = stringResource(Res.string.about),
-                    osStyle = state.osStyle,
                     onCloseClick = onCloseClick,
                 ) {
                     contentModifier ->
@@ -108,7 +107,7 @@ private fun AboutContent(
     state: AboutState,
     modifier: Modifier = Modifier,
 ) {
-    val bg = if (state.osStyle == OSStyle.AmigaOS20)
+    val bg = if (LocalOsStyle.current == OSStyle.AmigaOS20)
         backgroundColor
     else
         amigaOs13Blue
@@ -131,33 +130,30 @@ private fun AboutContent(
         Spacer(modifier = Modifier.height(16.dp))
         AmigaTextBox(
             text = stringResource(Res.string.about_app_name, state.appName),
-            osStyle = state.osStyle,
         )
         Spacer(modifier = Modifier.height(8.dp))
         AmigaTextBox(
             text = stringResource(Res.string.about_application_version, state.appVersion),
-            osStyle = state.osStyle,
         )
     }
 }
 
 private val previewState = AboutState(
     appVersion = "1.0.0",
-    osStyle = OSStyle.AmigaOS20,
 )
 
 @Preview
 @Composable
 private fun AboutScreenPortraitOs13Preview() {
-    BoingBallDemoTheme {
-        AboutScreen(state = previewState.copy(osStyle = OSStyle.AmigaOS13))
+    BoingBallDemoTheme(osStyle = OSStyle.AmigaOS13) {
+        AboutScreen(state = previewState)
     }
 }
 
 @Preview(device = "spec:parent=Nexus 5,orientation=landscape")
 @Composable
 private fun AboutScreenLandscapeOs30Preview() {
-    BoingBallDemoTheme {
+    BoingBallDemoTheme(osStyle = OSStyle.AmigaOS20) {
         AboutScreen(state = previewState)
     }
 }

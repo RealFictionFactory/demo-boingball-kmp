@@ -39,7 +39,6 @@ class ShellViewModelTest {
         advanceUntilIdle()
 
         val state = viewModel.uiState.value
-        assertEquals(OSStyle.AmigaOS13, state.osStyle)
         assertEquals(bannerFor(OSStyle.AmigaOS13), state.lines)
         assertEquals(promptFor(OSStyle.AmigaOS13), state.currentLine)
         collector.cancel()
@@ -56,7 +55,6 @@ class ShellViewModelTest {
         advanceUntilIdle()
 
         val state = viewModel.uiState.value
-        assertEquals(OSStyle.AmigaOS20, state.osStyle)
         assertEquals(bannerFor(OSStyle.AmigaOS20), state.lines)
         assertEquals(promptFor(OSStyle.AmigaOS20), state.currentLine)
         assertFalse(state.isBusy)

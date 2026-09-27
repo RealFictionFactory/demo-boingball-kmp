@@ -27,9 +27,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import boingball.shared.generated.resources.Res
 import boingball.shared.generated.resources.workbench
+import com.rff.boingballdemo.component.LocalOsStyle
 import com.rff.boingballdemo.component.AmigaScreenTitleBar
 import com.rff.boingballdemo.component.GuruMeditationOverlay
 import com.rff.boingballdemo.component.OSStyle
@@ -37,7 +37,6 @@ import com.rff.boingballdemo.ui.theme.BoingBallDemoTheme
 import com.rff.boingballdemo.ui.theme.amigaOs13Blue
 import com.rff.boingballdemo.ui.theme.backgroundColor
 import org.jetbrains.compose.resources.stringResource
-import org.koin.compose.viewmodel.koinViewModel
 
 /**
  * Future development plan — making this a real Workbench experience:
@@ -82,7 +81,6 @@ import org.koin.compose.viewmodel.koinViewModel
  */
 @Composable
 fun WorkbenchScreenRoot(
-    viewModel: WorkbenchViewModel = koinViewModel(),
     onBoingBallClick: () -> Unit = {},
     onPreferencesClick: () -> Unit,
     onClockClick: () -> Unit = {},
@@ -92,10 +90,7 @@ fun WorkbenchScreenRoot(
     onShellClick: () -> Unit = {},
     onMusicPlayerClick: () -> Unit = {},
 ) {
-    val state by viewModel.uiState.collectAsStateWithLifecycle()
-
     WorkbenchScreen(
-        state = state,
         onAction = { action ->
             when (action) {
                 WorkbenchAction.BoingBall -> onBoingBallClick()
@@ -113,12 +108,11 @@ fun WorkbenchScreenRoot(
 
 @Composable
 fun WorkbenchScreen(
-    state: WorkbenchState,
     onAction: (WorkbenchAction) -> Unit = {},
 ) {
     var showGuruMeditation by remember { mutableStateOf(false) }
 
-    val bg = if (state.osStyle == OSStyle.AmigaOS20)
+    val bg = if (LocalOsStyle.current == OSStyle.AmigaOS20)
         backgroundColor
     else
         amigaOs13Blue
@@ -138,7 +132,6 @@ fun WorkbenchScreen(
             Column(modifier = Modifier.fillMaxSize()) {
                 AmigaScreenTitleBar(
                     text = stringResource(Res.string.workbench),
-                    osStyle = state.osStyle
                 )
 
                 val shortcuts = workbenchShortcuts()
@@ -161,7 +154,7 @@ fun WorkbenchScreen(
                         ) {
                             items(shortcuts) { shortcut ->
                                 Box(contentAlignment = Alignment.TopCenter) {
-                                    WorkbenchShortcutIcon(shortcut, state) { onAction(shortcut.action) }
+                                    WorkbenchShortcutIcon(shortcut) { onAction(shortcut.action) }
                                 }
                             }
                         }
@@ -178,7 +171,7 @@ fun WorkbenchScreen(
                     ) {
                         items(shortcuts) { shortcut ->
                             Box(contentAlignment = Alignment.TopCenter) {
-                                WorkbenchShortcutIcon(shortcut, state) { onAction(shortcut.action) }
+                                WorkbenchShortcutIcon(shortcut) { onAction(shortcut.action) }
                             }
                         }
                     }
@@ -188,21 +181,16 @@ fun WorkbenchScreen(
 
         if (showGuruMeditation) {
             GuruMeditationOverlay(
-                osStyle = state.osStyle,
                 onDismiss = { showGuruMeditation = false })
         }
     }
 }
 
-private val previewState = WorkbenchState(
-    osStyle = OSStyle.AmigaOS13
-)
-
 @Preview(device = "id:pixel_10")
 @Composable
 private fun BoingBallScreenOs13Preview() {
     BoingBallDemoTheme {
-        WorkbenchScreen(previewState)
+        WorkbenchScreen()
     }
 }
 
@@ -210,22 +198,22 @@ private fun BoingBallScreenOs13Preview() {
 @Composable
 private fun BoingBallScreenLandscapeOs13Preview() {
     BoingBallDemoTheme {
-        WorkbenchScreen(previewState)
+        WorkbenchScreen()
     }
 }
 
 @Preview(device = "id:Nexus 4")
 @Composable
 private fun BoingBallScreenPreview() {
-    BoingBallDemoTheme {
-        WorkbenchScreen(previewState.copy(osStyle = OSStyle.AmigaOS20))
+    BoingBallDemoTheme(osStyle = OSStyle.AmigaOS20) {
+        WorkbenchScreen()
     }
 }
 
 @Preview(device = "spec:parent=Nexus 4,orientation=landscape")
 @Composable
 private fun BoingBallScreenLandscapePreview() {
-    BoingBallDemoTheme {
-        WorkbenchScreen(previewState.copy(osStyle = OSStyle.AmigaOS20))
+    BoingBallDemoTheme(osStyle = OSStyle.AmigaOS20) {
+        WorkbenchScreen()
     }
 }

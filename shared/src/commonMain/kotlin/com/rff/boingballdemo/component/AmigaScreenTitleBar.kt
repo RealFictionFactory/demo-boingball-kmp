@@ -19,7 +19,7 @@ import com.rff.boingballdemo.ui.theme.whiteColor
 @Composable
 fun AmigaScreenTitleBar(
     text: String,
-    osStyle: OSStyle,
+    osStyle: OSStyle = LocalOsStyle.current,
     modifier: Modifier = Modifier,
     bgColor: Color = whiteColor,
 ) {

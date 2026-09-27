@@ -31,6 +31,7 @@ import boingball.shared.generated.resources.prefs30
 import boingball.shared.generated.resources.shell
 import boingball.shared.generated.resources.shell13
 import boingball.shared.generated.resources.shell30
+import com.rff.boingballdemo.component.LocalOsStyle
 import com.rff.boingballdemo.component.AmigaTextBox
 import com.rff.boingballdemo.component.OSStyle
 import org.jetbrains.compose.resources.DrawableResource
@@ -61,10 +62,9 @@ internal fun workbenchShortcuts() = listOf(
 @Composable
 internal fun WorkbenchShortcutIcon(
     shortcut: WorkbenchShortcut,
-    state: WorkbenchState,
     onClick: () -> Unit,
 ) {
-    val isOs13 = state.osStyle == OSStyle.AmigaOS13
+    val isOs13 = LocalOsStyle.current == OSStyle.AmigaOS13
     Column(
         modifier = Modifier.clickable(onClick = onClick),
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -76,7 +76,6 @@ internal fun WorkbenchShortcutIcon(
         )
         AmigaTextBox(
             text = stringResource(if (isOs13) shortcut.os13Label else shortcut.os20Label),
-            osStyle = state.osStyle,
             modifier = Modifier.fillMaxWidth(),
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,

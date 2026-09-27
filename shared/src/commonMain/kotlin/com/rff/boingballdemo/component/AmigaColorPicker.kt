@@ -23,7 +23,7 @@ import com.rff.boingballdemo.ui.theme.whiteColor
 @Composable
 fun AmigaColorPicker(
     selectedIndex: Int = 0,
-    osStyle: OSStyle,
+    osStyle: OSStyle = LocalOsStyle.current,
     onColorSelected: (Int) -> Unit = { _-> },
     colors: List<Color> = DefaultAmigaOs13PickerColors,
 ) {

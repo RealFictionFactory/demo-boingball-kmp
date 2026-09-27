@@ -1,18 +1,14 @@
 package com.rff.boingballdemo.screens.about
 
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
 import com.rff.boingballdemo.data.local.AppSettings
-import com.rff.boingballdemo.utils.stateInWhileSubscribed
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.asStateFlow
 
 class AboutViewModel(
     settings: AppSettings,
 ) : ViewModel() {
-    private val initialState = AboutState(appVersion = settings.getVersion())
-
-    val uiState: StateFlow<AboutState> = settings.osStyle
-        .map { initialState.copy(osStyle = it) }
-        .stateInWhileSubscribed(viewModelScope, initialState)
+    val uiState: StateFlow<AboutState> =
+        MutableStateFlow(AboutState(appVersion = settings.getVersion())).asStateFlow()
 }

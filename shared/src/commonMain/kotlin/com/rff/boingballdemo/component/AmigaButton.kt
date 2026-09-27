@@ -29,7 +29,7 @@ import com.rff.boingballdemo.ui.theme.whiteColor
 @Composable
 fun AmigaButton(
     text: String = "",
-    osStyle: OSStyle,
+    osStyle: OSStyle = LocalOsStyle.current,
     onClick: () -> Unit = {}
 ) {
     when (osStyle) {

@@ -12,16 +12,15 @@ import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import boingball.shared.generated.resources.Res
 import boingball.shared.generated.resources.copper
 import boingball.shared.generated.resources.workbench
+import com.rff.boingballdemo.component.LocalOsStyle
 import com.rff.boingballdemo.component.AmigaScreenTitleBar
 import com.rff.boingballdemo.component.AmigaWindow
 import com.rff.boingballdemo.screens.copper.ui.CopperBarsView
@@ -30,23 +29,19 @@ import com.rff.boingballdemo.ui.theme.BoingBallDemoTheme
 import com.rff.boingballdemo.ui.theme.amigaOs13Blue
 import com.rff.boingballdemo.ui.theme.backgroundColor
 import org.jetbrains.compose.resources.stringResource
-import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
 fun CopperBarsScreenRoot(
-    viewModel: CopperBarsViewModel = koinViewModel(),
     onCloseClick: () -> Unit = {},
 ) {
-    val state by viewModel.uiState.collectAsStateWithLifecycle()
-    CopperBarsScreen(state = state, onCloseClick = onCloseClick)
+    CopperBarsScreen(onCloseClick = onCloseClick)
 }
 
 @Composable
 fun CopperBarsScreen(
-    state: CopperBarsState,
     onCloseClick: () -> Unit = {},
 ) {
-    val bg = if (state.osStyle == OSStyle.AmigaOS20) backgroundColor else amigaOs13Blue
+    val bg = if (LocalOsStyle.current == OSStyle.AmigaOS20) backgroundColor else amigaOs13Blue
 
     BoxWithConstraints(
         modifier = Modifier
@@ -61,27 +56,26 @@ fun CopperBarsScreen(
         // Content is 4:3, so never let it get wider than the free height allows.
         val widthLimitedByHeight = contentHeight * 4f / 3f
         if (maxWidth > maxHeight) {
-            LandscapeCopperBarsLayout(state, onCloseClick, minOf(maxWidth * 0.6f, widthLimitedByHeight))
+            LandscapeCopperBarsLayout(onCloseClick, minOf(maxWidth * 0.6f, widthLimitedByHeight))
         } else {
-            PortraitCopperBarsLayout(state, onCloseClick, minOf(maxWidth * 0.9f, widthLimitedByHeight))
+            PortraitCopperBarsLayout(onCloseClick, minOf(maxWidth * 0.9f, widthLimitedByHeight))
         }
     }
 }
 
 @Composable
-private fun PortraitCopperBarsLayout(state: CopperBarsState, onCloseClick: () -> Unit, windowWidth: Dp) =
-    CopperBarsLayout(state, onCloseClick, windowWidth)
+private fun PortraitCopperBarsLayout(onCloseClick: () -> Unit, windowWidth: Dp) =
+    CopperBarsLayout(onCloseClick, windowWidth)
 
 @Composable
-private fun LandscapeCopperBarsLayout(state: CopperBarsState, onCloseClick: () -> Unit, windowWidth: Dp) =
-    CopperBarsLayout(state, onCloseClick, windowWidth)
+private fun LandscapeCopperBarsLayout(onCloseClick: () -> Unit, windowWidth: Dp) =
+    CopperBarsLayout(onCloseClick, windowWidth)
 
 @Composable
-private fun CopperBarsLayout(state: CopperBarsState, onCloseClick: () -> Unit, windowWidth: Dp) {
+private fun CopperBarsLayout(onCloseClick: () -> Unit, windowWidth: Dp) {
         Column(modifier = Modifier.fillMaxSize()) {
             AmigaScreenTitleBar(
                 text = stringResource(Res.string.workbench),
-                osStyle = state.osStyle,
             )
             Box(
                 modifier = Modifier.weight(1f).fillMaxWidth(),
@@ -90,10 +84,9 @@ private fun CopperBarsLayout(state: CopperBarsState, onCloseClick: () -> Unit, w
                 AmigaWindow(
                     modifier = Modifier.width(windowWidth),
                     title = stringResource(Res.string.copper),
-                    osStyle = state.osStyle,
                     onCloseClick = onCloseClick,
                 ) { contentModifier ->
-                    CopperBarsContent(state = state, modifier = contentModifier)
+                    CopperBarsContent(modifier = contentModifier)
                 }
             }
         }
@@ -101,7 +94,6 @@ private fun CopperBarsLayout(state: CopperBarsState, onCloseClick: () -> Unit, w
 
 @Composable
 private fun CopperBarsContent(
-    state: CopperBarsState,
     modifier: Modifier = Modifier,
 ) {
     Box(
@@ -117,13 +109,11 @@ private fun CopperBarsContent(
     }
 }
 
-private val previewState = CopperBarsState(osStyle = OSStyle.AmigaOS13)
-
 @Preview(device = "id:pixel_10")
 @Composable
 private fun CopperBarsScreenOs13Preview() {
     BoingBallDemoTheme {
-        CopperBarsScreen(state = previewState)
+        CopperBarsScreen()
     }
 }
 
@@ -131,14 +121,14 @@ private fun CopperBarsScreenOs13Preview() {
 @Composable
 private fun CopperBarsScreenLandscapeOs13Preview() {
     BoingBallDemoTheme {
-        CopperBarsScreen(state = previewState)
+        CopperBarsScreen()
     }
 }
 
 @Preview(device = "id:pixel_10")
 @Composable
 private fun CopperBarsScreenOs30Preview() {
-    BoingBallDemoTheme {
-        CopperBarsScreen(state = previewState.copy(osStyle = OSStyle.AmigaOS20))
+    BoingBallDemoTheme(osStyle = OSStyle.AmigaOS20) {
+        CopperBarsScreen()
     }
 }

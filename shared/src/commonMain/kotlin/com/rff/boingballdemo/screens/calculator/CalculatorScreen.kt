@@ -30,6 +30,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import boingball.shared.generated.resources.Res
 import boingball.shared.generated.resources.calculator
 import boingball.shared.generated.resources.workbench
+import com.rff.boingballdemo.component.LocalOsStyle
 import com.rff.boingballdemo.component.AmigaKey
 import com.rff.boingballdemo.component.AmigaScreenTitleBar
 import com.rff.boingballdemo.component.AmigaWindow
@@ -132,7 +133,7 @@ fun CalculatorScreen(
     onAction: (CalculatorAction) -> Unit = {},
     onCloseClick: () -> Unit = {},
 ) {
-    val bg = if (state.osStyle == OSStyle.AmigaOS20) backgroundColor else amigaOs13Blue
+    val bg = if (LocalOsStyle.current == OSStyle.AmigaOS20) backgroundColor else amigaOs13Blue
 
     BoxWithConstraints(
         modifier = Modifier
@@ -179,7 +180,6 @@ private fun CalculatorLayout(
         Column(modifier = Modifier.fillMaxSize()) {
             AmigaScreenTitleBar(
                 text = stringResource(Res.string.workbench),
-                osStyle = state.osStyle,
             )
             Box(
                 modifier = Modifier.weight(1f).fillMaxWidth(),
@@ -188,7 +188,6 @@ private fun CalculatorLayout(
                 AmigaWindow(
                     modifier = Modifier.width(windowWidth),
                     title = stringResource(Res.string.calculator),
-                    osStyle = state.osStyle,
                     onCloseClick = onCloseClick,
                 ) { contentModifier ->
                     CalculatorContent(
@@ -212,7 +211,7 @@ private fun CalculatorContent(
     Column(
         modifier = modifier
             .fillMaxWidth()
-            .background(color = if (state.osStyle == OSStyle.AmigaOS13) amigaOs13Blue else backgroundColor)
+            .background(color = if (LocalOsStyle.current == OSStyle.AmigaOS13) amigaOs13Blue else backgroundColor)
             .padding(8.dp),
         verticalArrangement = Arrangement.spacedBy(8.dp),
     ) {
@@ -230,7 +229,6 @@ private fun CalculatorContent(
                     } else {
                         AmigaKey(
                             text = key.label,
-                            osStyle = state.osStyle,
                             modifier = Modifier.weight(1f).aspectRatio(1.2f),
                             onClick = { onAction(key.action) },
                         )
@@ -249,7 +247,7 @@ private fun CalculatorDisplay(
     state: CalculatorState,
     modifier: Modifier = Modifier,
 ) {
-    val isOs13 = state.osStyle == OSStyle.AmigaOS13
+    val isOs13 = LocalOsStyle.current == OSStyle.AmigaOS13
 
     Box(
         modifier = modifier
@@ -280,7 +278,6 @@ private fun CalculatorDisplay(
 }
 
 private val previewState = CalculatorState(
-    osStyle = OSStyle.AmigaOS13,
     display = "1234.5",
 )
 
@@ -303,7 +300,7 @@ private fun CalculatorScreenLandscapeOs13Preview() {
 @Preview(device = "id:pixel_10")
 @Composable
 private fun CalculatorScreenOs30Preview() {
-    BoingBallDemoTheme {
-        CalculatorScreen(state = previewState.copy(osStyle = OSStyle.AmigaOS20))
+    BoingBallDemoTheme(osStyle = OSStyle.AmigaOS20) {
+        CalculatorScreen(state = previewState)
     }
 }

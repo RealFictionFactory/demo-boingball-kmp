@@ -37,6 +37,7 @@ import boingball.shared.generated.resources.Res
 import boingball.shared.generated.resources.shell
 import boingball.shared.generated.resources.shell13
 import boingball.shared.generated.resources.workbench
+import com.rff.boingballdemo.component.LocalOsStyle
 import com.rff.boingballdemo.component.AmigaScreenTitleBar
 import com.rff.boingballdemo.component.AmigaWindow
 import com.rff.boingballdemo.component.OSStyle
@@ -74,8 +75,8 @@ fun ShellScreen(
     onTap: () -> Unit = {},
     onCloseClick: () -> Unit = {},
 ) {
-    val bg = if (state.osStyle == OSStyle.AmigaOS20) backgroundColor else amigaOs13Blue
-    val title = if (state.osStyle == OSStyle.AmigaOS13) {
+    val bg = if (LocalOsStyle.current == OSStyle.AmigaOS20) backgroundColor else amigaOs13Blue
+    val title = if (LocalOsStyle.current == OSStyle.AmigaOS13) {
         stringResource(Res.string.shell13)
     } else {
         stringResource(Res.string.shell)
@@ -110,7 +111,6 @@ private fun ShellLayout(state: ShellState, onTap: () -> Unit, onCloseClick: () -
         Column(modifier = Modifier.fillMaxSize()) {
             AmigaScreenTitleBar(
                 text = stringResource(Res.string.workbench),
-                osStyle = state.osStyle,
             )
             Box(
                 modifier = Modifier.weight(1f).fillMaxWidth(),
@@ -119,7 +119,6 @@ private fun ShellLayout(state: ShellState, onTap: () -> Unit, onCloseClick: () -
                 AmigaWindow(
                     modifier = Modifier.width(windowWidth),
                     title = title,
-                    osStyle = state.osStyle,
                     onCloseClick = onCloseClick,
                 ) { contentModifier ->
                     ShellConsole(
@@ -140,7 +139,7 @@ private fun ShellConsole(
     onTap: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val isOs13 = state.osStyle == OSStyle.AmigaOS13
+    val isOs13 = LocalOsStyle.current == OSStyle.AmigaOS13
     val consoleBackground = if (isOs13) amigaOs13Blue else whiteColor
     val textColor = if (isOs13) whiteColor else blackColor
     val cursorColor = if (isOs13) amigaOs13Orange else blackColor
@@ -163,7 +162,7 @@ private fun ShellConsole(
     Box(
         modifier = modifier
             .fillMaxWidth()
-            .background(color = if (state.osStyle == OSStyle.AmigaOS13) amigaOs13Blue else backgroundColor)
+            .background(color = if (LocalOsStyle.current == OSStyle.AmigaOS13) amigaOs13Blue else backgroundColor)
             .height(consoleHeight)
             .clickable(
                 interactionSource = interactionSource,
@@ -209,7 +208,6 @@ private fun ShellText(
 }
 
 private val previewState = ShellState(
-    osStyle = OSStyle.AmigaOS13,
     lines = listOf("New CLI task 2", "", "1.SYS:> version", "Kickstart version 34.5, Workbench version 34.20", ""),
     currentLine = "1.SYS:> ",
 )
@@ -233,10 +231,9 @@ private fun ShellScreenLandscapeOs13Preview() {
 @Preview(device = "id:pixel_10")
 @Composable
 private fun ShellScreenOs30Preview() {
-    BoingBallDemoTheme {
+    BoingBallDemoTheme(osStyle = OSStyle.AmigaOS20) {
         ShellScreen(
             state = previewState.copy(
-                osStyle = OSStyle.AmigaOS20,
                 lines = listOf("New Shell process 2", "", "1.Workbench3.0:> version", "Kickstart 40.68, Workbench 40.42", ""),
                 currentLine = "1.Workbench3.0:> ",
             )
