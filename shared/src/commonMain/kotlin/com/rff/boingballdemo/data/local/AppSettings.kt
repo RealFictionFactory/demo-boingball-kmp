@@ -46,18 +46,18 @@ class AppSettings(
     }
 
     private fun Preferences.toBoingBallPrefs() = BoingBallPrefs(
-        themeColorIndex = this[KEY_THEME_COLOR_INDEX] ?: 0,
-        altColorIndex = this[KEY_ALT_COLOR_INDEX] ?: 3,
-        drawBorders = this[KEY_DRAW_BORDERS] ?: false,
+        themeColorIndex = this[KEY_THEME_COLOR_INDEX] ?: BoingBallPrefs.Default.themeColorIndex,
+        altColorIndex = this[KEY_ALT_COLOR_INDEX] ?: BoingBallPrefs.Default.altColorIndex,
+        drawBorders = this[KEY_DRAW_BORDERS] ?: BoingBallPrefs.Default.drawBorders,
         osStyle = decodeEnum(
             name = this[KEY_OS_STYLE],
             legacyOrdinal = this[LEGACY_KEY_OS_STYLE],
-            default = OSStyle.AmigaOS13,
+            default = BoingBallPrefs.Default.osStyle,
         ),
         videoSystem = decodeEnum(
             name = this[KEY_VIDEO_SYSTEM],
             legacyOrdinal = this[LEGACY_KEY_VIDEO_SYSTEM],
-            default = VideoSystem.PAL,
+            default = BoingBallPrefs.Default.videoSystem,
         ),
     )
 
@@ -104,6 +104,32 @@ data class BoingBallPrefs(
     val themeColorIndex: Int,
     val altColorIndex: Int,
     val drawBorders: Boolean,
-    val osStyle: OSStyle = OSStyle.AmigaOS13,
-    val videoSystem: VideoSystem = VideoSystem.PAL,
-)
+    val osStyle: OSStyle,
+    val videoSystem: VideoSystem,
+) {
+    /** The original demo look with this OS style kept ("Set original demo defaults"). */
+    fun withDemoDefaults(): BoingBallPrefs = Default.copy(osStyle = osStyle)
+
+    companion object {
+        /**
+         * The original 1984 demo look: red and white ball, no tile borders, PAL speed.
+         * Used until the user changes a setting, and as the fallback for invalid values.
+         */
+        val Default = BoingBallPrefs(
+            themeColorIndex = 0,
+            altColorIndex = 3,
+            drawBorders = false,
+            osStyle = OSStyle.AmigaOS13,
+            videoSystem = VideoSystem.PAL,
+        )
+
+        /** This app's own look: blue and white ball with tile borders ("Set app defaults"). */
+        val App = BoingBallPrefs(
+            themeColorIndex = 1,
+            altColorIndex = 3,
+            drawBorders = true,
+            osStyle = OSStyle.AmigaOS13,
+            videoSystem = VideoSystem.PAL,
+        )
+    }
+}

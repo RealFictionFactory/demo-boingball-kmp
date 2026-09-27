@@ -9,17 +9,15 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.rff.boingballdemo.data.local.BoingBallPrefs
 import com.rff.boingballdemo.screens.boingball.ui.BoingBallView
 import com.rff.boingballdemo.ui.theme.BoingBallDemoTheme
 import com.rff.boingballdemo.ui.theme.backgroundColor
-import com.rff.boingballdemo.ui.theme.redColor
 
 @Composable
 fun TVBoingBallScreen() {
-    val state = BoingBallState(
-        themeColor = redColor,
-        drawBorders = false,
-    )
+    // The TV screen always shows the original demo look.
+    val state = BoingBallPrefs.Default.toBoingBallState()
     Box(
         modifier = Modifier
             .fillMaxSize()

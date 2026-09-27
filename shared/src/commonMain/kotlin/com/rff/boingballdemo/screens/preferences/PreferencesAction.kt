@@ -11,5 +11,4 @@ sealed interface PreferencesAction {
     data object BringAppDefaults : PreferencesAction
     data object SetAmigaOS13 : PreferencesAction
     data object SetAmigaOS20 : PreferencesAction
-    data object Back : PreferencesAction
 }

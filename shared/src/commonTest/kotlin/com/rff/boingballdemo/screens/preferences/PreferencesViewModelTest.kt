@@ -3,6 +3,7 @@ package com.rff.boingballdemo.screens.preferences
 import com.rff.boingballdemo.component.OSStyle
 import com.rff.boingballdemo.component.VideoSystem
 import com.rff.boingballdemo.data.local.AppSettings
+import com.rff.boingballdemo.data.local.BoingBallPrefs
 import com.rff.boingballdemo.testing.InMemoryDataStore
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -66,6 +67,23 @@ class PreferencesViewModelTest {
     }
 
     @Test
+    fun startsWithDefaultPrefsWhenNothingIsStored() = runTest(dispatcher) {
+        assertEquals(BoingBallPrefs.Default, settings.boingBallPrefs.first())
+        assertEquals(BoingBallPrefs.Default.toPreferencesState(), PreferencesViewModel(settings).uiState.value)
+    }
+
+    @Test
+    fun appDefaultsReplaceEverySetting() = runTest(dispatcher) {
+        val viewModel = PreferencesViewModel(settings)
+        viewModel.onAction(PreferencesAction.SetAmigaOS20)
+        viewModel.onAction(PreferencesAction.SetVideoSystem(VideoSystem.NTSC))
+        viewModel.onAction(PreferencesAction.BringAppDefaults)
+        advanceUntilIdle()
+
+        assertEquals(BoingBallPrefs.App, settings.boingBallPrefs.first())
+    }
+
+    @Test
     fun demoDefaultsKeepOsStyle() = runTest(dispatcher) {
         val viewModel = PreferencesViewModel(settings)
         viewModel.onAction(PreferencesAction.SetAmigaOS20)
@@ -73,8 +91,9 @@ class PreferencesViewModelTest {
         viewModel.onAction(PreferencesAction.BringDefaults)
         advanceUntilIdle()
 
-        val prefs = settings.boingBallPrefs.first()
-        assertEquals(0, prefs.themeColorIndex)
-        assertEquals(OSStyle.AmigaOS20, prefs.osStyle)
+        assertEquals(
+            BoingBallPrefs.Default.copy(osStyle = OSStyle.AmigaOS20),
+            settings.boingBallPrefs.first(),
+        )
     }
 }
