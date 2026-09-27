@@ -1,7 +1,5 @@
 package com.rff.boingballdemo.data.local
 
-import androidx.datastore.core.DataStore
-import androidx.datastore.preferences.core.Preferences
 import kotlinx.cinterop.ExperimentalForeignApi
 import platform.Foundation.NSApplicationSupportDirectory
 import platform.Foundation.NSDocumentDirectory
@@ -16,14 +14,9 @@ import platform.Foundation.NSUserDomainMask
  * Support is still included in iCloud and device backups.
  */
 @OptIn(ExperimentalForeignApi::class)
-fun getPreferencesDataStorePath(): String {
+internal fun preferencesDataStorePath(): String {
     val newPath = directoryPath(NSApplicationSupportDirectory, create = true) + "/$dataStoreFileName"
     return migrateFromDocuments(newPath)
-}
-
-actual fun createPreferencesDataStore(): DataStore<Preferences> {
-    val path = getPreferencesDataStorePath()
-    return getPreferencesDataStore(path)
 }
 
 /**

@@ -1,12 +1,9 @@
 package com.rff.boingballdemo.di
 
-import androidx.datastore.core.DataStore
-import androidx.datastore.preferences.core.Preferences
 import com.rff.boingballdemo.screens.about.AboutViewModel
 import com.rff.boingballdemo.screens.boingball.BoingBallViewModel
 import com.rff.boingballdemo.screens.calculator.CalculatorViewModel
 import com.rff.boingballdemo.data.local.AppSettings
-import com.rff.boingballdemo.data.local.createPreferencesDataStore
 import com.rff.boingballdemo.screens.clock.ClockViewModel
 import com.rff.boingballdemo.screens.musicplayer.MusicPlayerViewModel
 import com.rff.boingballdemo.screens.preferences.PreferencesViewModel
@@ -16,10 +13,10 @@ import org.koin.core.module.dsl.singleOf
 import org.koin.core.module.dsl.viewModelOf
 import org.koin.dsl.module
 
+/** Platform bindings, including the preferences `DataStore<Preferences>` that [AppSettings] needs. */
 expect val platformModule: Module
 
 val sharedModule = module {
-    single<DataStore<Preferences>> { createPreferencesDataStore() }
     singleOf(::AppSettings)
 
     viewModelOf(::BoingBallViewModel)

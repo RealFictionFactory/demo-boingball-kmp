@@ -7,8 +7,9 @@ import okio.Path.Companion.toPath
 
 internal const val dataStoreFileName = "boing.preferences_pb"
 
-fun getPreferencesDataStore(path: String) = PreferenceDataStoreFactory.createWithPath {
-    path.toPath()
-}
-
-expect fun createPreferencesDataStore(): DataStore<Preferences>
+/**
+ * Creates the preferences DataStore at [path]. Each platform's Koin `platformModule`
+ * binds it as a single instance, since DataStore allows only one instance per file.
+ */
+fun createPreferencesDataStore(path: String): DataStore<Preferences> =
+    PreferenceDataStoreFactory.createWithPath { path.toPath() }
