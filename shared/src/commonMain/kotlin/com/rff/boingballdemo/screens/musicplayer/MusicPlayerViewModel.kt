@@ -3,15 +3,18 @@ package com.rff.boingballdemo.screens.musicplayer
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.rff.boingballdemo.data.local.AppSettings
-import kotlinx.coroutines.Job
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.onEach
-import kotlinx.coroutines.flow.update
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.stateIn
 
 private const val PROGRESS_TICK_MS = 200L
 
@@ -66,176 +69,100 @@ internal val AMIGA_MUSIC_TRACKS = listOf(
     ),
 )
 
+/**
+ * Mirrors [MusicPlayback], which owns the playlist and play state so system media
+ * controls and this screen always agree. The ViewModel only translates UI actions.
+ */
 class MusicPlayerViewModel(
-    private val settings: AppSettings,
+    settings: AppSettings,
     private val playback: MusicPlayback,
 ) : ViewModel() {
-    private val _uiState = MutableStateFlow(
-        MusicPlayerState(tracks = AMIGA_MUSIC_TRACKS)
-    )
-    val uiState: StateFlow<MusicPlayerState> = _uiState.asStateFlow()
 
-    private var progressJob: Job? = null
+    // Polls the live position only while playing and while the UI is subscribed.
+    @OptIn(ExperimentalCoroutinesApi::class)
+    private val positionMs: Flow<Long> = playback.status.flatMapLatest { status ->
+        if (!status.isPlaying) {
+            flowOf(status.positionMs)
+        } else {
+            flow {
+                while (true) {
+                    emit(playback.currentPositionMs())
+                    delay(PROGRESS_TICK_MS)
+                }
+            }
+        }
+    }
+
+    val uiState: StateFlow<MusicPlayerState> = combine(
+        settings.boingBallPrefs.map { it.osStyle }.distinctUntilChanged(),
+        playback.status,
+        positionMs,
+    ) { osStyle, status, position ->
+        MusicPlayerState(
+            osStyle = osStyle,
+            tracks = status.tracks,
+            currentTrackIndex = status.currentIndex,
+            isPlaying = status.isPlaying,
+            positionMs = position,
+        )
+    }.stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5_000),
+        initialValue = MusicPlayerState(tracks = AMIGA_MUSIC_TRACKS),
+    )
 
     init {
-        settings.boingBallPrefs
-            .onEach { prefs -> _uiState.update { it.copy(osStyle = prefs.osStyle) } }
-            .launchIn(viewModelScope)
-
-        playback.setOnExternalStateChange(::onExternalStateChange)
+        playback.setPlaylist(AMIGA_MUSIC_TRACKS)
     }
 
     fun onAction(action: MusicPlayerAction) {
-        var command: PlaybackCommand? = null
-        _uiState.update { state ->
-            val step = state.step(action)
-            command = step.command
-            step.state
+        val tracks = playback.status.value.tracks
+        when (action) {
+            MusicPlayerAction.Play -> playback.play()
+            MusicPlayerAction.Pause -> playback.pause()
+            MusicPlayerAction.Stop -> playback.stop()
+            MusicPlayerAction.Next -> playback.skipToNext()
+            MusicPlayerAction.Previous -> playback.skipToPrevious()
+            is MusicPlayerAction.Seek -> {
+                val duration = tracks.getOrNull(playback.status.value.currentIndex)?.durationMs ?: return
+                playback.seekTo(seekTarget(playback.currentPositionMs(), action.deltaMs, duration))
+            }
+            is MusicPlayerAction.SelectTrack -> {
+                if (action.index in tracks.indices) playback.skipToTrack(action.index)
+            }
+            is MusicPlayerAction.MoveTrack -> {
+                val target = moveTarget(tracks, action.index, action.direction) ?: return
+                playback.moveTrack(action.index, target)
+            }
         }
-        dispatch(command)
     }
 
     override fun onCleared() {
-        progressJob?.cancel()
+        // Closing the player window stops the music.
         playback.release()
     }
-
-    private fun dispatch(command: PlaybackCommand?) {
-        when (command) {
-            is PlaybackCommand.Play -> {
-                playback.play(command.resourcePath, command.positionMs)
-                // play() reports synchronously when audio focus is denied.
-                if (_uiState.value.isPlaying) startProgress()
-            }
-            PlaybackCommand.Pause -> {
-                playback.pause()
-                stopProgress()
-            }
-            PlaybackCommand.Stop -> {
-                playback.stop()
-                stopProgress()
-            }
-            is PlaybackCommand.Seek -> playback.seekTo(command.positionMs)
-            null -> Unit
-        }
-    }
-
-    /** The system paused or resumed playback (audio focus, headphones unplugged). */
-    private fun onExternalStateChange(isPlaying: Boolean) {
-        val position = playback.currentPositionMs()
-        _uiState.update { it.copy(isPlaying = isPlaying, positionMs = position) }
-        if (isPlaying) startProgress() else stopProgress()
-    }
-
-    private fun startProgress() {
-        progressJob?.cancel()
-        progressJob = viewModelScope.launch {
-            while (true) {
-                delay(PROGRESS_TICK_MS)
-                if (!_uiState.value.isPlaying) continue
-                if (playback.hasEnded()) {
-                    onAction(MusicPlayerAction.Next)
-                    return@launch
-                }
-                val position = playback.currentPositionMs()
-                _uiState.update { state ->
-                    if (!state.isPlaying) state else state.copy(positionMs = position)
-                }
-            }
-        }
-    }
-
-    private fun stopProgress() {
-        progressJob?.cancel()
-        progressJob = null
-    }
 }
 
-internal sealed interface PlaybackCommand {
-    data class Play(val resourcePath: String, val positionMs: Long) : PlaybackCommand
-    data object Pause : PlaybackCommand
-    data object Stop : PlaybackCommand
-    data class Seek(val positionMs: Long) : PlaybackCommand
+internal fun seekTarget(positionMs: Long, deltaMs: Long, durationMs: Long): Long =
+    (positionMs + deltaMs).coerceIn(0L, durationMs.coerceAtLeast(0L))
+
+/** Target index for moving a track one step up (-1) or down (+1), or null if not possible. */
+internal fun moveTarget(tracks: List<MusicTrack>, index: Int, direction: Int): Int? {
+    if (direction != -1 && direction != 1) return null
+    val target = index + direction
+    return if (index in tracks.indices && target in tracks.indices) target else null
 }
 
-internal data class PlaybackStep(
-    val state: MusicPlayerState,
-    val command: PlaybackCommand?,
-)
+/** Moves the element at [from] to [to], shifting the elements in between. */
+internal fun <T> List<T>.moved(from: Int, to: Int): List<T> =
+    toMutableList().apply { add(to, removeAt(from)) }
 
-internal fun MusicPlayerState.step(action: MusicPlayerAction): PlaybackStep {
-    val after = reduce(action)
-    val command = when (action) {
-        MusicPlayerAction.Play -> after.currentTrack?.let {
-            PlaybackCommand.Play(it.resourcePath, after.positionMs)
-        }
-        MusicPlayerAction.Pause -> PlaybackCommand.Pause
-        MusicPlayerAction.Stop -> PlaybackCommand.Stop
-        is MusicPlayerAction.Seek -> PlaybackCommand.Seek(after.positionMs)
-        MusicPlayerAction.Next,
-        MusicPlayerAction.Previous,
-        -> trackChangeCommand(after)
-        is MusicPlayerAction.SelectTrack -> {
-            if (action.index !in tracks.indices) null
-            else trackChangeCommand(after)
-        }
-        is MusicPlayerAction.MoveTrack -> null
-    }
-    return PlaybackStep(after, command)
-}
-
-private fun trackChangeCommand(after: MusicPlayerState): PlaybackCommand {
-    val path = after.currentTrack?.resourcePath
-    return if (after.isPlaying && path != null) {
-        PlaybackCommand.Play(path, 0L)
-    } else {
-        PlaybackCommand.Stop
-    }
-}
-
-internal fun MusicPlayerState.reduce(action: MusicPlayerAction): MusicPlayerState {
-    if (tracks.isEmpty()) return this
-
-    return when (action) {
-        MusicPlayerAction.Play -> copy(isPlaying = true)
-        MusicPlayerAction.Pause -> copy(isPlaying = false)
-        MusicPlayerAction.Stop -> copy(isPlaying = false, positionMs = 0L)
-        MusicPlayerAction.Next -> copy(
-            currentTrackIndex = (currentTrackIndex + 1) % tracks.size,
-            positionMs = 0L,
-        )
-        MusicPlayerAction.Previous -> copy(
-            currentTrackIndex = (currentTrackIndex - 1 + tracks.size) % tracks.size,
-            positionMs = 0L,
-        )
-        is MusicPlayerAction.Seek -> {
-            val duration = currentTrack?.durationMs ?: return this
-            copy(positionMs = (positionMs + action.deltaMs).coerceIn(0L, duration))
-        }
-        is MusicPlayerAction.SelectTrack -> {
-            if (action.index !in tracks.indices) this
-            else copy(currentTrackIndex = action.index, positionMs = 0L)
-        }
-        is MusicPlayerAction.MoveTrack -> {
-            val target = action.index + action.direction
-            if (action.direction !in -1..1 || action.direction == 0 ||
-                action.index !in tracks.indices || target !in tracks.indices
-            ) this
-            else {
-                val reordered = tracks.toMutableList()
-                reordered[action.index] = tracks[target]
-                reordered[target] = tracks[action.index]
-                copy(
-                    tracks = reordered,
-                    currentTrackIndex = when (currentTrackIndex) {
-                        action.index -> target
-                        target -> action.index
-                        else -> currentTrackIndex
-                    },
-                )
-            }
-        }
-    }
+/** Index of the current element after [moved] with the same [from] and [to]. */
+internal fun indexAfterMove(current: Int, from: Int, to: Int): Int = when {
+    current == from -> to
+    from < to && current in (from + 1)..to -> current - 1
+    to < from && current in to until from -> current + 1
+    else -> current
 }
 
 internal fun formatPlaybackTime(positionMs: Long): String {

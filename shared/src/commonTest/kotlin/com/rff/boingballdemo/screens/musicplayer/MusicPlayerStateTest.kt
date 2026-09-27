@@ -1,157 +1,65 @@
 package com.rff.boingballdemo.screens.musicplayer
 
-import com.rff.boingballdemo.screens.musicplayer.MusicPlayerAction
-import com.rff.boingballdemo.screens.musicplayer.MusicPlayerState
-import com.rff.boingballdemo.screens.musicplayer.MusicTrack
-import com.rff.boingballdemo.screens.musicplayer.PlaybackCommand
-import com.rff.boingballdemo.screens.musicplayer.formatPlaybackTime
-import com.rff.boingballdemo.screens.musicplayer.reduce
-import com.rff.boingballdemo.screens.musicplayer.step
 import kotlin.test.Test
 import kotlin.test.assertEquals
-import kotlin.test.assertFalse
-import kotlin.test.assertTrue
+import kotlin.test.assertNull
 
 class MusicPlayerStateTest {
 
     private val tracks = listOf(
         MusicTrack("A", "One", 1_000L, "files/a.mp3"),
         MusicTrack("B", "Two", 2_000L, "files/b.mp3"),
+        MusicTrack("C", "Three", 3_000L, "files/c.mp3"),
     )
-    private val state = MusicPlayerState(tracks = tracks)
-
-    @Test
-    fun playStartsPlayback() {
-        val next = state.reduce(MusicPlayerAction.Play)
-        assertTrue(next.isPlaying)
-        assertEquals(0L, next.positionMs)
-    }
-
-    @Test
-    fun stopClearsPosition() {
-        val next = state.copy(isPlaying = true, positionMs = 500L)
-            .reduce(MusicPlayerAction.Stop)
-        assertFalse(next.isPlaying)
-        assertEquals(0L, next.positionMs)
-    }
-
-    @Test
-    fun nextWrapsAroundAndResetsPosition() {
-        val next = state.copy(currentTrackIndex = 1, positionMs = 400L)
-            .reduce(MusicPlayerAction.Next)
-        assertEquals(0, next.currentTrackIndex)
-        assertEquals(0L, next.positionMs)
-    }
-
-    @Test
-    fun previousWrapsAround() {
-        val next = state.reduce(MusicPlayerAction.Previous)
-        assertEquals(1, next.currentTrackIndex)
-    }
-
-    @Test
-    fun selectTrackIgnoresOutOfRangeIndex() {
-        val next = state.reduce(MusicPlayerAction.SelectTrack(9))
-        assertEquals(state, next)
-    }
 
     @Test
     fun progressUsesTrackDuration() {
-        val playing = state.copy(positionMs = 500L)
-        assertEquals(0.5f, playing.progress)
+        val state = MusicPlayerState(tracks = tracks, positionMs = 500L)
+        assertEquals(0.5f, state.progress)
     }
 
     @Test
-    fun seekClampsToTrackDuration() {
-        val next = state.copy(positionMs = 800L)
-            .reduce(MusicPlayerAction.Seek(500L))
-        assertEquals(1_000L, next.positionMs)
+    fun seekTargetClampsToTrackBounds() {
+        assertEquals(1_000L, seekTarget(positionMs = 800L, deltaMs = 500L, durationMs = 1_000L))
+        assertEquals(0L, seekTarget(positionMs = 300L, deltaMs = -500L, durationMs = 1_000L))
+        assertEquals(700L, seekTarget(positionMs = 200L, deltaMs = 500L, durationMs = 1_000L))
     }
 
     @Test
-    fun playCommandsCurrentFile() {
-        val step = state.step(MusicPlayerAction.Play)
-        assertEquals(PlaybackCommand.Play("files/a.mp3", 0L), step.command)
-        assertTrue(step.state.isPlaying)
+    fun moveTargetAllowsOneStepInsidePlaylist() {
+        assertEquals(1, moveTarget(tracks, index = 0, direction = 1))
+        assertEquals(1, moveTarget(tracks, index = 2, direction = -1))
     }
 
     @Test
-    fun pauseAndStopCommandPlayback() {
-        val playing = state.step(MusicPlayerAction.Play).state
-        assertEquals(PlaybackCommand.Pause, playing.step(MusicPlayerAction.Pause).command)
-        assertEquals(PlaybackCommand.Stop, playing.step(MusicPlayerAction.Stop).command)
+    fun moveTargetRejectsMovesOutsidePlaylist() {
+        assertNull(moveTarget(tracks, index = 0, direction = -1))
+        assertNull(moveTarget(tracks, index = 2, direction = 1))
+        assertNull(moveTarget(tracks, index = 9, direction = -1))
+        assertNull(moveTarget(tracks, index = 0, direction = 2))
+        assertNull(moveTarget(tracks, index = 0, direction = 0))
     }
 
     @Test
-    fun nextWhilePlayingCommandsNextFile() {
-        val playing = state.step(MusicPlayerAction.Play).state
-        val step = playing.step(MusicPlayerAction.Next)
-        assertEquals(PlaybackCommand.Play("files/b.mp3", 0L), step.command)
-        assertEquals(0L, step.state.positionMs)
+    fun movedShiftsElementsInBetween() {
+        assertEquals(listOf(tracks[1], tracks[0], tracks[2]), tracks.moved(0, 1))
+        assertEquals(listOf(tracks[1], tracks[2], tracks[0]), tracks.moved(0, 2))
+        assertEquals(listOf(tracks[2], tracks[0], tracks[1]), tracks.moved(2, 0))
     }
 
     @Test
-    fun nextWhilePausedStopsPlayback() {
-        val step = state.step(MusicPlayerAction.Next)
-        assertEquals(PlaybackCommand.Stop, step.command)
-        assertEquals(1, step.state.currentTrackIndex)
-    }
-
-    @Test
-    fun seekCommandsClampedPosition() {
-        val step = state.copy(positionMs = 800L).step(MusicPlayerAction.Seek(500L))
-        assertEquals(PlaybackCommand.Seek(1_000L), step.command)
-    }
-
-    @Test
-    fun selectTrackOutOfRangeDoesNotCommandPlayback() {
-        val step = state.step(MusicPlayerAction.SelectTrack(9))
-        assertEquals(null, step.command)
-        assertEquals(state, step.state)
-    }
-
-    @Test
-    fun movingCurrentTrackKeepsPlaybackAndPosition() {
-        val playing = state.copy(isPlaying = true, positionMs = 500L)
-        val step = playing.step(MusicPlayerAction.MoveTrack(0, 1))
-        assertEquals(listOf(tracks[1], tracks[0]), step.state.tracks)
-        assertEquals(1, step.state.currentTrackIndex)
-        assertEquals(tracks[0], step.state.currentTrack)
-        assertEquals(500L, step.state.positionMs)
-        assertTrue(step.state.isPlaying)
-        assertEquals(null, step.command)
-    }
-
-    @Test
-    fun movingOtherTrackAdjustsCurrentIndexWithoutRestarting() {
-        val playing = state.copy(isPlaying = true, currentTrackIndex = 1, positionMs = 700L)
-        val step = playing.step(MusicPlayerAction.MoveTrack(0, 1))
-        assertEquals(tracks[1], step.state.currentTrack)
-        assertEquals(0, step.state.currentTrackIndex)
-        assertEquals(700L, step.state.positionMs)
-        assertEquals(null, step.command)
-    }
-
-    @Test
-    fun nextUsesReorderedPlaylist() {
-        val reordered = state.reduce(MusicPlayerAction.MoveTrack(0, 1))
-        val step = reordered.copy(currentTrackIndex = 0, isPlaying = true)
-            .step(MusicPlayerAction.Next)
-        assertEquals(tracks[0], step.state.currentTrack)
-        assertEquals(PlaybackCommand.Play("files/a.mp3", 0L), step.command)
-    }
-
-    @Test
-    fun movingOutsidePlaylistDoesNothing() {
-        for (action in listOf(
-            MusicPlayerAction.MoveTrack(0, -1),
-            MusicPlayerAction.MoveTrack(1, 1),
-            MusicPlayerAction.MoveTrack(9, -1),
-            MusicPlayerAction.MoveTrack(0, 2),
-        )) {
-            val step = state.step(action)
-            assertEquals(state, step.state)
-            assertEquals(null, step.command)
+    fun indexAfterMoveFollowsCurrentElement() {
+        for (from in tracks.indices) {
+            for (to in tracks.indices) {
+                val reordered = tracks.moved(from, to)
+                for (current in tracks.indices) {
+                    assertEquals(
+                        tracks[current],
+                        reordered[indexAfterMove(current, from, to)],
+                        "current=$current from=$from to=$to",
+                    )
+                }
+            }
         }
     }
 
