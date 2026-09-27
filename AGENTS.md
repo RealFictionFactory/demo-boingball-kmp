@@ -3,6 +3,8 @@
 ## Project Structure & Module Organization
 `shared/` contains the Kotlin Multiplatform code used by both apps. Put shared UI, state, DI, and business logic under `shared/src/commonMain/kotlin/pl/chaoticorder/boingball`, and keep platform-specific implementations in `androidMain/` and `iosMain/`.
 
+`build-logic/` is an included Gradle build with this project's convention plugins, e.g. `boingball.app-version`, which reads `version.properties` and generates the version code for Android and iOS.
+
 `androidApp/` is the Android entry point, including `MainActivity`, app wiring, and Android resources under `src/main/res`. `iosApp/` contains the Xcode project, SwiftUI entry files, and iOS assets. Shared fonts, audio, strings, and images live in `shared/src/commonMain/composeResources`.
 
 ## Build, Test, and Development Commands

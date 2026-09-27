@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Launch theme: the app icon on the Workbench blue, the same on every Android version. -->
+    <style name="Theme.BoingBall.Starting" parent="Theme.SplashScreen">
+        <item name="windowSplashScreenBackground">@color/ic_launcher_background</item>
+        <item name="windowSplashScreenAnimatedIcon">@mipmap/ic_launcher_foreground</item>
+        <item name="postSplashScreenTheme">@style/Theme.BoingBall</item>
+    </style>
+
+    <!-- Theme after the splash. Compose draws everything; this only sets the window. -->
+    <style name="Theme.BoingBall" parent="@android:style/Theme.Material.Light.NoActionBar" />
+
+    <style name="Theme.BoingBall.Starting.TV">
+        <item name="postSplashScreenTheme">@style/Theme.BoingBall.TV</item>
+    </style>
+
+    <style name="Theme.BoingBall.TV" parent="@android:style/Theme.Material.NoActionBar" />
+</resources>

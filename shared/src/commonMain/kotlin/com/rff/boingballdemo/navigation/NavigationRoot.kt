@@ -10,8 +10,8 @@ import androidx.navigation3.runtime.rememberNavBackStack
 import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
 import androidx.navigation3.ui.NavDisplay
 import androidx.savedstate.serialization.SavedStateConfiguration
+import com.rff.boingballdemo.component.LocalOsStyle
 import com.rff.boingballdemo.data.local.AppSettings
-import com.rff.boingballdemo.data.local.BoingBallPrefs
 import com.rff.boingballdemo.screens.about.AboutScreenRoot
 import com.rff.boingballdemo.screens.calculator.CalculatorScreenRoot
 import com.rff.boingballdemo.screens.clock.ClockScreenRoot
@@ -92,7 +92,9 @@ fun NavigationRoot(
     onExitApp: () -> Unit = {},
 ) {
     val settings = koinInject<AppSettings>()
-    val osStyle by settings.osStyle.collectAsStateWithLifecycle(BoingBallPrefs.Default.osStyle)
+    // Start from the style the caller provides (Android passes the stored one after the
+    // splash screen), so the first frame does not flash the default style.
+    val osStyle by settings.osStyle.collectAsStateWithLifecycle(LocalOsStyle.current)
     ProvideOsStyle(osStyle) {
         AppNavDisplay(onExitApp)
     }

@@ -7,12 +7,13 @@
 -keep class **$$serializer { *; }
 -dontnote kotlinx.serialization.AnnotationsKt
 
-# Koin — keep ViewModel constructors (viewModelOf uses reflection)
+# Koin does not use reflection here (the Koin compiler plugin wires constructors at build
+# time). Kept conservatively; verify a release build on a device before removing.
 -keepclasseswithmembers class * extends androidx.lifecycle.ViewModel {
     <init>(...);
 }
 
-# Kotlin metadata (needed for reflection-based DI)
+# Kotlin metadata and attributes; kept conservatively, see the Koin note above.
 -keep class kotlin.Metadata { *; }
 -keepattributes *Annotation*, InnerClasses, Signature, EnclosingMethod
 

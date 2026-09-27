@@ -2,6 +2,8 @@ rootProject.name = "BoingBall"
 enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 
 pluginManagement {
+    // Convention plugins for this project, e.g. boingball.app-version.
+    includeBuild("build-logic")
     repositories {
         google {
             mavenContent {

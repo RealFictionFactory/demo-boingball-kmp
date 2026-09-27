@@ -1,15 +1,33 @@
+import boingball.version.GenerateVersionConfig
+import boingball.version.GenerateXcodeVersionConfig
+
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
     alias(libs.plugins.androidMultiplatformLibrary)
     alias(libs.plugins.composeMultiplatform)
     alias(libs.plugins.composeCompiler)
     alias(libs.plugins.kotlin.serialization)
+    // Compiles the Koin DSL modules (singleOf/viewModelOf/single { }) at build time and fails the
+    // build when a dependency has no definition (e.g. [KOIN-D002] Missing definition).
     alias(libs.plugins.koin.compiler)
+    id("boingball.app-version")
 }
 
-val generatedVersionSourceDir = rootProject.layout.buildDirectory.dir(
-    "generated/source/versioning/commonMain/kotlin"
-)
+// Generates VersionConfig.kt from version.properties. Added below as a task-backed source
+// directory, so every task that reads commonMain sources (compile, lint, IDE sync) depends on it.
+val generateVersionConfig = tasks.register<GenerateVersionConfig>("generateVersionConfig") {
+    packageName = "com.rff.boingballdemo"
+    versionCode = appVersion.code
+    versionName = appVersion.name
+    outputDir = layout.buildDirectory.dir("generated/source/versioning/commonMain/kotlin")
+}
+
+// Writes the committed iOS version file (see GenerateXcodeVersionConfig).
+val generateXcodeVersionConfig = tasks.register<GenerateXcodeVersionConfig>("generateXcodeVersionConfig") {
+    versionCode = appVersion.code
+    versionName = appVersion.name
+    outputFile = isolated.rootProject.projectDirectory.file("iosApp/Configuration/GeneratedVersion.xcconfig")
+}
 
 kotlin {
     // Compiles the Android target with JDK 17 and targets Java 17 bytecode.
@@ -44,7 +62,7 @@ kotlin {
 
     sourceSets {
         commonMain {
-            kotlin.srcDir(generatedVersionSourceDir)
+            kotlin.srcDir(generateVersionConfig)
         }
 
         androidMain.dependencies {
@@ -88,11 +106,9 @@ dependencies {
     androidRuntimeClasspath(libs.compose.uiTooling)
 }
 
+// Keep the committed GeneratedVersion.xcconfig in sync when building from Xcode.
 tasks.matching {
-    it.name.startsWith("compile") ||
-        it.name == "embedAndSignAppleFrameworkForXcode" ||
-        it.name == "embedSwiftExportForXcode"
+    it.name == "embedAndSignAppleFrameworkForXcode" || it.name == "embedSwiftExportForXcode"
 }.configureEach {
-    dependsOn(rootProject.tasks.named("generateVersionConfig"))
-    dependsOn(rootProject.tasks.named("generateXcodeVersionConfig"))
+    dependsOn(generateXcodeVersionConfig)
 }

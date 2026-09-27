@@ -4,12 +4,10 @@ plugins {
     alias(libs.plugins.androidApplication)
     alias(libs.plugins.composeMultiplatform)
     alias(libs.plugins.composeCompiler)
+    id("boingball.app-version")
 }
 
-val appVersionCode = rootProject.extra["appVersionCode"] as Int
-val appVersionName = rootProject.extra["appVersionName"] as String
-
-val keystorePropsFile = rootProject.file("keystore.properties")
+val keystorePropsFile = isolated.rootProject.projectDirectory.file("keystore.properties").asFile
 val keystoreProps = if (keystorePropsFile.exists()) {
     Properties().also { props -> keystorePropsFile.inputStream().use { props.load(it) } }
 } else null
@@ -22,6 +20,7 @@ dependencies {
     implementation(projects.shared)
 
     implementation(libs.androidx.activity.compose)
+    implementation(libs.androidx.core.splashscreen)
 
     implementation(libs.compose.uiToolingPreview)
     debugImplementation(libs.compose.uiTooling)
@@ -38,8 +37,8 @@ android {
         applicationId = "com.rff.boingballdemo"
         minSdk = libs.versions.android.minSdk.get().toInt()
         targetSdk = libs.versions.android.targetSdk.get().toInt()
-        versionCode = appVersionCode
-        versionName = appVersionName
+        versionCode = appVersion.code.get()
+        versionName = appVersion.name.get()
     }
     packaging {
         resources {
@@ -69,7 +68,7 @@ android {
     }
 }
 
+// Any Android build also refreshes the committed iOS version file after a version bump.
 tasks.named("preBuild") {
-    dependsOn(rootProject.tasks.named("generateVersionConfig"))
-    dependsOn(rootProject.tasks.named("generateXcodeVersionConfig"))
+    dependsOn(":shared:generateXcodeVersionConfig")
 }
