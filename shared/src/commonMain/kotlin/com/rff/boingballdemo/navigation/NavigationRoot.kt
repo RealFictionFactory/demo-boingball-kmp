@@ -3,7 +3,9 @@ package com.rff.boingballdemo.navigation
 import androidx.compose.runtime.Composable
 import androidx.navigation3.runtime.NavEntry
 import androidx.navigation3.runtime.NavKey
+import androidx.lifecycle.viewmodel.navigation3.rememberViewModelStoreNavEntryDecorator
 import androidx.navigation3.runtime.rememberNavBackStack
+import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
 import androidx.navigation3.ui.NavDisplay
 import androidx.savedstate.serialization.SavedStateConfiguration
 import com.rff.boingballdemo.screens.about.AboutScreenRoot
@@ -93,6 +95,12 @@ fun NavigationRoot(
                 onExitApp()
             }
         },
+        // Scope each entry's ViewModels to the entry itself so they are cleared
+        // when the entry is popped (e.g. the music player stops on close).
+        entryDecorators = listOf(
+            rememberSaveableStateHolderNavEntryDecorator(),
+            rememberViewModelStoreNavEntryDecorator(),
+        ),
         entryProvider = { key ->
             when(key) {
                 WorkbenchRoute -> {
