@@ -3,10 +3,10 @@ package com.rff.boingballdemo.component
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.selection.toggleable
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -16,6 +16,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import boingball.shared.generated.resources.Res
@@ -54,17 +55,17 @@ private fun AmigaOs13CheckBox(
             .height(28.dp)
             .background(color = Color.Transparent)
             .border(width = 1.dp, color = Color.White)
-            .clickable(
-                onClick = {
-                    onCheckChanged(!isChecked)
-                }
+            .toggleable(
+                value = isChecked,
+                role = Role.Checkbox,
+                onValueChange = onCheckChanged,
             ),
         contentAlignment = Alignment.Center
     ) {
         if (isChecked) {
             Image(
                 painter = painterResource(resource = Res.drawable.ic_check),
-                contentDescription = "Checked",
+                contentDescription = null, // Checkbox semantics announce the state
             )
         }
     }
@@ -80,17 +81,17 @@ private fun AmigaOs30CheckBox(
             .width(30.dp)
             .height(28.dp)
             .amigaOs30Frame(fillColor = amigaOs30Grey)
-            .clickable(
-                onClick = {
-                    onCheckChanged(!isChecked)
-                }
+            .toggleable(
+                value = isChecked,
+                role = Role.Checkbox,
+                onValueChange = onCheckChanged,
             ),
         contentAlignment = Alignment.Center
     ) {
         if (isChecked) {
             Image(
                 painter = painterResource(resource = Res.drawable.ic_check),
-                contentDescription = "Checked",
+                contentDescription = null, // Checkbox semantics announce the state
                 colorFilter = ColorFilter.tint(blackColor)
             )
         }

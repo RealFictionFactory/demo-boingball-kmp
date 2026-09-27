@@ -16,4 +16,14 @@
     <string name="about_application_version">Wersja aplikacji: %1$s</string>
     <string name="guru_meditation_header">Błąd oprogramowania.  Naciśnij lewy przycisk myszy, aby kontynuować.</string>
     <string name="guru_meditation_code">Guru Meditation %1$s</string>
+    <string name="playlist">Playlista</string>
+    <string name="playlist_move_up">Przesuń utwór w górę</string>
+    <string name="playlist_move_down">Przesuń utwór w dół</string>
+    <string name="player_previous">Poprzedni utwór</string>
+    <string name="player_rewind">Przewiń do tyłu</string>
+    <string name="player_play">Odtwórz</string>
+    <string name="player_pause">Pauza</string>
+    <string name="player_stop">Zatrzymaj</string>
+    <string name="player_forward">Przewiń do przodu</string>
+    <string name="player_next">Następny utwór</string>
 </resources>

@@ -26,6 +26,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.layout.onSizeChanged
@@ -234,6 +235,7 @@ private fun SelectorRow(
             .clickable(
                 interactionSource = interactionSource,
                 indication = null,
+                role = Role.DropdownList,
                 onClick = onClick,
             )
             .padding(horizontal = 6.dp, vertical = 4.dp),
@@ -246,7 +248,7 @@ private fun SelectorRow(
         }
         Image(
             painter = painterResource(resource = Res.drawable.ic_cycle),
-            contentDescription = "Checked",
+            contentDescription = null, // Decorative cycle-gadget glyph
             colorFilter = ColorFilter.tint(tintColor)
         )
         Spacer(modifier = Modifier.width(6.dp))

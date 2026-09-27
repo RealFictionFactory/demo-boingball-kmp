@@ -16,4 +16,14 @@
     <string name="about_application_version">App-Version: %1$s</string>
     <string name="guru_meditation_header">Softwarefehler.  Linke Maustaste drücken, um fortzufahren.</string>
     <string name="guru_meditation_code">Guru Meditation %1$s</string>
+    <string name="playlist">Wiedergabeliste</string>
+    <string name="playlist_move_up">Titel nach oben verschieben</string>
+    <string name="playlist_move_down">Titel nach unten verschieben</string>
+    <string name="player_previous">Vorheriger Titel</string>
+    <string name="player_rewind">Zurückspulen</string>
+    <string name="player_play">Wiedergabe</string>
+    <string name="player_pause">Pause</string>
+    <string name="player_stop">Stopp</string>
+    <string name="player_forward">Vorspulen</string>
+    <string name="player_next">Nächster Titel</string>
 </resources>

@@ -60,6 +60,13 @@ import boingball.shared.generated.resources.ic_skip_next
 import boingball.shared.generated.resources.ic_skip_previous
 import boingball.shared.generated.resources.ic_stop
 import boingball.shared.generated.resources.music_player_version
+import boingball.shared.generated.resources.player_forward
+import boingball.shared.generated.resources.player_next
+import boingball.shared.generated.resources.player_pause
+import boingball.shared.generated.resources.player_play
+import boingball.shared.generated.resources.player_previous
+import boingball.shared.generated.resources.player_rewind
+import boingball.shared.generated.resources.player_stop
 import boingball.shared.generated.resources.playlist
 import boingball.shared.generated.resources.playlist_move_down
 import boingball.shared.generated.resources.playlist_move_up
@@ -81,6 +88,7 @@ import com.rff.boingballdemo.ui.theme.topazFont
 import com.rff.boingballdemo.ui.theme.topazFont20
 import com.rff.boingballdemo.ui.theme.whiteColor
 import org.jetbrains.compose.resources.DrawableResource
+import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
@@ -370,32 +378,41 @@ private fun NowPlayingPanel(
     }
 }
 
+/** One button of the transport bar; [description] is read out by screen readers. */
+private data class TransportControl(
+    val icon: DrawableResource,
+    val action: MusicPlayerAction,
+    val description: StringResource,
+)
+
 @Composable
 private fun TransportBar(
     state: MusicPlayerState,
     onAction: (MusicPlayerAction) -> Unit,
 ) {
-    val playPauseIcon = if (state.isPlaying) Res.drawable.ic_pause else Res.drawable.ic_play
-    val playPauseAction = if (state.isPlaying) MusicPlayerAction.Pause else MusicPlayerAction.Play
-    val playPauseDescription = if (state.isPlaying) "Pause" else "Play"
-    val buttons = listOf(
-        Triple(Res.drawable.ic_skip_previous, MusicPlayerAction.Previous, "Previous"),
-        Triple(Res.drawable.ic_fast_rewind, MusicPlayerAction.Seek(-SEEK_STEP_MS), "Rewind"),
-        Triple(playPauseIcon, playPauseAction, playPauseDescription),
-        Triple(Res.drawable.ic_stop, MusicPlayerAction.Stop, "Stop"),
-        Triple(Res.drawable.ic_fast_forward, MusicPlayerAction.Seek(SEEK_STEP_MS), "Forward"),
-        Triple(Res.drawable.ic_skip_next, MusicPlayerAction.Next, "Next"),
+    val playPause = if (state.isPlaying) {
+        TransportControl(Res.drawable.ic_pause, MusicPlayerAction.Pause, Res.string.player_pause)
+    } else {
+        TransportControl(Res.drawable.ic_play, MusicPlayerAction.Play, Res.string.player_play)
+    }
+    val controls = listOf(
+        TransportControl(Res.drawable.ic_skip_previous, MusicPlayerAction.Previous, Res.string.player_previous),
+        TransportControl(Res.drawable.ic_fast_rewind, MusicPlayerAction.Seek(-SEEK_STEP_MS), Res.string.player_rewind),
+        playPause,
+        TransportControl(Res.drawable.ic_stop, MusicPlayerAction.Stop, Res.string.player_stop),
+        TransportControl(Res.drawable.ic_fast_forward, MusicPlayerAction.Seek(SEEK_STEP_MS), Res.string.player_forward),
+        TransportControl(Res.drawable.ic_skip_next, MusicPlayerAction.Next, Res.string.player_next),
     )
 
     Row(
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.spacedBy(4.dp),
     ) {
-        buttons.forEach { (icon, action, description) ->
+        controls.forEach { control ->
             TransportButton(
-                icon = icon,
-                contentDescription = description,
-                onClick = { onAction(action) },
+                icon = control.icon,
+                contentDescription = stringResource(control.description),
+                onClick = { onAction(control.action) },
                 modifier = Modifier
                     .weight(1f)
                     .aspectRatio(1f),

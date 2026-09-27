@@ -14,6 +14,13 @@
     <string name="playlist">Playlist</string>
     <string name="playlist_move_up">Move track up</string>
     <string name="playlist_move_down">Move track down</string>
+    <string name="player_previous">Previous track</string>
+    <string name="player_rewind">Rewind</string>
+    <string name="player_play">Play</string>
+    <string name="player_pause">Pause</string>
+    <string name="player_stop">Stop</string>
+    <string name="player_forward">Fast forward</string>
+    <string name="player_next">Next track</string>
     <string name="shell" translatable="false">Shell</string>
     <string name="shell13" translatable="false">CLI</string>
     <string name="boing" translatable="false">Boing</string>
