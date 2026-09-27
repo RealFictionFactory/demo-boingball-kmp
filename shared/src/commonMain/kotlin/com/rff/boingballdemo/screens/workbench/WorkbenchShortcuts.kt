@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
@@ -66,7 +67,10 @@ internal fun WorkbenchShortcutIcon(
 ) {
     val isOs13 = LocalOsStyle.current == OSStyle.AmigaOS13
     Column(
-        modifier = Modifier.clickable(onClick = onClick),
+        // Stable id for UI automation (baseline profile generation), independent of language.
+        modifier = Modifier
+            .testTag("workbench_${shortcut.action}")
+            .clickable(onClick = onClick),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         Image(

@@ -4,6 +4,7 @@ plugins {
     alias(libs.plugins.androidApplication)
     alias(libs.plugins.composeMultiplatform)
     alias(libs.plugins.composeCompiler)
+    alias(libs.plugins.baselineprofile)
     id("boingball.app-version")
 }
 
@@ -20,7 +21,12 @@ dependencies {
     implementation(projects.shared)
 
     implementation(libs.androidx.activity.compose)
+    implementation(libs.compose.foundation)
     implementation(libs.androidx.core.splashscreen)
+    // Installs the baseline profile on devices that did not get it from Play (e.g. sideloads).
+    implementation(libs.androidx.profileinstaller)
+    // Generates src/release/generated/baselineProfiles with :baselineprofile.
+    baselineProfile(projects.baselineprofile)
 
     implementation(libs.compose.uiToolingPreview)
     debugImplementation(libs.compose.uiTooling)

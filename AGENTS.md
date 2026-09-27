@@ -15,6 +15,7 @@ Use the Gradle wrapper from the repository root.
 - `./gradlew :shared:testAndroidHostTest` runs Android host-side tests for shared code.
 - `./gradlew :shared:iosSimulatorArm64Test` runs iOS simulator tests for the shared module.
 - `./gradlew :shared:check` runs the standard verification tasks.
+- `ANDROID_SERIAL=<serial> ./gradlew :androidApp:generateBaselineProfile` regenerates the baseline profile on a connected Android 13+ device; commit the files it writes to `androidApp/src/release/generated/baselineProfiles/`.
 
 Run the iOS app from Xcode by opening `iosApp/iosApp.xcodeproj`.
 
