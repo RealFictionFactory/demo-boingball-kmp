@@ -1,52 +1,37 @@
 package com.rff.boingballdemo.ui.theme
 
-import androidx.compose.foundation.isSystemInDarkTheme
-import androidx.compose.material3.ColorScheme
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import com.rff.boingballdemo.component.LocalOsStyle
 import com.rff.boingballdemo.component.OSStyle
 
-val DarkColorScheme = darkColorScheme(
-    primary = Purple80,
-    secondary = PurpleGrey80,
-    tertiary = Pink80
+/**
+ * The app draws its own fixed Amiga palette, so the Material scheme only backs the few
+ * Material defaults still in play (e.g. ripples). No dark mode and no dynamic color: the
+ * Workbench looks the same on every device, as it did on the Amiga.
+ */
+private val AmigaColorScheme = lightColorScheme(
+    primary = amigaOs13Blue,
+    onPrimary = whiteColor,
+    secondary = amigaOs13Orange,
+    onSecondary = blackColor,
+    background = backgroundColor,
+    onBackground = blackColor,
+    surface = backgroundColor,
+    onSurface = blackColor,
 )
-
-val LightColorScheme = lightColorScheme(
-    primary = Purple40,
-    secondary = PurpleGrey40,
-    tertiary = Pink40
-
-    /* Other default colors to override
-    background = Color(0xFFFFFBFE),
-    surface = Color(0xFFFFFBFE),
-    onPrimary = Color.White,
-    onSecondary = Color.White,
-    onTertiary = Color.White,
-    onBackground = Color(0xFF1C1B1F),
-    onSurface = Color(0xFF1C1B1F),
-    */
-)
-
-@Composable
-expect fun getColorScheme(darkTheme: Boolean, dynamicColor: Boolean): ColorScheme
 
 @Composable
 fun BoingBallDemoTheme(
-    darkTheme: Boolean = isSystemInDarkTheme(),
-    // Dynamic color is available on Android 12+
-    dynamicColor: Boolean = true,
     // Screens and previews inherit the Workbench look from here.
     osStyle: OSStyle = LocalOsStyle.current,
     content: @Composable () -> Unit
 ) {
     CompositionLocalProvider(LocalOsStyle provides osStyle) {
         MaterialTheme(
-            colorScheme = getColorScheme(darkTheme, dynamicColor),
+            colorScheme = AmigaColorScheme,
             typography = appTypography(),
             content = content
         )
