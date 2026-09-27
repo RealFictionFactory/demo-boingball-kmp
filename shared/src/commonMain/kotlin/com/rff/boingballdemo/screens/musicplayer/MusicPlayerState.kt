@@ -21,4 +21,12 @@ data class MusicPlayerState(
             if (duration <= 0L) return 0f
             return (positionMs.toFloat() / duration).coerceIn(0f, 1f)
         }
+
+    /**
+     * Index of the track identified by [resourcePath], or the current track if it is null
+     * or no longer in the playlist. Identifying by track (not position) keeps a selection
+     * on the same track however the playlist is reordered.
+     */
+    fun indexOfTrack(resourcePath: String?): Int =
+        tracks.indexOfFirst { it.resourcePath == resourcePath }.takeIf { it >= 0 } ?: currentTrackIndex
 }

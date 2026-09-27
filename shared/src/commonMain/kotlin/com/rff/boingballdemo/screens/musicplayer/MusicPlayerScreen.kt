@@ -31,7 +31,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -117,13 +116,15 @@ fun MusicPlayerScreen(
 ) {
     val bg = if (LocalOsStyle.current == OSStyle.AmigaOS20) backgroundColor else amigaOs13Blue
     var showPlaylist by rememberSaveable { mutableStateOf(initiallyShowPlaylist) }
-    var selectedTrackIndex by rememberSaveable { mutableIntStateOf(state.currentTrackIndex) }
+    // Playlist highlight, remembered by track so it follows the track through reorders.
+    // The player owns the order; the ViewModel validates moves.
+    var selectedTrackPath by rememberSaveable { mutableStateOf<String?>(null) }
+    val selectedTrackIndex = state.indexOfTrack(selectedTrackPath)
     val moveTrack: (Int) -> Unit = { direction ->
-        val target = selectedTrackIndex + direction
-        if (selectedTrackIndex in state.tracks.indices && target in state.tracks.indices) {
-            onAction(MusicPlayerAction.MoveTrack(selectedTrackIndex, direction))
-            selectedTrackIndex = target
-        }
+        onAction(MusicPlayerAction.MoveTrack(selectedTrackIndex, direction))
+    }
+    val selectTrack: (Int) -> Unit = { index ->
+        selectedTrackPath = state.tracks.getOrNull(index)?.resourcePath
     }
 
     BoxWithConstraints(
@@ -145,7 +146,7 @@ fun MusicPlayerScreen(
                         onAction = onAction,
                         onCloseClick = onCloseClick,
                         onPlaylistClick = {
-                            selectedTrackIndex = state.currentTrackIndex
+                            selectedTrackPath = state.currentTrack?.resourcePath
                             showPlaylist = true
                         },
                         modifier = Modifier.width(
@@ -159,7 +160,7 @@ fun MusicPlayerScreen(
                             PlaylistWindow(
                                 state = state,
                                 selectedIndex = selectedTrackIndex,
-                                onSelect = { selectedTrackIndex = it },
+                                onSelect = selectTrack,
                                 onMove = moveTrack,
                                 onCloseClick = { showPlaylist = false },
                                 maxListHeight = (maxHeight - 52.dp).coerceAtLeast(1.dp),
@@ -178,7 +179,7 @@ fun MusicPlayerScreen(
                         onAction = onAction,
                         onCloseClick = onCloseClick,
                         onPlaylistClick = {
-                            selectedTrackIndex = state.currentTrackIndex
+                            selectedTrackPath = state.currentTrack?.resourcePath
                             showPlaylist = true
                         },
                         modifier = Modifier.width(windowWidth),
@@ -189,7 +190,7 @@ fun MusicPlayerScreen(
                             PlaylistWindow(
                                 state = state,
                                 selectedIndex = selectedTrackIndex,
-                                onSelect = { selectedTrackIndex = it },
+                                onSelect = selectTrack,
                                 onMove = moveTrack,
                                 onCloseClick = { showPlaylist = false },
                                 maxListHeight = (maxHeight - 52.dp).coerceAtLeast(1.dp),

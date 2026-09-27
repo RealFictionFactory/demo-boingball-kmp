@@ -64,6 +64,23 @@ class MusicPlayerStateTest {
     }
 
     @Test
+    fun selectionFollowsTrackThroughReorder() {
+        val state = MusicPlayerState(tracks = tracks, currentTrackIndex = 0)
+        val selected = tracks[0].resourcePath
+        assertEquals(0, state.indexOfTrack(selected))
+
+        val reordered = state.copy(tracks = tracks.moved(0, 2))
+        assertEquals(2, reordered.indexOfTrack(selected))
+    }
+
+    @Test
+    fun missingSelectionFallsBackToCurrentTrack() {
+        val state = MusicPlayerState(tracks = tracks, currentTrackIndex = 1)
+        assertEquals(1, state.indexOfTrack(null))
+        assertEquals(1, state.indexOfTrack("files/removed.mp3"))
+    }
+
+    @Test
     fun formatPlaybackTimePadsSeconds() {
         assertEquals("0:00", formatPlaybackTime(0L))
         assertEquals("1:12", formatPlaybackTime(72_000L))
