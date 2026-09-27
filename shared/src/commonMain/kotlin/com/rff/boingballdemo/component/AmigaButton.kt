@@ -101,6 +101,7 @@ private fun AmigaOs30Button(
         Text(
             text = text,
             style = toolbarTextStyle(),
+            color = blackColor,
             modifier = Modifier
                 .align(Alignment.CenterStart)
         )

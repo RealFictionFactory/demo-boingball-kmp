@@ -1,5 +1,6 @@
 package com.rff.boingballdemo.ui.theme
 
+import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
@@ -29,11 +30,25 @@ fun BoingBallDemoTheme(
     osStyle: OSStyle = LocalOsStyle.current,
     content: @Composable () -> Unit
 ) {
-    CompositionLocalProvider(LocalOsStyle provides osStyle) {
-        MaterialTheme(
-            colorScheme = AmigaColorScheme,
-            typography = appTypography(),
-            content = content
-        )
+    MaterialTheme(
+        colorScheme = AmigaColorScheme,
+        typography = appTypography(),
+    ) {
+        ProvideOsStyle(osStyle, content)
     }
+}
+
+/**
+ * Provides [osStyle] and its default content color (text and icons): white on the
+ * OS 1.3 blue Workbench, black on the OS 2.0+ grey one. Use this wherever the style
+ * changes, so the two never disagree.
+ */
+@Composable
+fun ProvideOsStyle(osStyle: OSStyle, content: @Composable () -> Unit) {
+    val contentColor = if (osStyle == OSStyle.AmigaOS13) whiteColor else blackColor
+    CompositionLocalProvider(
+        LocalOsStyle provides osStyle,
+        LocalContentColor provides contentColor,
+        content = content,
+    )
 }

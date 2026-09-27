@@ -1,7 +1,6 @@
 package com.rff.boingballdemo.navigation
 
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation3.runtime.NavKey
@@ -11,7 +10,6 @@ import androidx.navigation3.runtime.rememberNavBackStack
 import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
 import androidx.navigation3.ui.NavDisplay
 import androidx.savedstate.serialization.SavedStateConfiguration
-import com.rff.boingballdemo.component.LocalOsStyle
 import com.rff.boingballdemo.data.local.AppSettings
 import com.rff.boingballdemo.data.local.BoingBallPrefs
 import com.rff.boingballdemo.screens.about.AboutScreenRoot
@@ -23,6 +21,7 @@ import com.rff.boingballdemo.screens.workbench.WorkbenchScreenRoot
 import com.rff.boingballdemo.screens.musicplayer.MusicPlayerScreenRoot
 import com.rff.boingballdemo.screens.preferences.PreferencesScreenRoot
 import com.rff.boingballdemo.screens.shell.ShellScreenRoot
+import com.rff.boingballdemo.ui.theme.ProvideOsStyle
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.modules.SerializersModule
@@ -94,7 +93,7 @@ fun NavigationRoot(
 ) {
     val settings = koinInject<AppSettings>()
     val osStyle by settings.osStyle.collectAsStateWithLifecycle(BoingBallPrefs.Default.osStyle)
-    CompositionLocalProvider(LocalOsStyle provides osStyle) {
+    ProvideOsStyle(osStyle) {
         AppNavDisplay(onExitApp)
     }
 }

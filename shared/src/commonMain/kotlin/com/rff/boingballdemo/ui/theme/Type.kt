@@ -2,7 +2,6 @@ package com.rff.boingballdemo.ui.theme
 
 import androidx.compose.material3.Typography
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
@@ -23,12 +22,12 @@ fun topazFont20() = FontFamily(
     Font(Res.font.topaz_a1200)
 )
 
+/** Text colors are not part of the styles: they come from LocalContentColor or the call site. */
 @Composable
 fun toolbarTextStyle() = TextStyle(
     fontFamily = topazFont20(),
     fontWeight = FontWeight.Normal,
     fontSize = 16.sp,
-    color = blackColor,
     lineHeight = 24.sp,
     letterSpacing = 0.5.sp
 )
@@ -41,7 +40,6 @@ fun appTypography(): Typography {
             fontFamily = topaz,
             fontWeight = FontWeight.Normal,
             fontSize = 16.sp,
-            color = Color.White,
             lineHeight = 24.sp,
             letterSpacing = 0.5.sp
         ),
@@ -49,7 +47,6 @@ fun appTypography(): Typography {
             fontFamily = topaz,
             fontWeight = FontWeight.Normal,
             fontSize = 14.sp,
-            color = Color.White,
             lineHeight = 20.sp,
             letterSpacing = 0.3.sp
         ),
@@ -57,7 +54,6 @@ fun appTypography(): Typography {
             fontFamily = topaz,
             fontWeight = FontWeight.Normal,
             fontSize = 12.sp,
-            color = Color.White,
             lineHeight = 16.sp,
             letterSpacing = 0.1.sp
         ),
@@ -65,7 +61,6 @@ fun appTypography(): Typography {
             fontFamily = topaz,
             fontWeight = FontWeight.Medium,
             fontSize = 14.sp,
-            color = Color.White,
             lineHeight = 20.sp,
             letterSpacing = 0.1.sp
         ),

@@ -186,6 +186,7 @@ fun AmigaOs30ToolbarPlaceholderGadget(
         Text(
             text = text,
             style = toolbarTextStyle(),
+            color = blackColor,
             modifier = Modifier
                 .align(Alignment.CenterStart)
                 .padding(horizontal = 8.dp, vertical = 2.dp)
