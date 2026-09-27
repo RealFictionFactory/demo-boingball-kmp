@@ -25,7 +25,7 @@ Follow Kotlin defaults: 4-space indentation, no tabs, and one top-level class or
 Compose screens, state, and action types already follow `FeatureScreen`, `FeatureState`, and `FeatureAction`; keep new code consistent with that pattern. No formatter or linter is configured in this repository, so keep imports tidy and match surrounding code style.
 
 ## Testing Guidelines
-Tests use `kotlin.test`. Place cross-platform tests in `shared/src/commonTest`, Android-specific tests in `shared/src/androidHostTest`, and iOS-specific tests in `shared/src/iosTest`. Name test classes after the unit under test, and use descriptive test function names such as `fun savesPreferences()` instead of generic `example()`.
+Tests use `kotlin.test`. Place cross-platform tests in `shared/src/commonTest` (ViewModels use `kotlinx-coroutines-test`, `testing/InMemoryDataStore` and `testAppSettings`), Android-specific tests and Compose UI tests (Robolectric, `runComposeUiTest`) in `shared/src/androidHostTest`, and iOS-specific tests in `shared/src/iosTest`. Name test classes after the unit under test, and use descriptive test function names such as `fun savesPreferences()` instead of generic `example()`.
 
 ## Commit & Pull Request Guidelines
 Git history is minimal and uses short, lowercase subjects (`initial version`). Keep commit messages brief, imperative, and focused on one change, for example `add preferences persistence`.

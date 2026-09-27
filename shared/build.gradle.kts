@@ -99,6 +99,12 @@ kotlin {
             implementation(libs.kotlin.test)
             implementation(libs.kotlinx.coroutines.test)
         }
+        // Compose UI tests run on the JVM through Robolectric.
+        getByName("androidHostTest").dependencies {
+            implementation(libs.compose.ui.test)
+            implementation(libs.androidx.compose.ui.test.manifest)
+            implementation(libs.robolectric)
+        }
     }
 }
 
