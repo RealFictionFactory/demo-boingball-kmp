@@ -56,9 +56,8 @@ import org.jetbrains.compose.resources.stringResource
  * - [*DONE*] Add full screen Boing Ball view like real demo, some back button may be necessary
  *
  * PHASE 3 — more nice to have features (version 1.5.x):
- * - Allow user to change rotation speed
  * - [*DONE*] Music Player interactive playlist window
- * - Sine scroll demo
+ * - [*DONE*] Sine scroll demo
  * - [*DONE*] Starfield demo
  * - Plasma screen demo
  * - Raster bars demo
@@ -86,6 +85,7 @@ fun WorkbenchScreenRoot(
     onAboutClick: () -> Unit = {},
     onCopperBarsClick: () -> Unit = {},
     onStarfieldClick: () -> Unit = {},
+    onSineScrollClick: () -> Unit = {},
     onCalculatorClick: () -> Unit = {},
     onShellClick: () -> Unit = {},
     onMusicPlayerClick: () -> Unit = {},
@@ -99,6 +99,7 @@ fun WorkbenchScreenRoot(
                 WorkbenchAction.About -> onAboutClick()
                 WorkbenchAction.CopperBars -> onCopperBarsClick()
                 WorkbenchAction.Starfield -> onStarfieldClick()
+                WorkbenchAction.SineScroll -> onSineScrollClick()
                 WorkbenchAction.Calculator -> onCalculatorClick()
                 WorkbenchAction.Shell -> onShellClick()
                 WorkbenchAction.MusicPlayer -> onMusicPlayerClick()

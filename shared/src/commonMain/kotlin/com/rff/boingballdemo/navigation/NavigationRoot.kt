@@ -21,6 +21,7 @@ import com.rff.boingballdemo.screens.workbench.WorkbenchScreenRoot
 import com.rff.boingballdemo.screens.musicplayer.MusicPlayerScreenRoot
 import com.rff.boingballdemo.screens.preferences.PreferencesScreenRoot
 import com.rff.boingballdemo.screens.shell.ShellScreenRoot
+import com.rff.boingballdemo.screens.sinescroll.SineScrollScreenRoot
 import com.rff.boingballdemo.screens.starfield.StarfieldScreenRoot
 import com.rff.boingballdemo.ui.theme.ProvideOsStyle
 import kotlinx.serialization.ExperimentalSerializationApi
@@ -63,6 +64,9 @@ data object MusicPlayerRoute : AppRoute
 @Serializable
 data object StarfieldRoute : AppRoute
 
+@Serializable
+data object SineScrollRoute : AppRoute
+
 @OptIn(ExperimentalSerializationApi::class)
 private val navConfig = SavedStateConfiguration {
     serializersModule = SerializersModule {
@@ -77,6 +81,7 @@ private val navConfig = SavedStateConfiguration {
             subclass(ShellRoute::class)
             subclass(MusicPlayerRoute::class)
             subclass(StarfieldRoute::class)
+            subclass(SineScrollRoute::class)
         }
     }
 }
@@ -147,6 +152,7 @@ private fun AppNavDisplay(onExitApp: () -> Unit) {
                     onShellClick = { open(ShellRoute) },
                     onMusicPlayerClick = { open(MusicPlayerRoute) },
                     onStarfieldClick = { open(StarfieldRoute) },
+                    onSineScrollClick = { open(SineScrollRoute) },
                 )
             }
             entry<BoingBallRoute> { BoingBallScreenRoot(onDismiss = onCloseClick) }
@@ -158,6 +164,7 @@ private fun AppNavDisplay(onExitApp: () -> Unit) {
             entry<ShellRoute> { ShellScreenRoot(onCloseClick = onCloseClick) }
             entry<MusicPlayerRoute> { MusicPlayerScreenRoot(onCloseClick = onCloseClick) }
             entry<StarfieldRoute> { StarfieldScreenRoot(onCloseClick = onCloseClick) }
+            entry<SineScrollRoute> { SineScrollScreenRoot(onCloseClick = onCloseClick) }
         },
     )
 }

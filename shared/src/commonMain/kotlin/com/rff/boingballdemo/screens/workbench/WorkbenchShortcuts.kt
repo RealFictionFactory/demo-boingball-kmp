@@ -32,6 +32,9 @@ import boingball.shared.generated.resources.prefs30
 import boingball.shared.generated.resources.shell
 import boingball.shared.generated.resources.shell13
 import boingball.shared.generated.resources.shell30
+import boingball.shared.generated.resources.sine_scroll
+import boingball.shared.generated.resources.sinescroll
+import boingball.shared.generated.resources.sinescroll30
 import boingball.shared.generated.resources.starfield
 import boingball.shared.generated.resources.starfield30
 import com.rff.boingballdemo.component.LocalOsStyle
@@ -58,9 +61,10 @@ internal fun workbenchShortcuts() = listOf(
     WorkbenchShortcut(WorkbenchAction.Clock, Res.drawable.clock, Res.drawable.clock30, Res.string.clock),
     WorkbenchShortcut(WorkbenchAction.Shell, Res.drawable.shell, Res.drawable.shell30, Res.string.shell13, Res.string.shell, iconWidth = 60.dp),
     WorkbenchShortcut(WorkbenchAction.Calculator, Res.drawable.calculator, Res.drawable.calculator30, Res.string.calculator),
-    WorkbenchShortcut(WorkbenchAction.CopperBars, Res.drawable.copper, Res.drawable.copper30, Res.string.copper),
     WorkbenchShortcut(WorkbenchAction.MusicPlayer, Res.drawable.mplayer, Res.drawable.mplayer30, Res.string.music_player),
+    WorkbenchShortcut(WorkbenchAction.CopperBars, Res.drawable.copper, Res.drawable.copper30, Res.string.copper),
     WorkbenchShortcut(WorkbenchAction.Starfield, Res.drawable.starfield, Res.drawable.starfield30, Res.string.starfield),
+    WorkbenchShortcut(WorkbenchAction.SineScroll, Res.drawable.sinescroll, Res.drawable.sinescroll30, Res.string.sine_scroll),
 )
 
 @Composable

@@ -82,7 +82,7 @@ fun CopperBarsView(
     }
 }
 
-private fun DrawScope.drawCopperBar(
+internal fun DrawScope.drawCopperBar(
     top: Float,
     height: Float,
     color: Color,
