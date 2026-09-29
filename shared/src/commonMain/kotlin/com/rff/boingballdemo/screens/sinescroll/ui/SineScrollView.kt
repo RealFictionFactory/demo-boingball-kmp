@@ -42,6 +42,7 @@ import androidx.lifecycle.repeatOnLifecycle
 import com.rff.boingballdemo.screens.copper.ui.drawCopperBar
 import com.rff.boingballdemo.ui.theme.BoingBallDemoTheme
 import com.rff.boingballdemo.ui.theme.topazFont
+import com.rff.boingballdemo.utils.markImmutable
 import kotlin.math.ceil
 import kotlin.math.floor
 import kotlin.math.roundToInt
@@ -206,6 +207,8 @@ private fun buildGlyphAtlas(
             drawText(layout, topLeft = Offset(cell * cellWidth.toFloat(), 0f))
         }
     }
+    // The scroller draws hundreds of slices of the atlas per frame.
+    image.markImmutable()
     return GlyphAtlas(image, cellWidth, cellHeight)
 }
 

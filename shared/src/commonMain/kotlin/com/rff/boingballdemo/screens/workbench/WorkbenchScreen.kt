@@ -60,7 +60,7 @@ import org.jetbrains.compose.resources.stringResource
  * - [*DONE*] Sine scroll demo
  * - [*DONE*] Starfield demo
  * - [*DONE*] Plasma screen demo
- * - Raster bars demo
+ * - [*DONE*] Raster bars demo (as Kefrens bars; plain raster bars are the Copper demo)
  * - [*DONE*] Twister demo
  * - Parallax demo
  *
@@ -88,6 +88,7 @@ fun WorkbenchScreenRoot(
     onSineScrollClick: () -> Unit = {},
     onPlasmaClick: () -> Unit = {},
     onTwisterClick: () -> Unit = {},
+    onKefrensBarsClick: () -> Unit = {},
     onCalculatorClick: () -> Unit = {},
     onShellClick: () -> Unit = {},
     onMusicPlayerClick: () -> Unit = {},
@@ -104,6 +105,7 @@ fun WorkbenchScreenRoot(
                 WorkbenchAction.SineScroll -> onSineScrollClick()
                 WorkbenchAction.Plasma -> onPlasmaClick()
                 WorkbenchAction.Twister -> onTwisterClick()
+                WorkbenchAction.KefrensBars -> onKefrensBarsClick()
                 WorkbenchAction.Calculator -> onCalculatorClick()
                 WorkbenchAction.Shell -> onShellClick()
                 WorkbenchAction.MusicPlayer -> onMusicPlayerClick()

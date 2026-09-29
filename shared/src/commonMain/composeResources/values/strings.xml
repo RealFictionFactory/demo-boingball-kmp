@@ -11,6 +11,7 @@
     <string name="sine_scroll" translatable="false">Scroller</string>
     <string name="plasma_demo" translatable="false">Plasma</string>
     <string name="twister_demo" translatable="false">Twister</string>
+    <string name="kefrens_demo" translatable="false">Kefrens</string>
     <string name="calculator">Calculator</string>
     <string name="music_player" translatable="false">Player</string>
     <string name="chaotic_player" translatable="false">Chaotic Player</string>

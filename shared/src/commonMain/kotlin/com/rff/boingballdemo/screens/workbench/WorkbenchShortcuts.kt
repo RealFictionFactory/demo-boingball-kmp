@@ -24,6 +24,9 @@ import boingball.shared.generated.resources.clock
 import boingball.shared.generated.resources.clock30
 import boingball.shared.generated.resources.copper
 import boingball.shared.generated.resources.copper30
+import boingball.shared.generated.resources.kefrens
+import boingball.shared.generated.resources.kefrens30
+import boingball.shared.generated.resources.kefrens_demo
 import boingball.shared.generated.resources.mplayer
 import boingball.shared.generated.resources.mplayer30
 import boingball.shared.generated.resources.music_player
@@ -73,6 +76,7 @@ internal fun workbenchShortcuts() = listOf(
     WorkbenchShortcut(WorkbenchAction.SineScroll, Res.drawable.sinescroll, Res.drawable.sinescroll30, Res.string.sine_scroll),
     WorkbenchShortcut(WorkbenchAction.Plasma, Res.drawable.plasma, Res.drawable.plasma30, Res.string.plasma_demo),
     WorkbenchShortcut(WorkbenchAction.Twister, Res.drawable.twister, Res.drawable.twister30, Res.string.twister_demo),
+    WorkbenchShortcut(WorkbenchAction.KefrensBars, Res.drawable.kefrens, Res.drawable.kefrens30, Res.string.kefrens_demo),
 )
 
 @Composable

@@ -16,6 +16,7 @@ import com.rff.boingballdemo.screens.about.AboutScreenRoot
 import com.rff.boingballdemo.screens.calculator.CalculatorScreenRoot
 import com.rff.boingballdemo.screens.clock.ClockScreenRoot
 import com.rff.boingballdemo.screens.copper.CopperBarsScreenRoot
+import com.rff.boingballdemo.screens.kefrens.KefrensBarsScreenRoot
 import com.rff.boingballdemo.screens.boingball.BoingBallScreenRoot
 import com.rff.boingballdemo.screens.workbench.WorkbenchScreenRoot
 import com.rff.boingballdemo.screens.musicplayer.MusicPlayerScreenRoot
@@ -75,6 +76,9 @@ data object PlasmaRoute : AppRoute
 @Serializable
 data object TwisterRoute : AppRoute
 
+@Serializable
+data object KefrensBarsRoute : AppRoute
+
 @OptIn(ExperimentalSerializationApi::class)
 private val navConfig = SavedStateConfiguration {
     serializersModule = SerializersModule {
@@ -92,6 +96,7 @@ private val navConfig = SavedStateConfiguration {
             subclass(SineScrollRoute::class)
             subclass(PlasmaRoute::class)
             subclass(TwisterRoute::class)
+            subclass(KefrensBarsRoute::class)
         }
     }
 }
@@ -165,6 +170,7 @@ private fun AppNavDisplay(onExitApp: () -> Unit) {
                     onSineScrollClick = { open(SineScrollRoute) },
                     onPlasmaClick = { open(PlasmaRoute) },
                     onTwisterClick = { open(TwisterRoute) },
+                    onKefrensBarsClick = { open(KefrensBarsRoute) },
                 )
             }
             entry<BoingBallRoute> { BoingBallScreenRoot(onDismiss = onCloseClick) }
@@ -179,6 +185,7 @@ private fun AppNavDisplay(onExitApp: () -> Unit) {
             entry<SineScrollRoute> { SineScrollScreenRoot(onCloseClick = onCloseClick) }
             entry<PlasmaRoute> { PlasmaScreenRoot(onCloseClick = onCloseClick) }
             entry<TwisterRoute> { TwisterScreenRoot(onCloseClick = onCloseClick) }
+            entry<KefrensBarsRoute> { KefrensBarsScreenRoot(onCloseClick = onCloseClick) }
         },
     )
 }
