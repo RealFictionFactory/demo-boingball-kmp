@@ -11,4 +11,5 @@ sealed interface WorkbenchAction {
     data object MusicPlayer : WorkbenchAction
     data object Starfield : WorkbenchAction
     data object SineScroll : WorkbenchAction
+    data object Plasma : WorkbenchAction
 }

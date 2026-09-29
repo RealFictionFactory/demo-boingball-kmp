@@ -59,7 +59,7 @@ import org.jetbrains.compose.resources.stringResource
  * - [*DONE*] Music Player interactive playlist window
  * - [*DONE*] Sine scroll demo
  * - [*DONE*] Starfield demo
- * - Plasma screen demo
+ * - [*DONE*] Plasma screen demo
  * - Raster bars demo
  * - Twister demo
  * - Parallax demo
@@ -86,6 +86,7 @@ fun WorkbenchScreenRoot(
     onCopperBarsClick: () -> Unit = {},
     onStarfieldClick: () -> Unit = {},
     onSineScrollClick: () -> Unit = {},
+    onPlasmaClick: () -> Unit = {},
     onCalculatorClick: () -> Unit = {},
     onShellClick: () -> Unit = {},
     onMusicPlayerClick: () -> Unit = {},
@@ -100,6 +101,7 @@ fun WorkbenchScreenRoot(
                 WorkbenchAction.CopperBars -> onCopperBarsClick()
                 WorkbenchAction.Starfield -> onStarfieldClick()
                 WorkbenchAction.SineScroll -> onSineScrollClick()
+                WorkbenchAction.Plasma -> onPlasmaClick()
                 WorkbenchAction.Calculator -> onCalculatorClick()
                 WorkbenchAction.Shell -> onShellClick()
                 WorkbenchAction.MusicPlayer -> onMusicPlayerClick()

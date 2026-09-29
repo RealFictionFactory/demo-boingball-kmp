@@ -27,6 +27,9 @@ import boingball.shared.generated.resources.copper30
 import boingball.shared.generated.resources.mplayer
 import boingball.shared.generated.resources.mplayer30
 import boingball.shared.generated.resources.music_player
+import boingball.shared.generated.resources.plasma
+import boingball.shared.generated.resources.plasma30
+import boingball.shared.generated.resources.plasma_demo
 import boingball.shared.generated.resources.preferences
 import boingball.shared.generated.resources.prefs30
 import boingball.shared.generated.resources.shell
@@ -65,6 +68,7 @@ internal fun workbenchShortcuts() = listOf(
     WorkbenchShortcut(WorkbenchAction.CopperBars, Res.drawable.copper, Res.drawable.copper30, Res.string.copper),
     WorkbenchShortcut(WorkbenchAction.Starfield, Res.drawable.starfield, Res.drawable.starfield30, Res.string.starfield),
     WorkbenchShortcut(WorkbenchAction.SineScroll, Res.drawable.sinescroll, Res.drawable.sinescroll30, Res.string.sine_scroll),
+    WorkbenchShortcut(WorkbenchAction.Plasma, Res.drawable.plasma, Res.drawable.plasma30, Res.string.plasma_demo),
 )
 
 @Composable
