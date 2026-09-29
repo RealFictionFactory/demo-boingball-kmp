@@ -40,6 +40,9 @@ import boingball.shared.generated.resources.sinescroll
 import boingball.shared.generated.resources.sinescroll30
 import boingball.shared.generated.resources.starfield
 import boingball.shared.generated.resources.starfield30
+import boingball.shared.generated.resources.twister
+import boingball.shared.generated.resources.twister30
+import boingball.shared.generated.resources.twister_demo
 import com.rff.boingballdemo.component.LocalOsStyle
 import com.rff.boingballdemo.component.AmigaTextBox
 import com.rff.boingballdemo.component.OSStyle
@@ -69,6 +72,7 @@ internal fun workbenchShortcuts() = listOf(
     WorkbenchShortcut(WorkbenchAction.Starfield, Res.drawable.starfield, Res.drawable.starfield30, Res.string.starfield),
     WorkbenchShortcut(WorkbenchAction.SineScroll, Res.drawable.sinescroll, Res.drawable.sinescroll30, Res.string.sine_scroll),
     WorkbenchShortcut(WorkbenchAction.Plasma, Res.drawable.plasma, Res.drawable.plasma30, Res.string.plasma_demo),
+    WorkbenchShortcut(WorkbenchAction.Twister, Res.drawable.twister, Res.drawable.twister30, Res.string.twister_demo),
 )
 
 @Composable

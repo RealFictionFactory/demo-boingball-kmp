@@ -31,7 +31,7 @@ class BaselineProfileGenerator {
         Thread.sleep(ANIMATION_MS)
         device.click(device.displayWidth / 2, device.displayHeight / 2)
 
-        for (window in listOf("Clock", "MusicPlayer", "Preferences", "Calculator", "Shell", "CopperBars", "Starfield", "SineScroll", "Plasma")) {
+        for (window in listOf("Clock", "MusicPlayer", "Preferences", "Calculator", "Shell", "CopperBars", "Starfield", "SineScroll", "Plasma", "Twister")) {
             val icon = device.wait(Until.findObject(By.res("workbench_$window")), TIMEOUT_MS)
                 ?: error("Workbench icon for $window not found")
             icon.click()

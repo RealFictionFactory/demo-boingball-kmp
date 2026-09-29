@@ -24,6 +24,7 @@ import com.rff.boingballdemo.screens.preferences.PreferencesScreenRoot
 import com.rff.boingballdemo.screens.shell.ShellScreenRoot
 import com.rff.boingballdemo.screens.sinescroll.SineScrollScreenRoot
 import com.rff.boingballdemo.screens.starfield.StarfieldScreenRoot
+import com.rff.boingballdemo.screens.twister.TwisterScreenRoot
 import com.rff.boingballdemo.ui.theme.ProvideOsStyle
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.Serializable
@@ -71,6 +72,9 @@ data object SineScrollRoute : AppRoute
 @Serializable
 data object PlasmaRoute : AppRoute
 
+@Serializable
+data object TwisterRoute : AppRoute
+
 @OptIn(ExperimentalSerializationApi::class)
 private val navConfig = SavedStateConfiguration {
     serializersModule = SerializersModule {
@@ -87,6 +91,7 @@ private val navConfig = SavedStateConfiguration {
             subclass(StarfieldRoute::class)
             subclass(SineScrollRoute::class)
             subclass(PlasmaRoute::class)
+            subclass(TwisterRoute::class)
         }
     }
 }
@@ -159,6 +164,7 @@ private fun AppNavDisplay(onExitApp: () -> Unit) {
                     onStarfieldClick = { open(StarfieldRoute) },
                     onSineScrollClick = { open(SineScrollRoute) },
                     onPlasmaClick = { open(PlasmaRoute) },
+                    onTwisterClick = { open(TwisterRoute) },
                 )
             }
             entry<BoingBallRoute> { BoingBallScreenRoot(onDismiss = onCloseClick) }
@@ -172,6 +178,7 @@ private fun AppNavDisplay(onExitApp: () -> Unit) {
             entry<StarfieldRoute> { StarfieldScreenRoot(onCloseClick = onCloseClick) }
             entry<SineScrollRoute> { SineScrollScreenRoot(onCloseClick = onCloseClick) }
             entry<PlasmaRoute> { PlasmaScreenRoot(onCloseClick = onCloseClick) }
+            entry<TwisterRoute> { TwisterScreenRoot(onCloseClick = onCloseClick) }
         },
     )
 }

@@ -61,7 +61,7 @@ import org.jetbrains.compose.resources.stringResource
  * - [*DONE*] Starfield demo
  * - [*DONE*] Plasma screen demo
  * - Raster bars demo
- * - Twister demo
+ * - [*DONE*] Twister demo
  * - Parallax demo
  *
  * PHASE 4 — full Workbench rework (version 2.0.x):
@@ -87,6 +87,7 @@ fun WorkbenchScreenRoot(
     onStarfieldClick: () -> Unit = {},
     onSineScrollClick: () -> Unit = {},
     onPlasmaClick: () -> Unit = {},
+    onTwisterClick: () -> Unit = {},
     onCalculatorClick: () -> Unit = {},
     onShellClick: () -> Unit = {},
     onMusicPlayerClick: () -> Unit = {},
@@ -102,6 +103,7 @@ fun WorkbenchScreenRoot(
                 WorkbenchAction.Starfield -> onStarfieldClick()
                 WorkbenchAction.SineScroll -> onSineScrollClick()
                 WorkbenchAction.Plasma -> onPlasmaClick()
+                WorkbenchAction.Twister -> onTwisterClick()
                 WorkbenchAction.Calculator -> onCalculatorClick()
                 WorkbenchAction.Shell -> onShellClick()
                 WorkbenchAction.MusicPlayer -> onMusicPlayerClick()

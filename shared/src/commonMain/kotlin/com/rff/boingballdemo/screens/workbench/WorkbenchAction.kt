@@ -12,4 +12,5 @@ sealed interface WorkbenchAction {
     data object Starfield : WorkbenchAction
     data object SineScroll : WorkbenchAction
     data object Plasma : WorkbenchAction
+    data object Twister : WorkbenchAction
 }
